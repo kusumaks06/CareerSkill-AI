@@ -99,7 +99,7 @@ If SMTP credentials are not configured, the application **will not crash**. Inst
 ==================================================
 [*] Password reset OTP generated for:
 [*] Email: user@example.com
-[*] Development OTP: 492817
+[*] Development OTP: ******
 [*] Expiry: 10 minutes
 ==================================================
 ```
