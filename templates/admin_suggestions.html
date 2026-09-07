@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Suggestions & Improvement Hub - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb & Header -->
+    <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('admin_feedback') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-user-shield me-1"></i> Admin Portal</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">User Suggestions</li>
+            </ol>
+        </nav>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin_feedback') }}" class="btn btn-brand-outline btn-sm">
+                <i class="fa-solid fa-star me-1"></i> Course Feedbacks
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-brand-outline btn-sm">
+                <i class="fa-solid fa-gauge-high me-1"></i> My Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin Portal Header & Nav Pills -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-warning">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-bold small">
+                        <i class="fa-solid fa-shield-halved me-1"></i> Admin Control Center
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-secondary small">
+                        Module 10 &bull; Platform Improvements
+                    </span>
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    User Suggestions & <span class="text-gradient">Platform Improvements</span>
+                </h1>
+                <p class="text-secondary mb-0">
+                    Review community enhancement requests, track missing careers and courses, and dispatch official administrative responses.
+                </p>
+            </div>
+
+            <div class="col-lg-5 text-lg-end">
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('admin_feedback') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-star me-1 text-warning"></i> Course Ratings
+                    </a>
+                    <a href="{{ url_for('admin_suggestions') }}" class="btn btn-brand-primary btn-sm active">
+                        <i class="fa-solid fa-lightbulb me-1"></i> Suggestions ({{ analytics.total_suggestions }})
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5 KPI Summary Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total Suggestions -->
+        <div class="col-6 col-md-4 col-lg">
+            <div class="glass-card p-3 text-center h-100 border-top border-2 border-primary">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Total Submissions</span>
+                <div class="h3 fw-bold text-gradient mb-0">{{ analytics.total_suggestions }}</div>
+                <span class="text-muted x-small">Community inputs</span>
+            </div>
+        </div>
+
+        <!-- Submitted / New -->
+        <div class="col-6 col-md-4 col-lg">
+            <div class="glass-card p-3 text-center h-100 border-top border-2 border-info">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">New / Submitted</span>
+                <div class="h3 fw-bold text-info mb-0">{{ analytics.new_count }}</div>
+                <span class="text-muted x-small">Awaiting triage</span>
+            </div>
+        </div>
+
+        <!-- Under Review -->
+        <div class="col-6 col-md-4 col-lg">
+            <div class="glass-card p-3 text-center h-100 border-top border-2 border-warning">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Under Review</span>
+                <div class="h3 fw-bold text-warning mb-0">{{ analytics.under_review_count }}</div>
+                <span class="text-muted x-small">Active investigation</span>
+            </div>
+        </div>
+
+        <!-- Resolved -->
+        <div class="col-6 col-md-6 col-lg">
+            <div class="glass-card p-3 text-center h-100 border-top border-2 border-success">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Resolved</span>
+                <div class="h3 fw-bold text-success mb-0">{{ analytics.resolved_count }}</div>
+                <span class="text-muted x-small">{{ analytics.resolution_rate }}% Resolution rate</span>
+            </div>
+        </div>
+
+        <!-- Rejected -->
+        <div class="col-6 col-md-6 col-lg">
+            <div class="glass-card p-3 text-center h-100 border-top border-2 border-danger">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Rejected</span>
+                <div class="h3 fw-bold text-danger mb-0">{{ analytics.rejected_count }}</div>
+                <span class="text-muted x-small">Not actionable</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Distribution & Top Project Improvement Insights -->
+    <div class="row g-4 mb-4">
+        <!-- Category Breakdown -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-primary"></i> Category Distribution
+                </h5>
+                <div class="d-flex flex-column gap-2">
+                    {% for cat in categories %}
+                        {% set count = analytics.category_counts[cat] if analytics.category_counts else 0 %}
+                        {% set pct = ((count / analytics.total_suggestions) * 100)|round|int if analytics.total_suggestions > 0 else 0 %}
+                        <div>
+                            <div class="d-flex justify-content-between small text-secondary mb-1">
+                                <span>{{ cat }}</span>
+                                <span><strong class="text-white">{{ count }}</strong> ({{ pct }}%)</span>
+                            </div>
+                            <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                                <div class="progress-bar bg-primary" style="width: {{ pct }}%;"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Requested Enhancements (Careers, Skills, Courses) -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-warning"></i> High-Demand Project Enhancements
+                </h5>
+
+                <!-- Top Careers -->
+                <div class="mb-3">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">
+                        <i class="fa-solid fa-briefcase text-primary me-1"></i> Top Requested Careers
+                    </span>
+                    {% if analytics.top_requested_careers %}
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for item in analytics.top_requested_careers %}
+                                <span class="badge bg-dark border border-primary text-light small py-1 px-2">
+                                    {{ item.name }} <span class="badge bg-primary ms-1">{{ item.count }}</span>
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <span class="text-muted small">No specific careers reported yet.</span>
+                    {% endif %}
+                </div>
+
+                <!-- Top Skills -->
+                <div class="mb-3">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">
+                        <i class="fa-solid fa-code text-info me-1"></i> Top Missing Skills
+                    </span>
+                    {% if analytics.top_requested_skills %}
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for item in analytics.top_requested_skills %}
+                                <span class="badge bg-dark border border-info text-light small py-1 px-2">
+                                    {{ item.name }} <span class="badge bg-info text-dark ms-1">{{ item.count }}</span>
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <span class="text-muted small">No specific skills reported yet.</span>
+                    {% endif %}
+                </div>
+
+                <!-- Top Courses -->
+                <div>
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">
+                        <i class="fa-solid fa-graduation-cap text-warning me-1"></i> Top Reported Courses
+                    </span>
+                    {% if analytics.top_reported_courses %}
+                        <div class="d-flex flex-wrap gap-1">
+                            {% for item in analytics.top_reported_courses %}
+                                <span class="badge bg-dark border border-warning text-light small py-1 px-2">
+                                    {{ item.name }} <span class="badge bg-warning text-dark ms-1">{{ item.count }}</span>
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <span class="text-muted small">No specific courses reported yet.</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_suggestions') }}" class="row g-2 align-items-center" id="admin-suggestion-filter-form">
+            <!-- Search Query -->
+            <div class="col-md-4">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search user, title, keyword..." value="{{ search_query }}">
+                </div>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="col-6 col-md-3">
+                <select name="category" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all" {% if category_filter == 'all' or not category_filter %}selected{% endif %}>All Categories</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="col-6 col-md-3">
+                <select name="status" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all" {% if status_filter == 'all' or not status_filter %}selected{% endif %}>All Statuses</option>
+                    {% for st in statuses %}
+                        <option value="{{ st }}" {% if status_filter == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">
+                    <i class="fa-solid fa-filter me-1"></i> Filter
+                </button>
+                <a href="{{ url_for('admin_suggestions') }}" class="btn btn-brand-outline btn-sm">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Suggestions Table Card -->
+    <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-list-check text-info"></i> Suggestions Log ({{ suggestions|length }})
+            </h5>
+            <span class="text-secondary small">Click "Review & Respond" to update status and send response</span>
+        </div>
+
+        {% if suggestions %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>ID</th>
+                            <th>Learner</th>
+                            <th>Category</th>
+                            <th>Suggestion Details</th>
+                            <th>Target Metadata</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in suggestions %}
+                            <tr>
+                                <td class="font-monospace small text-muted">#{{ s.id }}</td>
+                                <td>
+                                    <div class="fw-bold text-white small">{{ s.user_name }}</div>
+                                    <div class="text-muted x-small">{{ s.user_email }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white small">{{ s.category }}</span>
+                                </td>
+                                <td style="max-width: 280px;">
+                                    <strong class="text-white small d-block text-truncate" title="{{ s.title }}">{{ s.title }}</strong>
+                                    <p class="text-secondary x-small mb-1 text-truncate" title="{{ s.description }}">{{ s.description }}</p>
+                                    
+                                    {% if s.has_response %}
+                                        <div class="p-1 px-2 rounded bg-primary-subtle bg-opacity-10 border border-primary-subtle x-small text-light">
+                                            <i class="fa-solid fa-shield-halved text-warning me-1"></i> <strong>Admin:</strong> {{ s.admin_response }}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.career %}
+                                        <span class="badge bg-black border border-secondary text-light x-small d-block mb-1">
+                                            <i class="fa-solid fa-briefcase text-primary me-1"></i> {{ s.career }}
+                                        </span>
+                                    {% endif %}
+                                    {% if s.skill %}
+                                        <span class="badge bg-black border border-secondary text-light x-small d-block mb-1">
+                                            <i class="fa-solid fa-code text-info me-1"></i> {{ s.skill }}
+                                        </span>
+                                    {% endif %}
+                                    {% if s.course %}
+                                        <span class="badge bg-black border border-secondary text-light x-small d-block">
+                                            <i class="fa-solid fa-graduation-cap text-warning me-1"></i> {{ s.course }}
+                                        </span>
+                                    {% endif %}
+                                    {% if not s.career and not s.skill and not s.course %}
+                                        <span class="text-muted x-small">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if s.status == 'Submitted' %}
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle small">Submitted</span>
+                                    {% elif s.status == 'Under Review' %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle small">Under Review</span>
+                                    {% elif s.status == 'Resolved' %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle small">Resolved</span>
+                                    {% elif s.status == 'Rejected' %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle small">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-muted small text-nowrap">
+                                    {{ s.date_formatted or s.created_at }}
+                                </td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-brand-primary btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#adminRespondModal-{{ s.id }}">
+                                        <i class="fa-solid fa-reply me-1"></i> Respond
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Admin Response Modal for this suggestion -->
+                            <div class="modal fade" id="adminRespondModal-{{ s.id }}" tabindex="-1" aria-labelledby="adminRespondModalLabel-{{ s.id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content bg-dark text-white border-secondary">
+                                        <div class="modal-header border-secondary">
+                                            <h5 class="modal-title fs-6 fw-bold" id="adminRespondModalLabel-{{ s.id }}">
+                                                <i class="fa-solid fa-shield-halved text-warning me-1"></i> Admin Triage &bull; Suggestion #{{ s.id }}
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form method="POST" action="{{ url_for('admin_respond_suggestion', suggestion_id=s.id) }}">
+                                            <div class="modal-body">
+                                                <div class="p-3 rounded bg-black bg-opacity-40 border border-secondary mb-3">
+                                                    <span class="badge bg-secondary small mb-1">{{ s.category }}</span>
+                                                    <h6 class="fw-bold text-white mb-1">{{ s.title }}</h6>
+                                                    <p class="text-secondary small mb-1">{{ s.description }}</p>
+                                                    <span class="text-muted x-small">Submitted by {{ s.user_name }} ({{ s.user_email }}) on {{ s.created_at }}</span>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label text-white fw-bold small">Change Status</label>
+                                                    <select class="form-select form-select-sm bg-black text-white border-secondary" name="status" required>
+                                                        {% for st in statuses %}
+                                                            <option value="{{ st }}" {% if s.status == st %}selected{% endif %}>{{ st }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label text-white fw-bold small">Admin Response / Notes to Learner</label>
+                                                    <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="admin_response" rows="4" placeholder="Write explanation or update notes for the user...">{{ s.admin_response }}</textarea>
+                                                    <span class="text-muted x-small">This response will be visible on the learner's dashboard and suggestion history.</span>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer border-secondary">
+                                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-brand-primary btn-sm">
+                                                    <i class="fa-solid fa-check me-1"></i> Save & Dispatch Response
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- Empty Filter State -->
+            <div class="p-5 text-center rounded bg-dark border border-secondary border-opacity-50">
+                <i class="fa-solid fa-inbox text-secondary fa-3x mb-3 opacity-50"></i>
+                <h5 class="fw-bold text-white mb-1">No Suggestions Matched</h5>
+                <p class="text-secondary small mb-0">Try clearing filters or check back when learners submit feedback.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

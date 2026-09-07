@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}CareerSkill AI - Empower Your Career Journey{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <!-- Badge -->
+        <div class="hero-badge animate-fade">
+            <i class="fa-solid fa-sparkles text-warning"></i>
+            <span>AI-Driven Career Intelligence & Skill Gap Engine</span>
+        </div>
+
+        <!-- Main Title -->
+        <h1 class="hero-title fw-bold text-white">
+            <span class="text-gradient">CareerSkill AI</span>
+        </h1>
+
+        <!-- Subtitle Requested by User -->
+        <p class="hero-subtitle">
+            "Learn what matters. Build the skills that matter. Reach the career you want."
+        </p>
+
+        <!-- CTA Buttons Requested by User -->
+        <div class="d-flex flex-wrap justify-content-center gap-3 mb-5">
+            <a href="{{ url_for('get_started') }}" class="btn btn-brand-primary btn-lg px-4 py-3" id="hero-get-started-btn">
+                <i class="fa-solid fa-rocket me-2"></i> Get Started
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-brand-outline btn-lg px-4 py-3" id="hero-login-btn">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Login
+            </a>
+        </div>
+
+        <!-- Quick Metrics Banner -->
+        <div class="stats-banner">
+            <div class="row g-4 text-center">
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number text-gradient">500+</div>
+                        <div class="stat-label">In-Demand Tech Skills</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number text-gradient">94%</div>
+                        <div class="stat-label">Matching Accuracy</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number text-gradient">50+</div>
+                        <div class="stat-label">Career Pathways</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-number text-gradient">NLP</div>
+                        <div class="stat-label">Resume Skill Parser</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Preview Section -->
+<section class="py-5" id="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-uppercase text-info small fw-bold tracking-wider">Engineered for Excellence</span>
+            <h2 class="h1 fw-bold text-white mt-1">Core Intelligence Capabilities</h2>
+            <p class="text-secondary max-w-600 mx-auto">
+                Discover the data-driven modules powering CareerSkill AI.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="feature-icon-wrapper icon-blue">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    </div>
+                    <h3 class="card-title-custom">Skill Gap Analysis</h3>
+                    <p class="card-desc-custom">
+                        Benchmark your skillset against current industry job descriptions and pinpoint exact areas for growth with quantitative gap scoring.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="glass-card">
+                    <div class="feature-icon-wrapper icon-purple">
+                        <i class="fa-solid fa-route"></i>
+                    </div>
+                    <h3 class="card-title-custom">AI Career Roadmaps</h3>
+                    <p class="card-desc-custom">
+                        Generate sequential, milestone-based learning paths tailored to your target job profile—from Data Analyst to Machine Learning Engineer.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="glass-card h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="feature-icon-wrapper icon-cyan">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h3 class="card-title-custom">Market Data Analytics</h3>
+                        <p class="card-desc-custom">
+                            Interactive Plotly visualizations detailing high-growth technologies, compensation trends, and hiring distribution.
+                        </p>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ url_for('market_trends') }}" class="btn btn-brand-outline btn-sm w-100">
+                            <i class="fa-solid fa-chart-line me-1"></i> Explore Market Trends
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About / Project Info Section -->
+<section class="py-5" id="about">
+    <div class="container">
+        <div class="glass-card p-4 p-md-5">
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-8">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-dark border border-secondary mb-3">
+                        <i class="fa-solid fa-code text-primary"></i>
+                        <span class="small text-white-50">AIDS / Data Analytics Capstone</span>
+                    </div>
+                    <h2 class="h2 fw-bold text-white mb-3">Engineered with Modern Python & Data Analytics</h2>
+                    <p class="text-secondary mb-0">
+                        CareerSkill AI combines Flask, SQLite/SQLAlchemy, Scikit-learn, NLTK, and Plotly to deliver an end-to-end career guidance platform. Built for simplicity, speed, and real analytical depth.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{{ url_for('get_started') }}" class="btn btn-brand-primary btn-lg">
+                        <i class="fa-solid fa-arrow-right me-1"></i> Start Exploring
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

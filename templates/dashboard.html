@@ -1,0 +1,658 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Welcome Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-md-7">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-gauge-high me-1"></i> User Dashboard
+                    </span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                        <i class="fa-solid fa-circle-check me-1"></i> Active Session
+                    </span>
+                </div>
+                {% if is_first_login %}
+                <h1 class="h2 fw-bold text-white mb-1">
+                    Welcome to CareerSkill AI, <span class="text-gradient">{{ user.full_name }}</span>! 🎉
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Your account has been created successfully. Let's build your career journey.
+                </p>
+                {% else %}
+                <h1 class="h2 fw-bold text-white mb-1">
+                    Welcome back, <span class="text-gradient">{{ user.full_name }}</span>! 👋
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Continue your journey toward <strong class="text-white">{{ target_role }}</strong>.
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="col-md-5 text-md-end">
+                <a href="{{ url_for('progress_history') }}" class="btn btn-brand-primary btn-sm me-2 mb-1">
+                    <i class="fa-solid fa-chart-line me-1"></i> My Progress
+                </a>
+                <a href="{{ url_for('roadmap') }}" class="btn btn-brand-outline btn-sm me-2 mb-1">
+                    <i class="fa-solid fa-road me-1"></i> My Roadmap
+                </a>
+                <a href="{{ url_for('assessment_hub') }}" class="btn btn-brand-outline btn-sm me-2 mb-1">
+                    <i class="fa-solid fa-laptop-code me-1"></i> Assessments
+                </a>
+                <a href="{{ url_for('market_trends') }}" class="btn btn-brand-outline btn-sm me-2 mb-1">
+                    <i class="fa-solid fa-chart-pie me-1"></i> Market Trends
+                </a>
+                <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-sm me-2 mb-1">
+                    <i class="fa-solid fa-graduation-cap me-1"></i> Courses
+                </a>
+                <a href="{{ url_for('logout') }}" class="btn btn-brand-outline btn-sm mb-1">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enter Target Career & Career Analysis Section (User Flow) -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-info">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill fw-bold small">
+                        <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Career Exploration & Intelligence
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-secondary small">
+                        Active Target: <strong class="text-white">{{ target_role }}</strong>
+                    </span>
+                </div>
+                <h3 class="h5 fw-bold text-white mb-1">
+                    Enter Target Career & Run Analysis
+                </h3>
+                <p class="text-secondary small mb-0">
+                    Type any dream job role (e.g. <em>Data Analyst</em>, <em>Healthcare Data Analyst</em>, <em>AI Engineer</em>, <em>Financial Analyst</em>) to analyze market requirements, assess your skills, and generate your roadmap.
+                </p>
+            </div>
+            <div class="col-lg-6">
+                <form action="{{ url_for('career_analysis') }}" method="GET" class="d-flex flex-column gap-2">
+                    <div class="search-input-group w-100">
+                        <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+                        <input 
+                            type="text" 
+                            class="form-control custom-career-input" 
+                            name="role" 
+                            id="dashboardTargetRoleInput"
+                            list="dashboardRolesList" 
+                            value="{{ target_role }}"
+                            placeholder="e.g., Data Analyst, Healthcare Data Analyst, AI Engineer..." 
+                            required
+                        >
+                        <button type="submit" class="btn btn-brand-primary px-3 text-nowrap" id="btnDashboardAnalyze">
+                            <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Analyze Career
+                        </button>
+                    </div>
+                    <datalist id="dashboardRolesList">
+                        <option value="Data Analyst"></option>
+                        <option value="Healthcare Data Analyst"></option>
+                        <option value="AI Engineer"></option>
+                        <option value="Financial Analyst"></option>
+                        <option value="Data Scientist"></option>
+                        <option value="Business Analyst"></option>
+                        <option value="Cloud Engineer"></option>
+                        <option value="Software Developer"></option>
+                        <option value="Machine Learning Engineer"></option>
+                        <option value="Cybersecurity Analyst"></option>
+                    </datalist>
+                    <!-- Quick Popular Chips -->
+                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                        <span class="text-muted x-small me-1">Quick switch:</span>
+                        <a href="{{ url_for('career_analysis', role='Data Analyst') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">Data Analyst</a>
+                        <a href="{{ url_for('career_analysis', role='Healthcare Data Analyst') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">Healthcare Data Analyst</a>
+                        <a href="{{ url_for('career_analysis', role='AI Engineer') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">AI Engineer</a>
+                        <a href="{{ url_for('career_analysis', role='Financial Analyst') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">Financial Analyst</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Learning Progress Comprehensive Dashboard Section -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-success">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill fw-bold small">
+                    <i class="fa-solid fa-bars-progress me-1"></i> Live Activity Tracking
+                </span>
+                <h3 class="h5 fw-bold text-white mb-0 mt-1">
+                    My Learning Progress & Analytics
+                </h3>
+            </div>
+            <a href="{{ url_for('progress_history') }}" class="btn btn-brand-outline btn-sm">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i> View Progress History & Log Hours
+            </a>
+        </div>
+
+        <div class="row g-3 text-center">
+            <!-- Overall Learning Progress % -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3 bg-dark border border-secondary h-100">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Overall Progress</span>
+                    <div class="h3 fw-bold text-gradient mb-1">{{ progress_summary.overall_progress_pct if progress_summary else 0 }}%</div>
+                    <div class="progress" style="height: 4px; background-color: rgba(255,255,255,0.05);">
+                        <div class="progress-bar bg-gradient" style="width: {{ progress_summary.overall_progress_pct if progress_summary else 0 }}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Career Readiness % -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3 bg-dark border border-secondary h-100">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Career Readiness</span>
+                    <div class="h3 fw-bold text-success mb-1">{{ progress_summary.career_readiness if progress_summary else (readiness_score if readiness_score is defined else 68) }}%</div>
+                    <span class="text-muted x-small">Target: 90%</span>
+                </div>
+            </div>
+
+            <!-- Courses Done / In Progress -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3 bg-dark border border-secondary h-100">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Course Status</span>
+                    <div class="h4 fw-bold text-white mb-1">
+                        <span class="text-success">{{ progress_summary.courses_completed if progress_summary else 0 }}</span> <span class="text-muted fs-6">Done</span> &bull; 
+                        <span class="text-warning">{{ progress_summary.courses_in_progress if progress_summary else 0 }}</span> <span class="text-muted fs-6">Active</span>
+                    </div>
+                    <span class="text-muted x-small">Curated Curriculum</span>
+                </div>
+            </div>
+
+            <!-- Learning Hours Logged vs Remaining -->
+            <div class="col-6 col-md-3">
+                <div class="p-3 rounded-3 bg-dark border border-secondary h-100">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Learning Hours</span>
+                    <div class="h4 fw-bold text-info mb-1">
+                        {{ progress_summary.learning_hours_completed if progress_summary else 0 }}h <span class="text-muted fs-6">Done</span>
+                    </div>
+                    <span class="text-secondary x-small">
+                        {{ progress_summary.learning_hours_remaining if progress_summary else 40 }}h Remaining
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Topics & Skills Sub-Row -->
+        <div class="row g-2 mt-2 pt-2 border-top border-secondary small text-secondary">
+            <div class="col-md-6 text-md-start">
+                <i class="fa-solid fa-list-check text-info me-1"></i>
+                Topics: <strong class="text-white">{{ progress_summary.topics_completed if progress_summary else 0 }} Mastered</strong> &bull; {{ progress_summary.topics_remaining if progress_summary else 0 }} Remaining
+            </div>
+            <div class="col-md-6 text-md-end">
+                <i class="fa-solid fa-arrow-trend-up text-success me-1"></i>
+                Skills Improved: <strong class="text-success">{{ progress_summary.skills_improved_count if progress_summary else 0 }} Verified</strong> over baseline
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Target Role</span>
+                <div class="h5 fw-bold text-white mb-0 text-truncate" title="{{ target_role }}">{{ target_role }}</div>
+                <span class="text-muted small">Active Pathway</span>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Career Readiness</span>
+                <div class="h3 fw-bold text-gradient mb-0">{{ readiness_score if readiness_score is defined else 68 }}%</div>
+                <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-gradient" style="width: {{ readiness_score if readiness_score is defined else 68 }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Roadmap Progress</span>
+                <div class="h3 fw-bold text-info mb-0">{{ roadmap.completion_percentage if roadmap else 0 }}%</div>
+                <div class="progress mt-2" style="height: 4px; background-color: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-info" style="width: {{ roadmap.completion_percentage if roadmap else 0 }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Weekly Velocity</span>
+                <div class="h3 fw-bold text-success mb-0">{{ profile.learning_hours_per_week if profile else 10 }}h</div>
+                <span class="text-muted small">per week pace</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Skill Assessment Validation Widget Banner -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold small">
+                        <i class="fa-solid fa-laptop-code me-1"></i> Knowledge Verification & Assessments
+                    </span>
+                    {% if assessment_stats and assessment_stats.total_completed > 0 %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                            {{ assessment_stats.validated_count }} Skills Validated &bull; {{ assessment_stats.avg_score }}% Avg Score
+                        </span>
+                    {% else %}
+                        <span class="badge bg-dark border border-secondary text-secondary small">
+                            Validate your self-reported skill levels
+                        </span>
+                    {% endif %}
+                </div>
+                <h4 class="h5 fw-bold text-white mb-1">
+                    Validate Your Technical Readiness for <span class="text-gradient">{{ target_role }}</span>
+                </h4>
+                <p class="text-secondary small mb-0">
+                    Take adaptive skill assessments to identify strong topics, discover weak areas needing practice, and calibrate your career readiness score.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ url_for('assessment_hub') }}" class="btn btn-brand-primary btn-sm">
+                    <i class="fa-solid fa-play me-1"></i> Start Skill Assessment
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active AI Learning Roadmap Widget Banner -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-info">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill fw-bold small">
+                        <i class="fa-solid fa-road me-1"></i> Active AI Milestone Roadmap
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-secondary small">
+                        {{ roadmap.total_weeks if roadmap else 12 }} Weeks &bull; 5 Progressive Phases
+                    </span>
+                </div>
+                <h4 class="h5 fw-bold text-white mb-1">
+                    Your Pathway to Becoming a <span class="text-gradient">{{ target_role }}</span>
+                </h4>
+                <p class="text-secondary small mb-0">
+                    Track your weekly milestones, check off practical deliverables, and practice mock technical interview questions.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ url_for('roadmap') }}" class="btn btn-brand-outline btn-sm">
+                    <i class="fa-solid fa-arrow-right me-1"></i> Open Interactive Roadmap
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 3 Gap-Based Course Recommendations -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-primary">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold small">
+                    <i class="fa-solid fa-graduation-cap me-1"></i> Recommended For You
+                </span>
+                <h3 class="h5 fw-bold text-white mb-0 mt-1">
+                    Top Gap-Based Course Recommendations
+                </h3>
+            </div>
+            <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-sm">
+                View All Recommendations ({{ total_recs_count if total_recs_count is defined else 'All' }}) <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-3">
+            {% if top_recommendations %}
+                {% for course in top_recommendations %}
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-dark border border-secondary h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-secondary text-white small">{{ course.resource_type }}</span>
+                                <span class="badge {% if course.priority == 'CRITICAL' %}bg-danger text-white{% elif course.priority == 'HIGH' %}bg-warning text-dark{% else %}bg-primary text-white{% endif %} small fw-bold">
+                                    {{ course.priority }}
+                                </span>
+                            </div>
+
+                            <h5 class="h6 fw-bold text-white mb-1 flex-grow-1 text-truncate" title="{{ course.title }}">
+                                <a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-white text-decoration-none hover-primary">
+                                    {{ course.title }}
+                                </a>
+                            </h5>
+
+                            <div class="text-secondary small mb-2">
+                                <span><i class="fa-solid fa-building me-1"></i> {{ course.provider }}</span> &bull; 
+                                <span class="text-info font-monospace">{{ course.recommendation_score }}% Match</span>
+                            </div>
+
+                            <div class="p-2 rounded bg-black bg-opacity-50 border border-secondary border-opacity-25 mb-3">
+                                <div class="d-flex justify-content-between text-secondary small">
+                                    <span>Skill: <strong class="text-white">{{ course.skill }}</strong></span>
+                                    <span>Duration: <strong class="text-success">{{ course.duration_hours }}h</strong></span>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-2 border-top border-secondary d-flex justify-content-between align-items-center gap-1 flex-wrap">
+                                <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-brand-primary btn-sm">
+                                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Learn
+                                </a>
+                                <a href="{{ url_for('complete_course_action', course_id=course.id) }}" class="btn btn-outline-success btn-sm">
+                                    <i class="fa-solid fa-check me-1"></i> Complete & Review
+                                </a>
+                                <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn btn-brand-outline btn-sm">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-4">
+                    <p class="text-secondary small mb-2">No recommendations generated yet.</p>
+                    <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-primary btn-sm">
+                        Generate Recommendations Now
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- My Course Feedback & Reviews Section (Module 9) -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-warning">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-bold small">
+                        <i class="fa-solid fa-star me-1"></i> Your Course Reviews
+                    </span>
+                    {% if user_feedbacks %}
+                        {% set avg_rating = ((user_feedbacks|map(attribute='rating')|sum) / (user_feedbacks|length))|round(1) %}
+                        <span class="badge bg-dark border border-warning text-warning px-3 py-1 rounded-pill small">
+                            <i class="fa-solid fa-star text-warning me-1"></i> Average Rating Given: <strong>{{ avg_rating }} / 5.0</strong>
+                        </span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                            <i class="fa-solid fa-circle-check me-1"></i> {{ user_feedbacks|length }} Reviewed
+                        </span>
+                    {% endif %}
+                </div>
+                <h3 class="h5 fw-bold text-white mb-0 mt-1">
+                    My Course Feedback & Ratings ({{ user_feedbacks|length if user_feedbacks else 0 }})
+                </h3>
+            </div>
+            <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-sm">
+                <i class="fa-solid fa-graduation-cap me-1"></i> Review More Courses
+            </a>
+        </div>
+
+        {% if user_feedbacks %}
+            <div class="row g-3">
+                {% for fb in user_feedbacks %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="p-3 rounded bg-dark border border-secondary h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-secondary text-white small">{{ fb.course_skill }}</span>
+                                <div class="text-warning small text-nowrap">
+                                    {% for _ in range(fb.rating) %}
+                                        <i class="fa-solid fa-star"></i>
+                                    {% endfor %}
+                                    {% for _ in range(5 - fb.rating) %}
+                                        <i class="fa-regular fa-star text-secondary"></i>
+                                    {% endfor %}
+                                    <span class="text-white ms-1 fw-bold">{{ fb.rating }}/5</span>
+                                </div>
+                            </div>
+
+                            <h5 class="h6 fw-bold text-white mb-1 flex-grow-1 text-truncate" title="{{ fb.course_title }}">
+                                {{ fb.course_title }}
+                            </h5>
+                            <span class="text-muted small mb-2 d-block">{{ fb.course_provider }}</span>
+
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle small">
+                                    {{ fb.usefulness }}
+                                </span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle small">
+                                    Skill Impact: {{ fb.improved_skill }}
+                                </span>
+                                {% if fb.would_recommend == 'Yes' %}
+                                    <span class="badge bg-dark border border-secondary text-success small">
+                                        <i class="fa-solid fa-thumbs-up me-1"></i> Recommended
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            {% if fb.liked_aspects %}
+                                <div class="p-2 rounded bg-black bg-opacity-50 border border-secondary border-opacity-25 small text-light mb-2">
+                                    <span class="text-muted d-block x-small">Liked:</span>
+                                    <em>"{{ fb.liked_aspects }}"</em>
+                                </div>
+                            {% endif %}
+
+                            {% if fb.improvement_suggestions %}
+                                <div class="p-2 rounded bg-black bg-opacity-50 border border-secondary border-opacity-25 small text-secondary mb-2">
+                                    <span class="text-muted d-block x-small">Suggested:</span>
+                                    <em>"{{ fb.improvement_suggestions }}"</em>
+                                </div>
+                            {% endif %}
+
+                            <div class="mt-auto pt-2 border-top border-secondary d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">{{ fb.date_formatted or fb.created_at }}</span>
+                                <a href="{{ url_for('course_feedback_view', course_id=fb.course_id) }}" class="btn btn-outline-warning btn-sm">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i> Edit Review
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-4 text-center rounded bg-dark border border-secondary border-opacity-50">
+                <i class="fa-solid fa-comment-dots text-secondary fa-2x mb-2 opacity-50"></i>
+                <p class="text-secondary small mb-2">You haven't submitted feedback for any completed courses yet.</p>
+                <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-primary btn-sm">
+                    <i class="fa-solid fa-play me-1"></i> Start and Complete a Course
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- My Platform Suggestions & Feedback Widget (Module 10) -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-info">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill fw-bold small">
+                        <i class="fa-solid fa-lightbulb me-1"></i> Continuous Improvement
+                    </span>
+                    {% if user_suggestions %}
+                        <span class="badge bg-dark border border-secondary text-white px-3 py-1 rounded-pill small">
+                            {{ user_suggestions|length }} Submitted
+                        </span>
+                        {% set resolved_count = user_suggestions|selectattr('status', 'equalto', 'Resolved')|list|length %}
+                        {% if resolved_count > 0 %}
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                                <i class="fa-solid fa-circle-check me-1"></i> {{ resolved_count }} Resolved
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <h3 class="h5 fw-bold text-white mb-0 mt-1">
+                    My Suggestions & Platform Feedback
+                </h3>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('suggestions_view') }}" class="btn btn-brand-primary btn-sm">
+                    <i class="fa-solid fa-plus me-1"></i> Submit Suggestion
+                </a>
+                <a href="{{ url_for('suggestions_view') }}" class="btn btn-brand-outline btn-sm">
+                    View History <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        {% if user_suggestions %}
+            <div class="row g-3">
+                {% for s in user_suggestions[:3] %}
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-dark border border-secondary h-100 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-1">
+                                <span class="badge bg-secondary text-white x-small">{{ s.category }}</span>
+                                {% if s.status == 'Submitted' %}
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle x-small">Submitted</span>
+                                {% elif s.status == 'Under Review' %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle x-small">Under Review</span>
+                                {% elif s.status == 'Resolved' %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle x-small">Resolved</span>
+                                {% elif s.status == 'Rejected' %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle x-small">Rejected</span>
+                                {% endif %}
+                            </div>
+
+                            <h5 class="h6 fw-bold text-white mb-1 text-truncate" title="{{ s.title }}">{{ s.title }}</h5>
+                            <p class="text-secondary x-small mb-2 text-truncate" title="{{ s.description }}">{{ s.description }}</p>
+
+                            {% if s.has_response %}
+                                <div class="p-2 rounded bg-primary-subtle bg-opacity-10 border border-primary-subtle x-small text-light mb-2">
+                                    <strong class="text-warning d-block x-small"><i class="fa-solid fa-shield-halved me-1"></i> Admin Response:</strong>
+                                    <span class="text-truncate d-block">{{ s.admin_response }}</span>
+                                </div>
+                            {% endif %}
+
+                            <div class="mt-auto pt-2 border-top border-secondary d-flex justify-content-between align-items-center">
+                                <span class="text-muted x-small">{{ s.date_formatted or s.created_at }}</span>
+                                <a href="{{ url_for('suggestions_view') }}" class="btn btn-link btn-sm text-info p-0 text-decoration-none x-small">
+                                    Details &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-3 rounded bg-dark border border-secondary border-opacity-50 text-center">
+                <p class="text-secondary small mb-2">
+                    Found missing skills, career pathways, or want to suggest new roadmap features?
+                </p>
+                <a href="{{ url_for('suggestions_view') }}" class="btn btn-brand-outline btn-sm">
+                    <i class="fa-solid fa-lightbulb me-1 text-warning"></i> Share Feedback or Feature Suggestion
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile Background Details -->
+        <div class="col-lg-5">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <h3 class="h5 fw-bold text-white mb-0">Academic & Experience</h3>
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Status & Education</span>
+                    <strong class="text-white">{{ profile.current_status if profile and profile.current_status else 'Student' }}</strong>
+                    {% if profile and profile.current_status == 'Student' and profile.current_semester_year %}
+                        <span class="text-secondary small d-block">{{ profile.degree }} ({{ profile.branch }}) &bull; {{ profile.current_semester_year }}</span>
+                    {% elif profile and profile.current_status == 'Working Professional' and profile.current_job_role %}
+                        <span class="text-secondary small d-block">Role: <strong class="text-white">{{ profile.current_job_role }}</strong> &bull; Exp: {{ profile.years_of_experience }}</span>
+                    {% elif profile and profile.current_status == 'Career Switcher' and profile.previous_role %}
+                        <span class="text-secondary small d-block">Previous Role: <strong class="text-white">{{ profile.previous_role }}</strong> &bull; Exp: {{ profile.years_of_experience }}</span>
+                    {% elif profile and profile.current_status == 'Returning After Career Break' and profile.previous_role %}
+                        <span class="text-secondary small d-block">Prior: <strong class="text-white">{{ profile.previous_role }}</strong> &bull; Break: {{ profile.break_duration }}</span>
+                    {% elif profile and profile.degree %}
+                        <span class="text-secondary small d-block">{{ profile.degree }} — {{ profile.branch }} &bull; Class of {{ profile.graduation_year }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Experience Level</span>
+                    <strong class="text-white">{{ profile.experience_level if profile and profile.experience_level else 'Beginner / Student' }}</strong>
+                    {% if profile and profile.has_project_experience and profile.project_experience %}
+                        <p class="text-secondary small mb-0 mt-1"><em>Projects: {{ profile.project_experience }}</em></p>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Learning Schedule</span>
+                    <strong class="text-white">{{ profile.learning_hours_per_week if profile else 10 }} hours / week</strong>
+                    <span class="text-secondary small d-block">{{ profile.learning_hours_per_day if profile else '2 hours/day' }} &bull; {{ profile.learning_days_per_week if profile else 5 }} days/week</span>
+                </div>
+
+                <div>
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Career Ambition</span>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% if profile %}
+                            {% for goal in profile.get_career_goals() %}
+                                <span class="badge bg-primary text-white small">{{ goal }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="badge bg-primary text-white small">Get my first job</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Skills Inventory -->
+        <div class="col-lg-7">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <h3 class="h5 fw-bold text-white mb-0">Current Skills Inventory ({{ user_skills|length }})</h3>
+                    </div>
+                    <a href="{{ url_for('onboarding', user_id=user.id) }}" class="btn btn-link btn-sm text-info text-decoration-none">
+                        + Add Skills
+                    </a>
+                </div>
+
+                <div class="row g-2 mb-4">
+                    {% for skill in user_skills %}
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-white d-block">{{ skill.skill_name }}</strong>
+                                    <span class="text-secondary small">Confidence: {{ skill.confidence_level }}/5</span>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge {% if skill.proficiency_score >= 75 %}bg-success{% elif skill.proficiency_score >= 50 %}bg-primary{% else %}bg-warning text-dark{% endif %} px-2 py-1">
+                                        {{ skill.proficiency_level }}
+                                    </span>
+                                    <span class="text-muted small d-block mt-1">{{ skill.proficiency_score }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12 text-center py-4 text-muted">
+                            <i class="fa-solid fa-layer-group fs-3 mb-2 d-block opacity-50"></i>
+                            No skills logged yet. <a href="{{ url_for('onboarding', user_id=user.id) }}" class="text-info">Complete onboarding</a> to add skills.
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="alert alert-dark border-secondary p-3 mb-0">
+                    <div class="d-flex align-items-center gap-2 mb-1 text-info">
+                        <i class="fa-solid fa-sparkles"></i>
+                        <strong class="small">CareerSkill AI Analytics Pipeline</strong>
+                    </div>
+                    <p class="text-secondary small mb-0">
+                        Your baseline profile is stored. Ready to compare against real-time job market skills and generate personalized roadmaps.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

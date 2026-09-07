@@ -1,0 +1,785 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Career Gap Analysis - {{ target_role }} | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="gap-analysis-root" data-user-id="{{ user.id if user else '' }}" data-target-role="{{ target_role }}">
+    
+    <!-- Target Career Switcher & Search Bar -->
+    <div class="glass-card mb-3 p-3 border-info-subtle">
+        <form action="{{ url_for('career_analysis') }}" method="GET" class="d-flex flex-wrap align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 text-secondary small fw-semibold me-2">
+                <i class="fa-solid fa-crosshairs text-info"></i> Target Career:
+            </div>
+            <div class="search-input-group flex-grow-1">
+                <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+                <input 
+                    type="text" 
+                    class="form-control custom-career-input" 
+                    name="role" 
+                    id="careerAnalysisRoleInput"
+                    list="analysisRolesDatalist" 
+                    value="{{ target_role }}" 
+                    placeholder="Enter or switch career role (e.g. Data Analyst, Healthcare Data Analyst, AI Engineer, Financial Analyst)..." 
+                    required
+                >
+                <button type="submit" class="btn btn-brand-primary px-3 text-nowrap" id="btnAnalysisSearch">
+                    <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Analyze
+                </button>
+            </div>
+            <datalist id="analysisRolesDatalist">
+                <option value="Data Analyst"></option>
+                <option value="Healthcare Data Analyst"></option>
+                <option value="AI Engineer"></option>
+                <option value="Financial Analyst"></option>
+                <option value="Data Scientist"></option>
+                <option value="Business Analyst"></option>
+                <option value="Cloud Engineer"></option>
+                <option value="Software Developer"></option>
+                <option value="Machine Learning Engineer"></option>
+                <option value="Cybersecurity Analyst"></option>
+            </datalist>
+            <!-- Quick Suggestion Chips -->
+            <div class="d-flex flex-wrap gap-1 align-items-center">
+                <span class="text-muted x-small me-1">Popular:</span>
+                <a href="{{ url_for('career_analysis', role='Data Analyst') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">Data Analyst</a>
+                <a href="{{ url_for('career_analysis', role='Healthcare Data Analyst') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">Healthcare Data Analyst</a>
+                <a href="{{ url_for('career_analysis', role='AI Engineer') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">AI Engineer</a>
+                <a href="{{ url_for('career_analysis', role='Financial Analyst') }}" class="badge bg-dark border border-secondary text-secondary text-decoration-none px-2 py-1">Financial Analyst</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Top Header & Context Card -->
+    <div class="glass-card mb-4 p-4 border-primary-subtle">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    <span class="badge {% if analysis.is_custom_role %}bg-warning-subtle text-warning border border-warning-subtle{% else %}bg-primary-subtle text-primary border border-primary-subtle{% endif %} px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid {% if analysis.is_custom_role %}fa-wand-magic-sparkles{% else %}fa-certificate{% endif %} me-1"></i>
+                        {{ analysis.market_status }}
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-secondary small">
+                        <i class="fa-solid fa-clock-rotate-left me-1"></i> Data-Driven Diagnostic
+                    </span>
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    Career Gap Analysis: <span class="text-gradient">{{ target_role }}</span>
+                </h1>
+                <p class="text-secondary small mb-0" id="market-explanation-text">
+                    {{ analysis.explanation }}
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end d-flex flex-wrap justify-content-lg-end gap-2">
+                <a href="{{ url_for('onboarding', user_id=user.id if user else 1) }}" class="btn btn-brand-outline btn-sm">
+                    <i class="fa-solid fa-pencil me-1"></i> Update Profile
+                </a>
+                <a href="{{ url_for('course_recommendations', role=target_role) }}" class="btn btn-brand-primary btn-sm">
+                    <i class="fa-solid fa-graduation-cap me-1"></i> Recommended Courses
+                </a>
+                <button type="button" class="btn btn-brand-outline btn-sm" data-bs-toggle="modal" data-bs-target="#assessmentModal">
+                    <i class="fa-solid fa-laptop-code me-1"></i> Take Skill Assessment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Career Readiness & High-Level KPIs -->
+    <div class="row g-3 mb-4">
+        <!-- Readiness Gauge Card -->
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-3 h-100 text-center d-flex flex-column justify-content-between">
+                <div>
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Career Readiness</span>
+                    <div class="display-5 fw-bold text-gradient mb-0" id="kpi-readiness">{{ analysis.readiness_score }}%</div>
+                </div>
+                <p class="text-muted x-small mb-0 mt-2">
+                    You currently meet approximately <strong class="text-info" id="kpi-readiness-desc">{{ analysis.readiness_score }}%</strong> of the required industry skill level.
+                </p>
+            </div>
+        </div>
+
+        <!-- Skill Distribution Counts -->
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-3 h-100 d-flex flex-column justify-content-between">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-2 text-center">Skill Alignment</span>
+                <div class="d-flex justify-content-around text-center my-auto">
+                    <div>
+                        <div class="h4 fw-bold text-success mb-0" id="kpi-strong">{{ analysis.strong_count }}</div>
+                        <span class="text-secondary x-small">Strong</span>
+                    </div>
+                    <div class="border-start border-secondary"></div>
+                    <div>
+                        <div class="h4 fw-bold text-warning mb-0" id="kpi-partial">{{ analysis.partial_count }}</div>
+                        <span class="text-secondary x-small">Partial</span>
+                    </div>
+                    <div class="border-start border-secondary"></div>
+                    <div>
+                        <div class="h4 fw-bold text-danger mb-0" id="kpi-missing">{{ analysis.missing_count }}</div>
+                        <span class="text-secondary x-small">Missing</span>
+                    </div>
+                </div>
+                <div class="text-center mt-2">
+                    <span class="badge bg-dark border border-secondary text-white-50 x-small">{{ analysis.gap_items|length }} Total Competencies</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Learning Hours -->
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-3 h-100 text-center d-flex flex-column justify-content-between">
+                <div>
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Required Study Time</span>
+                    <div class="h2 fw-bold text-info mb-0" id="kpi-hours">{{ analysis.total_learning_hours }} <span class="fs-6 text-muted">hrs</span></div>
+                </div>
+                <p class="text-muted x-small mb-0 mt-2">
+                    Calculated from remaining topic deficits scaled by proficiency depth.
+                </p>
+            </div>
+        </div>
+
+        <!-- Estimated Completion Duration -->
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-3 h-100 text-center d-flex flex-column justify-content-between">
+                <div>
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Estimated Timeline</span>
+                    <div class="h2 fw-bold text-white mb-0" id="kpi-weeks">{{ analysis.estimated_weeks }} <span class="fs-6 text-muted">weeks</span></div>
+                </div>
+                <div class="x-small text-muted mt-2">
+                    At <strong class="text-white">{{ analysis.weekly_hours }} hrs/wk</strong> velocity &bull; Target: <strong class="text-success" id="kpi-date">{{ analysis.completion_date }}</strong>
+                </div>
+            </div>
+        </div>
+    <!-- Interactive Current Skills & Self-Proficiency Assessment Section -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-warning">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-bold small">
+                    <i class="fa-solid fa-sliders me-1"></i> Current Skills & Proficiency
+                </span>
+                <h3 class="h5 fw-bold text-white mb-0 mt-1">
+                    What are your current skills and proficiency levels?
+                </h3>
+            </div>
+            <span class="text-muted small">
+                Update your proficiency for required skills below to instantly recalibrate your skill gap analysis.
+            </span>
+        </div>
+
+        <form action="{{ url_for('update_career_skills') }}" method="POST" id="updateSkillsForm">
+            <input type="hidden" name="target_role" value="{{ target_role }}">
+            <div class="row g-3" id="skillsSelectionGrid">
+                {% for item in analysis.gap_items %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="p-3 bg-dark rounded-3 border border-secondary h-100 d-flex flex-column justify-content-between">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <strong class="text-white d-block">{{ item.skill_name }}</strong>
+                                <span class="badge bg-dark border border-secondary text-secondary x-small">{{ item.category }}</span>
+                            </div>
+                            <span class="badge bg-dark border border-info text-info x-small">
+                                Required: {{ item.required_level }}
+                            </span>
+                        </div>
+                        <div>
+                            <label class="text-secondary x-small fw-semibold mb-1">Your Proficiency Level:</label>
+                            <select name="skill_level_{{ loop.index0 }}" class="form-select form-select-sm bg-dark text-white border-secondary">
+                                <option value="I don't know this skill" {% if item.user_level == "I don't know this skill" or item.user_score == 0 %}selected{% endif %}>I don't know this skill (0%)</option>
+                                <option value="Beginner" {% if item.user_level == 'Beginner' %}selected{% endif %}>Beginner (25%)</option>
+                                <option value="Intermediate" {% if item.user_level == 'Intermediate' %}selected{% endif %}>Intermediate (50%)</option>
+                                <option value="Advanced" {% if item.user_level == 'Advanced' %}selected{% endif %}>Advanced (75%)</option>
+                                <option value="Expert" {% if item.user_level == 'Expert' %}selected{% endif %}>Expert (100%)</option>
+                            </select>
+                            <input type="hidden" name="skill_name_{{ loop.index0 }}" value="{{ item.skill_name }}">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <input type="hidden" name="total_skills_count" value="{{ analysis.gap_items|length }}">
+
+            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary flex-wrap gap-2">
+                <span class="text-muted x-small">
+                    <i class="fa-solid fa-circle-info text-info me-1"></i> Saving will update your user profile skills and immediately recalculate your readiness score.
+                </span>
+                <button type="submit" class="btn btn-brand-primary btn-sm px-3" id="btnSaveSkills">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Save Skills & Recalculate Gap Analysis
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Visual Analytics Charts Section -->
+    <div class="glass-card mb-4 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3 class="h5 fw-bold text-white mb-0">Visual Gap Analytics</h3>
+            </div>
+            <span class="badge bg-dark border border-secondary text-info small">Plotly Real-Time Visualizations</span>
+        </div>
+
+        <div class="row g-4">
+            <!-- Gauge Chart -->
+            <div class="col-lg-3 col-md-6">
+                <div class="bg-dark p-3 rounded-3 border border-secondary text-center h-100">
+                    <span class="text-secondary small fw-bold d-block mb-1">Career Readiness Gauge</span>
+                    <div id="chart-gauge" style="min-height: 220px;"></div>
+                </div>
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="col-lg-3 col-md-6">
+                <div class="bg-dark p-3 rounded-3 border border-secondary text-center h-100">
+                    <span class="text-secondary small fw-bold d-block mb-1">Competency Alignment</span>
+                    <div id="chart-donut" style="min-height: 220px;"></div>
+                </div>
+            </div>
+
+            <!-- Level Comparison Bar Chart -->
+            <div class="col-lg-6">
+                <div class="bg-dark p-3 rounded-3 border border-secondary h-100">
+                    <span class="text-secondary small fw-bold d-block mb-1">Required vs Current Skill Level</span>
+                    <div id="chart-bar" style="min-height: 260px;"></div>
+                </div>
+            </div>
+
+            <!-- Priority Hours Chart -->
+            <div class="col-12">
+                <div class="bg-dark p-3 rounded-3 border border-secondary">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-secondary small fw-bold">Estimated Study Hours by Skill Priority</span>
+                        <span class="text-muted x-small">Ranked by Market Urgency & Deficit Size</span>
+                    </div>
+                    <div id="chart-hours" style="min-height: 260px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comprehensive Skill Gap Table -->
+    <div class="glass-card mb-4 p-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                    <i class="fa-solid fa-table-list"></i>
+                </div>
+                <h3 class="h5 fw-bold text-white mb-0">Detailed Skill & Topic Gap Matrix</h3>
+            </div>
+            <div class="text-muted small">
+                Click <span class="badge bg-secondary-subtle text-white border border-secondary"><i class="fa-solid fa-list-check me-1"></i>Assess Topics</span> to refine your knowledge in real-time.
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0 custom-gap-table">
+                <thead>
+                    <tr class="border-secondary text-secondary text-uppercase x-small">
+                        <th>Skill Name</th>
+                        <th>Category</th>
+                        <th>Your Level</th>
+                        <th>Required Level</th>
+                        <th>Gap Deficit</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Study Hours</th>
+                        <th class="text-end">Topic Assessment</th>
+                    </tr>
+                </thead>
+                <tbody id="skill-gap-tbody">
+                    {% for item in analysis.gap_items %}
+                    <tr class="border-secondary gap-row" data-skill="{{ item.skill_name }}" data-canonical="{{ item.normalized_skill_name }}">
+                        <td>
+                            <strong class="text-white d-block">{{ item.skill_name }}</strong>
+                            <span class="text-muted x-small">{{ item.all_topics|length }} Topic Modules</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark border border-secondary text-white-50 x-small">{{ item.category }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {% if item.user_score >= 75 %}bg-success-subtle text-success border border-success-subtle{% elif item.user_score >= 50 %}bg-primary-subtle text-primary border border-primary-subtle{% elif item.user_score >= 25 %}bg-warning-subtle text-warning border border-warning-subtle{% else %}bg-secondary-subtle text-muted border border-secondary{% endif %}">
+                                {{ item.user_level }}
+                            </span>
+                            <span class="text-muted x-small d-block mt-1">{{ item.user_score }}%</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark border border-info text-info">
+                                {{ item.required_level }}
+                            </span>
+                            <span class="text-muted x-small d-block mt-1">{{ item.required_score }}%</span>
+                        </td>
+                        <td>
+                            {% if item.gap_score == 0 %}
+                                <span class="text-success small fw-bold"><i class="fa-solid fa-check me-1"></i>None</span>
+                            {% elif item.gap_score <= 25 %}
+                                <span class="text-info small fw-bold">Low ({{ item.gap_score }}%)</span>
+                            {% elif item.gap_score <= 50 %}
+                                <span class="text-warning small fw-bold">Medium ({{ item.gap_score }}%)</span>
+                            {% else %}
+                                <span class="text-danger small fw-bold">High ({{ item.gap_score }}%)</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.status == 'STRONG' %}
+                                <span class="badge bg-success text-white px-2 py-1"><i class="fa-solid fa-circle-check me-1"></i>Strong</span>
+                            {% elif item.status == 'PARTIAL' %}
+                                <span class="badge bg-warning text-dark px-2 py-1"><i class="fa-solid fa-triangle-exclamation me-1"></i>Partial Gap</span>
+                            {% elif item.status == 'MISSING' %}
+                                <span class="badge bg-danger text-white px-2 py-1"><i class="fa-solid fa-circle-xmark me-1"></i>Missing</span>
+                            {% else %}
+                                <span class="badge bg-secondary text-white px-2 py-1">Low Priority</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {% if item.priority == 'Critical' %}bg-danger-subtle text-danger border border-danger-subtle{% elif item.priority == 'High' %}bg-warning-subtle text-warning border border-warning-subtle{% elif item.priority == 'Medium' %}bg-primary-subtle text-primary border border-primary-subtle{% else %}bg-dark border border-secondary text-secondary{% endif %} px-2 py-1">
+                                {{ item.priority }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong class="text-white">{{ item.remaining_hours }}h</strong>
+                            <span class="text-muted x-small d-block">of {{ item.estimated_hours }}h</span>
+                        </td>
+                        <td class="text-end">
+                            <button type="button" class="btn btn-sm btn-brand-outline btn-assess-topics" 
+                                    data-skill-name="{{ item.skill_name }}"
+                                    data-canonical-name="{{ item.normalized_skill_name }}"
+                                    data-all-topics='{{ item.all_topics|tojson }}'
+                                    data-known-topics='{{ item.known_topics|tojson }}'
+                                    data-remaining-topics='{{ item.remaining_topics|tojson }}'>
+                                <i class="fa-solid fa-list-check me-1"></i> Assess Topics
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Expandable Topic Summary Accordion Row -->
+                    <tr class="topic-detail-row bg-dark-subtle border-secondary">
+                        <td colspan="9" class="p-3">
+                            <div class="d-flex flex-wrap gap-4 align-items-start">
+                                <div class="flex-grow-1">
+                                    <span class="text-success small fw-bold d-block mb-1">
+                                        <i class="fa-solid fa-circle-check me-1"></i> Already Known Topics ({{ item.known_topics|length }}):
+                                    </span>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for t in item.known_topics %}
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle x-small">
+                                                {{ t.name if t.name is defined else t }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted x-small">No topics recorded as known yet.</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <span class="text-warning small fw-bold d-block mb-1">
+                                        <i class="fa-solid fa-arrow-trend-up me-1"></i> Remaining Topics to Learn ({{ item.remaining_topics|length }}):
+                                    </span>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for t in item.remaining_topics %}
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle x-small">
+                                                {{ t.name if t.name is defined else t }}
+                                                {% if t.difficulty is defined %}
+                                                    <span class="opacity-75">({{ t.difficulty }})</span>
+                                                {% endif %}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-success x-small"><i class="fa-solid fa-check me-1"></i>All topics mastered!</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recommendations & Roadmap Preview Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Personalized Recommendations -->
+        <div class="col-lg-6">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <h3 class="h5 fw-bold text-white mb-0">Your Recommended Next Steps</h3>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Intelligently sequenced based on market importance, gap severity, and prerequisite difficulty:
+                </p>
+
+                <div class="d-flex flex-column gap-3" id="recommendations-container">
+                    {% for rec in analysis.recommendations %}
+                    <div class="p-3 rounded-3 bg-dark border border-secondary d-flex align-items-start gap-3">
+                        <div class="badge rounded-circle bg-primary text-white p-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 0.85rem;">
+                            {{ loop.index }}
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <strong class="text-white">{{ rec.action }}</strong>
+                                <span class="badge {% if rec.priority == 'Critical' %}bg-danger{% elif rec.priority == 'High' %}bg-warning text-dark{% else %}bg-primary{% endif %} x-small">
+                                    {{ rec.priority }} Priority
+                                </span>
+                            </div>
+                            <p class="text-secondary small mb-0">{{ rec.reason }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary text-center">
+                    <a href="{{ url_for('course_recommendations', role=target_role) }}" class="btn btn-brand-primary btn-sm w-100">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> View Gap-Based Course Recommendations <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Roadmap Preview -->
+        <div class="col-lg-6">
+            <div class="glass-card h-100 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                            <i class="fa-solid fa-road"></i>
+                        </div>
+                        <h3 class="h5 fw-bold text-white mb-0">Learning Roadmap Preview</h3>
+                    </div>
+                    <span class="badge bg-dark border border-info text-info small">5-Phase Pathway</span>
+                </div>
+
+                <div class="roadmap-preview-timeline">
+                    <!-- Phase 1 -->
+                    <div class="timeline-step pb-3 ps-4 position-relative border-start border-primary">
+                        <div class="step-bullet bg-primary">1</div>
+                        <strong class="text-white d-block">Phase 1 — Fundamentals & Core Prerequisites</strong>
+                        <span class="text-secondary small">SQL Basic Querying, Excel Lookups & Pivot Tables, Python Syntax Foundations.</span>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="timeline-step pb-3 ps-4 position-relative border-start border-primary">
+                        <div class="step-bullet bg-primary">2</div>
+                        <strong class="text-white d-block">Phase 2 — Core Technical & Analytical Competencies</strong>
+                        <span class="text-secondary small">Pandas Wrangling, Multi-Table SQL JOINs, Power BI Star Schema Modeling, Exploratory Analysis.</span>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="timeline-step pb-3 ps-4 position-relative border-start border-primary">
+                        <div class="step-bullet bg-primary">3</div>
+                        <strong class="text-white d-block">Phase 3 — Advanced Specialization & Optimization</strong>
+                        <span class="text-secondary small">SQL Window Functions, Advanced DAX, Hypothesis Testing, Performance Tuning.</span>
+                    </div>
+
+                    <!-- Phase 4 -->
+                    <div class="timeline-step pb-3 ps-4 position-relative border-start border-primary">
+                        <div class="step-bullet bg-primary">4</div>
+                        <strong class="text-white d-block">Phase 4 — Portfolio & Capstone Projects</strong>
+                        <span class="text-secondary small">End-to-End Business Intelligence reporting dashboard & real-world predictive analysis deployment.</span>
+                    </div>
+
+                    <!-- Phase 5 -->
+                    <div class="timeline-step ps-4 position-relative">
+                        <div class="step-bullet bg-success">5</div>
+                        <strong class="text-white d-block">Phase 5 — Technical Interview Preparation</strong>
+                        <span class="text-secondary small">Scenario-based business problem solving, live coding challenges, and portfolio reviews.</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top border-secondary text-center">
+                    <span class="text-muted small d-block mb-2">Personalized milestone pathway calculated for your velocity</span>
+                    <a href="{{ url_for('roadmap', role=target_role) }}" class="btn btn-brand-primary btn-sm w-100">
+                        <i class="fa-solid fa-road me-1"></i> Open Full AI Learning Roadmap <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- Modal: Interactive Topic Knowledge Assessment -->
+<!-- ========================================================== -->
+<div class="modal fade" id="topicAssessmentModal" tabindex="-1" aria-labelledby="topicAssessmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-card border-secondary bg-dark text-white p-2">
+            <div class="modal-header border-secondary">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-white mb-0" id="topicAssessmentModalLabel">Assess My Topic Knowledge</h5>
+                        <span class="text-secondary small" id="modalSkillSubheading">Refine your known topics for this skill</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+                <p class="text-secondary small mb-3">
+                    Check off every topic you are already confident in. The system will immediately update your topic gap, remaining study hours, and career readiness percentage:
+                </p>
+
+                <div id="topicCheckboxesContainer" class="row g-2">
+                    <!-- Dynamic Checkboxes injected by JS -->
+                </div>
+
+                <div class="alert alert-dark border-secondary mt-3 mb-0 p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary small">
+                            Checked: <strong class="text-success" id="checkedTopicCount">0</strong> / <span id="totalTopicCount">0</span> topics
+                        </span>
+                        <span class="text-secondary small">
+                            Estimated Topic Hours Remaining: <strong class="text-info" id="modalRemainingHours">0</strong>h
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-brand-primary btn-sm" id="btnSaveTopicAssessment">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Save & Recalculate Gap
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================== -->
+<!-- Modal: Take Skill Assessment Preview -->
+<!-- ========================================================== -->
+<div class="modal fade" id="assessmentModal" tabindex="-1" aria-labelledby="assessmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-card border-secondary bg-dark text-white p-2">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fw-bold text-white mb-0" id="assessmentModalLabel">
+                    <i class="fa-solid fa-laptop-code text-primary me-2"></i>Adaptive Skill Assessment
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="brand-icon-box mx-auto mb-3" style="width: 50px; height: 50px; font-size: 1.3rem;">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-2">Automated Skill Assessment Engine</h5>
+                <p class="text-secondary small mb-3">
+                    Test your practical knowledge with 15 adaptive technical questions (SQL, Python, Analytics) to objectively verify your self-reported baseline.
+                </p>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill">
+                    Upcoming Assessment Module
+                </span>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Plotly CDN for Dark Mode Visual Analytics -->
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initial Chart Payloads passed from Flask
+    let gaugeData = {{ gauge_json|safe }};
+    let donutData = {{ donut_json|safe }};
+    let barData = {{ bar_json|safe }};
+    let hoursData = {{ hours_json|safe }};
+
+    const plotlyConfig = {
+        responsive: true,
+        displayModeBar: false
+    };
+
+    // Render Charts
+    Plotly.newPlot('chart-gauge', gaugeData.data, gaugeData.layout, plotlyConfig);
+    Plotly.newPlot('chart-donut', donutData.data, donutData.layout, plotlyConfig);
+    Plotly.newPlot('chart-bar', barData.data, barData.layout, plotlyConfig);
+    Plotly.newPlot('chart-hours', hoursData.data, hoursData.layout, plotlyConfig);
+
+    // ==========================================================
+    // Interactive Topic Assessment Logic
+    // ==========================================================
+    const rootEl = document.getElementById('gap-analysis-root');
+    const userId = rootEl.getAttribute('data-user-id');
+    const targetRole = rootEl.getAttribute('data-target-role');
+
+    const topicModalEl = document.getElementById('topicAssessmentModal');
+    const topicModal = new bootstrap.Modal(topicModalEl);
+    const modalTitle = document.getElementById('topicAssessmentModalLabel');
+    const modalSubheading = document.getElementById('modalSkillSubheading');
+    const checkboxesContainer = document.getElementById('topicCheckboxesContainer');
+    const checkedCountEl = document.getElementById('checkedTopicCount');
+    const totalCountEl = document.getElementById('totalTopicCount');
+    const modalRemainingHoursEl = document.getElementById('modalRemainingHours');
+    const btnSaveAssessment = document.getElementById('btnSaveTopicAssessment');
+
+    let currentActiveSkill = '';
+    let currentActiveCanonical = '';
+    let currentSkillTopics = [];
+
+    // Attach click listener to "Assess Topics" buttons
+    document.querySelectorAll('.btn-assess-topics').forEach(button => {
+        button.addEventListener('click', function() {
+            currentActiveSkill = this.getAttribute('data-skill-name');
+            currentActiveCanonical = this.getAttribute('data-canonical-name');
+            
+            try {
+                currentSkillTopics = JSON.parse(this.getAttribute('data-all-topics') || '[]');
+                const knownTopics = JSON.parse(this.getAttribute('data-known-topics') || '[]');
+                const knownNames = knownTopics.map(t => typeof t === 'object' ? t.name : t);
+
+                modalTitle.textContent = `Assess Topic Knowledge: ${currentActiveSkill}`;
+                modalSubheading.textContent = `Check off topics you have already mastered for ${currentActiveSkill}`;
+
+                // Build checkboxes
+                checkboxesContainer.innerHTML = '';
+                currentSkillTopics.forEach((t, index) => {
+                    const tName = typeof t === 'object' ? t.name : t;
+                    const tDiff = typeof t === 'object' ? t.difficulty : 'Moderate';
+                    const tHours = typeof t === 'object' ? t.hours : 6;
+                    const isChecked = knownNames.includes(tName);
+
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6';
+                    col.innerHTML = `
+                        <div class="p-3 rounded-3 bg-dark border border-secondary h-100 d-flex align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input topic-check" type="checkbox" value="${tName}" data-hours="${tHours}" id="chk_topic_${index}" ${isChecked ? 'checked' : ''}>
+                                <label class="form-check-label text-white small fw-medium" for="chk_topic_${index}">
+                                    ${tName}
+                                </label>
+                                <span class="d-block text-muted x-small mt-1">
+                                    Difficulty: <span class="badge bg-secondary x-small">${tDiff}</span> &bull; ${tHours}h
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                    checkboxesContainer.appendChild(col);
+                });
+
+                updateModalTopicSummary();
+                topicModal.show();
+            } catch (e) {
+                console.error("Error parsing topic data:", e);
+            }
+        });
+    });
+
+    // Update modal summary when checkboxes toggle
+    checkboxesContainer.addEventListener('change', function(e) {
+        if (e.target.classList.contains('topic-check')) {
+            updateModalTopicSummary();
+        }
+    });
+
+    function updateModalTopicSummary() {
+        const allChecks = checkboxesContainer.querySelectorAll('.topic-check');
+        let checkedCount = 0;
+        let remainingHours = 0;
+
+        allChecks.forEach(chk => {
+            const h = parseFloat(chk.getAttribute('data-hours') || 6);
+            if (chk.checked) {
+                checkedCount++;
+            } else {
+                remainingHours += h;
+            }
+        });
+
+        checkedCountEl.textContent = checkedCount;
+        totalCountEl.textContent = allChecks.length;
+        modalRemainingHoursEl.textContent = remainingHours;
+    }
+
+    // Save Topic Assessment via AJAX
+    btnSaveAssessment.addEventListener('click', function() {
+        const checkedBoxes = checkboxesContainer.querySelectorAll('.topic-check:checked');
+        const checkedTopicNames = Array.from(checkedBoxes).map(chk => chk.value);
+
+        btnSaveAssessment.disabled = true;
+        btnSaveAssessment.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i> Calculating...';
+
+        fetch("{{ url_for('api_assess_topics') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                target_role: targetRole,
+                skill_name: currentActiveSkill,
+                checked_topics: checkedTopicNames
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnSaveAssessment.disabled = false;
+            btnSaveAssessment.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> Save & Recalculate Gap';
+
+            if (data.success && data.analysis) {
+                const a = data.analysis;
+
+                // Update KPIs
+                document.getElementById('kpi-readiness').textContent = `${a.readiness_score}%`;
+                document.getElementById('kpi-readiness-desc').textContent = `${a.readiness_score}%`;
+                document.getElementById('kpi-strong').textContent = a.strong_count;
+                document.getElementById('kpi-partial').textContent = a.partial_count;
+                document.getElementById('kpi-missing').textContent = a.missing_count;
+                document.getElementById('kpi-hours').innerHTML = `${a.total_learning_hours} <span class="fs-6 text-muted">hrs</span>`;
+                document.getElementById('kpi-weeks').innerHTML = `${a.estimated_weeks} <span class="fs-6 text-muted">weeks</span>`;
+                document.getElementById('kpi-date').textContent = a.completion_date;
+
+                // Re-render Plotly charts with updated datasets
+                if (data.gauge_json) {
+                    const g = JSON.parse(data.gauge_json);
+                    Plotly.react('chart-gauge', g.data, g.layout, plotlyConfig);
+                }
+                if (data.donut_json) {
+                    const d = JSON.parse(data.donut_json);
+                    Plotly.react('chart-donut', d.data, d.layout, plotlyConfig);
+                }
+                if (data.bar_json) {
+                    const b = JSON.parse(data.bar_json);
+                    Plotly.react('chart-bar', b.data, b.layout, plotlyConfig);
+                }
+                if (data.hours_json) {
+                    const h = JSON.parse(data.hours_json);
+                    Plotly.react('chart-hours', h.data, h.layout, plotlyConfig);
+                }
+
+                // Update button dataset attributes
+                const matchingBtn = document.querySelector(`.btn-assess-topics[data-skill-name="${currentActiveSkill}"]`);
+                if (matchingBtn) {
+                    const updatedItem = a.gap_items.find(i => i.skill_name === currentActiveSkill);
+                    if (updatedItem) {
+                        matchingBtn.setAttribute('data-known-topics', JSON.stringify(updatedItem.known_topics));
+                        matchingBtn.setAttribute('data-remaining-topics', JSON.stringify(updatedItem.remaining_topics));
+                    }
+                }
+
+                topicModal.hide();
+                window.location.reload(); // Refresh page to re-render server template cleanly
+            } else {
+                alert(data.error || "Failed to update topic knowledge.");
+            }
+        })
+        .catch(err => {
+            console.error("Topic assessment error:", err);
+            btnSaveAssessment.disabled = false;
+            btnSaveAssessment.innerHTML = '<i class="fa-solid fa-floppy-disk me-1"></i> Save & Recalculate Gap';
+            alert("An error occurred while saving topic evaluation.");
+        });
+    });
+});
+</script>
+{% endblock %}

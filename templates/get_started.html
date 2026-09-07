@@ -1,0 +1,508 @@
+{% extends 'base.html' %}
+
+{% block title %}Get Started - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-auto">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="glass-card shadow-lg p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="brand-icon-box mx-auto mb-3">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <h2 class="h3 fw-bold text-white">Create Your Account</h2>
+                    <p class="text-secondary small">Tell us about your current status and target career role to build your personalized journey.</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="careerForm" action="{{ url_for('get_started') }}" method="POST">
+                    
+                    <!-- Basic Information Section -->
+                    <div class="mb-4">
+                        <h5 class="text-white fw-bold mb-3 border-bottom border-secondary pb-2">
+                            <i class="fa-solid fa-id-card text-primary me-2"></i> 1. Account Details
+                        </h5>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label text-secondary small fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-user"></i></span>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" id="fullName" name="full_name" placeholder="Jane Doe" required autocomplete="name">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label text-secondary small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-envelope"></i></span>
+                                    <input type="email" class="form-control bg-dark border-secondary text-white" id="email" name="email" placeholder="jane@example.com" required autocomplete="email">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label text-secondary small fw-semibold">Create Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-key"></i></span>
+                                <input type="password" class="form-control bg-dark border-secondary text-white" id="password" name="password" placeholder="••••••••" required autocomplete="new-password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Status Section -->
+                    <div class="mb-4">
+                        <h5 class="text-white fw-bold mb-3 border-bottom border-secondary pb-2">
+                            <i class="fa-solid fa-user-graduate text-info me-2"></i> 2. Current Status & Background
+                        </h5>
+
+                        <!-- Status Selector -->
+                        <div class="mb-3">
+                            <label for="currentStatus" class="form-label text-secondary small fw-semibold">
+                                Which option best describes your current status? <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-info"><i class="fa-solid fa-briefcase"></i></span>
+                                <select class="form-select bg-dark border-secondary text-white fw-semibold" id="currentStatus" name="current_status" required>
+                                    <option value="Student" selected>🎓 Student</option>
+                                    <option value="Fresher / Job Seeker">🚀 Fresher / Job Seeker</option>
+                                    <option value="Working Professional">💼 Working Professional</option>
+                                    <option value="Career Switcher">🔄 Career Switcher</option>
+                                    <option value="Returning After Career Break">⏳ Returning After Career Break</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- ----------------------------------------------------
+                             STATUS SUB-PANEL 1: STUDENT
+                             ---------------------------------------------------- -->
+                        <div id="studentFields" class="status-subpanel p-3 rounded bg-dark border border-secondary border-opacity-50 mb-3">
+                            <div class="d-flex align-items-center gap-2 mb-2 text-info small fw-bold">
+                                <i class="fa-solid fa-graduation-cap"></i> Student Details
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="studentEducation" class="form-label text-secondary small">Education Level</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="studentEducation" name="student_education">
+                                        <option value="Undergraduate / Bachelor's" selected>Undergraduate / Bachelor's</option>
+                                        <option value="Postgraduate / Master's">Postgraduate / Master's</option>
+                                        <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+                                        <option value="Doctorate / PhD">Doctorate / PhD</option>
+                                        <option value="High School">High School</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="studentDegree" class="form-label text-secondary small">College / Degree</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="studentDegree" name="student_degree">
+                                        <option value="BE / BTech" selected>BE / BTech</option>
+                                        <option value="BCA">BCA</option>
+                                        <option value="BSc (Computer Science / Data)">BSc</option>
+                                        <option value="MCA">MCA</option>
+                                        <option value="MTech">MTech</option>
+                                        <option value="MBA / Business">MBA</option>
+                                        <option value="Other">Other Degree</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="studentBranch" class="form-label text-secondary small">Branch / Specialization</label>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" id="studentBranch" name="student_branch" list="branchList" placeholder="e.g. Computer Science, AI & Data Science...">
+                                    <datalist id="branchList">
+                                        <option value="Computer Science & Engineering"></option>
+                                        <option value="Artificial Intelligence & Data Science"></option>
+                                        <option value="Information Science"></option>
+                                        <option value="Data Analytics"></option>
+                                        <option value="Electronics & Communication"></option>
+                                        <option value="Mechanical Engineering"></option>
+                                    </datalist>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="studentSemesterYear" class="form-label text-secondary small">Current Semester / Year</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="studentSemesterYear" name="student_semester_year">
+                                        <option value="1st Year (Sem 1-2)">1st Year (Sem 1-2)</option>
+                                        <option value="2nd Year (Sem 3-4)">2nd Year (Sem 3-4)</option>
+                                        <option value="3rd Year (Sem 5-6)">3rd Year (Sem 5-6)</option>
+                                        <option value="Final Year (Sem 7-8)" selected>Final Year (Sem 7-8)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ----------------------------------------------------
+                             STATUS SUB-PANEL 2: FRESHER / JOB SEEKER
+                             ---------------------------------------------------- -->
+                        <div id="fresherFields" class="status-subpanel p-3 rounded bg-dark border border-secondary border-opacity-50 mb-3 d-none">
+                            <div class="d-flex align-items-center gap-2 mb-2 text-info small fw-bold">
+                                <i class="fa-solid fa-certificate"></i> Fresher & Job Seeker Details
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="fresherQualification" class="form-label text-secondary small">Highest Qualification</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="fresherQualification" name="fresher_qualification">
+                                        <option value="Bachelor's (BE/BTech/BCA/BSc)" selected>Bachelor's (BE/BTech/BCA/BSc)</option>
+                                        <option value="Master's (MTech/MCA/MSc/MBA)">Master's (MTech/MCA/MSc/MBA)</option>
+                                        <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+                                        <option value="Doctorate / PhD">Doctorate / PhD</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fresherGradYear" class="form-label text-secondary small">Graduation Year</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="fresherGradYear" name="fresher_grad_year">
+                                        <option value="2026">2026</option>
+                                        <option value="2025" selected>2025</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2022">2022</option>
+                                        <option value="Earlier">Earlier</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="fresherSkills" class="form-label text-secondary small">Existing Skills <span class="text-muted">(Optional - comma separated)</span></label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white skill-target-input" id="fresherSkills" name="fresher_skills" placeholder="e.g. Python, SQL, Excel, Git, HTML/CSS">
+                                <div class="skill-chips-group mt-2">
+                                    <span class="text-muted small me-1">Quick add:</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Python">+ Python</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="SQL">+ SQL</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Excel">+ Excel</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Git">+ Git</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Java">+ Java</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Tableau">+ Tableau</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ----------------------------------------------------
+                             STATUS SUB-PANEL 3: WORKING PROFESSIONAL
+                             ---------------------------------------------------- -->
+                        <div id="professionalFields" class="status-subpanel p-3 rounded bg-dark border border-secondary border-opacity-50 mb-3 d-none">
+                            <div class="d-flex align-items-center gap-2 mb-2 text-info small fw-bold">
+                                <i class="fa-solid fa-user-tie"></i> Professional Experience Details
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="profCurrentRole" class="form-label text-secondary small">Current Job Role</label>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" id="profCurrentRole" name="prof_current_role" placeholder="e.g. Junior Developer, QA Engineer, Support Specialist">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="profExperienceYears" class="form-label text-secondary small">Years of Experience</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="profExperienceYears" name="prof_experience_years">
+                                        <option value="Less than 1 year">Less than 1 year</option>
+                                        <option value="1-2 years" selected>1-2 years</option>
+                                        <option value="3-5 years">3-5 years</option>
+                                        <option value="5-8 years">5-8 years</option>
+                                        <option value="8+ years">8+ years</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="profSkills" class="form-label text-secondary small">Existing Skills <span class="text-muted">(comma separated)</span></label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white skill-target-input" id="profSkills" name="prof_skills" placeholder="e.g. Python, SQL, Docker, AWS, APIs, Git">
+                                <div class="skill-chips-group mt-2">
+                                    <span class="text-muted small me-1">Quick add:</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Python">+ Python</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="SQL">+ SQL</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="AWS">+ AWS</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Docker">+ Docker</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="React">+ React</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Power BI">+ Power BI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ----------------------------------------------------
+                             STATUS SUB-PANEL 4: CAREER SWITCHER
+                             ---------------------------------------------------- -->
+                        <div id="switcherFields" class="status-subpanel p-3 rounded bg-dark border border-secondary border-opacity-50 mb-3 d-none">
+                            <div class="d-flex align-items-center gap-2 mb-2 text-info small fw-bold">
+                                <i class="fa-solid fa-arrows-rotate"></i> Career Transition Details
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label for="switcherPreviousRole" class="form-label text-secondary small">Previous / Current Role</label>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" id="switcherPreviousRole" name="switcher_previous_role" placeholder="e.g. Mechanical Engineer, Accountant, Sales Lead">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="switcherExperienceYears" class="form-label text-secondary small">Years of Total Experience</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="switcherExperienceYears" name="switcher_experience_years">
+                                        <option value="Less than 1 year">Less than 1 year</option>
+                                        <option value="1-3 years" selected>1-3 years</option>
+                                        <option value="3-5 years">3-5 years</option>
+                                        <option value="5+ years">5+ years</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="switcherSkills" class="form-label text-secondary small">Existing / Transferable Skills <span class="text-muted">(comma separated)</span></label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white skill-target-input" id="switcherSkills" name="switcher_skills" placeholder="e.g. Excel, Statistics, Problem Solving, Project Management, Python">
+                                <div class="skill-chips-group mt-2">
+                                    <span class="text-muted small me-1">Quick add:</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Excel">+ Excel</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Statistics">+ Statistics</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Python">+ Python</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="SQL">+ SQL</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Problem Solving">+ Problem Solving</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ----------------------------------------------------
+                             STATUS SUB-PANEL 5: RETURNING AFTER CAREER BREAK
+                             ---------------------------------------------------- -->
+                        <div id="breakFields" class="status-subpanel p-3 rounded bg-dark border border-secondary border-opacity-50 mb-3 d-none">
+                            <div class="d-flex align-items-center gap-2 mb-2 text-info small fw-bold">
+                                <i class="fa-solid fa-hourglass-half"></i> Career Break & Restart Details
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label for="breakPreviousRole" class="form-label text-secondary small">Previous Role</label>
+                                    <input type="text" class="form-control bg-dark border-secondary text-white" id="breakPreviousRole" name="break_previous_role" placeholder="e.g. Software Engineer, QA, Data Analyst">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="breakExperienceYears" class="form-label text-secondary small">Prior Experience</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="breakExperienceYears" name="break_experience_years">
+                                        <option value="1-2 years">1-2 years</option>
+                                        <option value="2-4 years" selected>2-4 years</option>
+                                        <option value="5+ years">5+ years</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="breakDuration" class="form-label text-secondary small">Break Duration</label>
+                                    <select class="form-select bg-dark border-secondary text-white" id="breakDuration" name="break_duration">
+                                        <option value="Less than 6 months">Less than 6 months</option>
+                                        <option value="6-12 months" selected>6-12 months</option>
+                                        <option value="1-2 years">1-2 years</option>
+                                        <option value="2-5 years">2-5 years</option>
+                                        <option value="5+ years">5+ years</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="breakSkills" class="form-label text-secondary small">Existing Prior Skills <span class="text-muted">(comma separated)</span></label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white skill-target-input" id="breakSkills" name="break_skills" placeholder="e.g. Java, SQL, Python, Manual Testing, C++">
+                                <div class="skill-chips-group mt-2">
+                                    <span class="text-muted small me-1">Quick add:</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Java">+ Java</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="SQL">+ SQL</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Python">+ Python</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Git">+ Git</span>
+                                    <span class="skill-chip badge bg-secondary-subtle text-info border border-secondary" data-skill="Testing">+ Testing</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target Career / Job Role Input (Free Text) -->
+                    <div class="mb-4">
+                        <h5 class="text-white fw-bold mb-3 border-bottom border-secondary pb-2">
+                            <i class="fa-solid fa-bullseye text-warning me-2"></i> 3. Target Career
+                        </h5>
+
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label for="targetRole" class="form-label text-white fw-semibold mb-0">
+                                What career or job role do you want? <span class="text-danger">*</span>
+                            </label>
+                            <span class="badge bg-secondary-subtle text-info border border-info-subtle small">Type Any Custom Job</span>
+                        </div>
+                        
+                        <div class="search-input-group">
+                            <i class="fa-solid fa-magnifying-glass search-input-icon"></i>
+                            <input 
+                                type="text" 
+                                class="form-control custom-career-input" 
+                                id="targetRole" 
+                                name="target_role" 
+                                list="popularRolesList"
+                                placeholder="e.g., Data Analyst, AI Engineer, Business Analyst..." 
+                                autocomplete="off"
+                                required
+                            >
+                        </div>
+                        
+                        <!-- Autocomplete datalist -->
+                        <datalist id="popularRolesList">
+                            <option value="Data Analyst"></option>
+                            <option value="Data Scientist"></option>
+                            <option value="Business Analyst"></option>
+                            <option value="AI Engineer"></option>
+                            <option value="ML Engineer"></option>
+                            <option value="Product Analyst"></option>
+                            <option value="Financial Analyst"></option>
+                            <option value="Cybersecurity Analyst"></option>
+                            <option value="Cloud Engineer"></option>
+                            <option value="Software Developer"></option>
+                            <option value="Healthcare Data Analyst"></option>
+                            <option value="Computer Vision Engineer"></option>
+                            <option value="NLP Engineer"></option>
+                            <option value="Marketing Data Analyst"></option>
+                        </datalist>
+
+                        <!-- Empty Validation Alert Placeholder -->
+                        <div id="roleValidationAlert" class="alert alert-danger py-2 px-3 mt-2 small d-none" role="alert">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                            <span id="roleValidationText">Please enter the career or job role you want to pursue.</span>
+                        </div>
+
+                        <!-- Clickable Popular Roles Suggestion Chips (Populates input only) -->
+                        <div class="mt-3">
+                            <span class="text-secondary small fw-semibold d-block mb-1">Popular roles:</span>
+                            <div class="suggestion-chips-container">
+                                <span class="role-chip" data-role="Data Analyst">Data Analyst</span>
+                                <span class="role-chip" data-role="Data Scientist">Data Scientist</span>
+                                <span class="role-chip" data-role="Business Analyst">Business Analyst</span>
+                                <span class="role-chip" data-role="AI Engineer">AI Engineer</span>
+                                <span class="role-chip" data-role="ML Engineer">ML Engineer</span>
+                                <span class="role-chip" data-role="Product Analyst">Product Analyst</span>
+                                <span class="role-chip" data-role="Financial Analyst">Financial Analyst</span>
+                                <span class="role-chip" data-role="Cybersecurity Analyst">Cybersecurity Analyst</span>
+                                <span class="role-chip" data-role="Cloud Engineer">Cloud Engineer</span>
+                                <span class="role-chip" data-role="Software Developer">Software Developer</span>
+                                <span class="role-chip" data-role="Healthcare Data Analyst">Healthcare Data Analyst</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 mt-4 mb-3">
+                        <button type="submit" class="btn btn-brand-primary btn-lg" id="submitBtn">
+                            <i class="fa-solid fa-user-plus me-1"></i> Register & Begin Assessment
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="text-secondary small">Already have an account?</span>
+                        <a href="{{ url_for('login') }}" class="small text-info text-decoration-none fw-semibold ms-1">Login here</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentStatusSelect = document.getElementById('currentStatus');
+        const studentFields = document.getElementById('studentFields');
+        const fresherFields = document.getElementById('fresherFields');
+        const professionalFields = document.getElementById('professionalFields');
+        const switcherFields = document.getElementById('switcherFields');
+        const breakFields = document.getElementById('breakFields');
+
+        const roleInput = document.getElementById('targetRole');
+        const roleChips = document.querySelectorAll('.role-chip');
+        const validationAlert = document.getElementById('roleValidationAlert');
+        const validationText = document.getElementById('roleValidationText');
+        const careerForm = document.getElementById('careerForm');
+
+        // Toggle Status Subpanels
+        function updateStatusPanels() {
+            const status = currentStatusSelect ? currentStatusSelect.value : 'Student';
+            if (studentFields) studentFields.classList.add('d-none');
+            if (fresherFields) fresherFields.classList.add('d-none');
+            if (professionalFields) professionalFields.classList.add('d-none');
+            if (switcherFields) switcherFields.classList.add('d-none');
+            if (breakFields) breakFields.classList.add('d-none');
+
+            if (status === 'Student' && studentFields) {
+                studentFields.classList.remove('d-none');
+            } else if (status === 'Fresher / Job Seeker' && fresherFields) {
+                fresherFields.classList.remove('d-none');
+            } else if (status === 'Working Professional' && professionalFields) {
+                professionalFields.classList.remove('d-none');
+            } else if (status === 'Career Switcher' && switcherFields) {
+                switcherFields.classList.remove('d-none');
+            } else if (status === 'Returning After Career Break' && breakFields) {
+                breakFields.classList.remove('d-none');
+            }
+        }
+
+        if (currentStatusSelect) {
+            currentStatusSelect.addEventListener('change', updateStatusPanels);
+            updateStatusPanels();
+        }
+
+        // Skill Chip Appender for Active Subpanel
+        document.querySelectorAll('.skill-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                const skillName = this.getAttribute('data-skill');
+                const parentPanel = this.closest('.status-subpanel');
+                if (parentPanel) {
+                    const skillInput = parentPanel.querySelector('.skill-target-input');
+                    if (skillInput) {
+                        let currentVal = skillInput.value.trim();
+                        const existingSkills = currentVal ? currentVal.split(',').map(s => s.trim().toLowerCase()) : [];
+                        if (!existingSkills.includes(skillName.toLowerCase())) {
+                            if (currentVal) {
+                                skillInput.value = currentVal + ', ' + skillName;
+                            } else {
+                                skillInput.value = skillName;
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Handle Target Role Chip Clicks - Only fills the input field
+        roleChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                const selectedRole = this.getAttribute('data-role');
+                roleInput.value = selectedRole;
+                
+                // Active state styling
+                roleChips.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                hideValidationError();
+            });
+        });
+
+        // Clear active chip when user manually types
+        if (roleInput) {
+            roleInput.addEventListener('input', function() {
+                hideValidationError();
+                const currentVal = this.value.trim().toLowerCase();
+                roleChips.forEach(c => {
+                    if (c.getAttribute('data-role').toLowerCase() === currentVal) {
+                        c.classList.add('active');
+                    } else {
+                        c.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        // Form Validation on Submit
+        if (careerForm) {
+            careerForm.addEventListener('submit', function(e) {
+                const roleVal = roleInput.value.trim();
+                if (!roleVal) {
+                    e.preventDefault();
+                    showValidationError("Please enter the career or job role you want to pursue.");
+                    roleInput.focus();
+                    return false;
+                }
+                hideValidationError();
+            });
+        }
+
+        function showValidationError(msg) {
+            if (validationText && validationAlert) {
+                validationText.textContent = msg;
+                validationAlert.classList.remove('d-none');
+            }
+        }
+
+        function hideValidationError() {
+            if (validationAlert) {
+                validationAlert.classList.add('d-none');
+            }
+        }
+    });
+</script>
+{% endblock %}

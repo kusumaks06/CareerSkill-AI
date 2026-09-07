@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-auto">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card shadow-lg p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="brand-icon-box mx-auto mb-3">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+                    <h2 class="h3 fw-bold text-white">Welcome Back</h2>
+                    <p class="text-secondary small">Login to access your personalized career roadmaps & dashboard</p>
+                </div>
+
+                <form action="{{ url_for('login') }}" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-secondary small fw-semibold">Email Address <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-envelope"></i></span>
+                            <input type="email" class="form-control bg-dark border-secondary text-white" id="email" name="email" placeholder="name@example.com" required autocomplete="email">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <label for="password" class="form-label text-secondary small fw-semibold mb-0">Password <span class="text-danger">*</span></label>
+                            <a href="{{ url_for('forgot_password') }}" class="small text-info text-decoration-none fw-semibold">Forgot Password?</a>
+                        </div>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-key"></i></span>
+                            <input type="password" class="form-control bg-dark border-secondary text-white" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-brand-primary btn-lg" id="loginSubmitBtn">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Sign In
+                        </button>
+                    </div>
+
+                    <div class="text-center">
+                        <span class="text-secondary small">Don't have an account?</span>
+                        <a href="{{ url_for('get_started') }}" class="small text-info text-decoration-none fw-semibold ms-1">Get Started</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Market Requirements - Admin Panel{% endblock %}
+{% block page_title %}Labor Market Requirements & Benchmarks{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-danger">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Market Requirements & <span class="text-gradient">Industry Benchmarks</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Empirical labor demand standards mapping target roles to required competencies, importance rankings, experience expectations, and salary benchmarks.
+                </p>
+            </div>
+            <button type="button" class="btn btn-brand-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newMarketReqModal">
+                <i class="fa-solid fa-plus me-1"></i> Add Market Requirement
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_market_requirements_view') }}" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search career or skill name..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="career" placeholder="Filter by target career..." value="{{ career_filter }}">
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">Filter</button>
+                <a href="{{ url_for('admin_market_requirements_view') }}" class="btn btn-brand-outline btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Requirements Table -->
+    <div class="glass-card p-4">
+        {% if requirements %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>Target Career</th>
+                            <th>Required Skill</th>
+                            <th>Level & Importance</th>
+                            <th>Experience & Salary</th>
+                            <th>Demand</th>
+                            <th>Topics Covered</th>
+                            <th>Data Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in requirements %}
+                            <tr>
+                                <td>
+                                    <strong class="text-white small d-block">{{ r.career_title }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-bold">{{ r.skill_name }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white x-small d-block mb-1">{{ r.required_level }}</span>
+                                    {% if r.importance == 'Critical' %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle x-small">Critical</span>
+                                    {% else %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle x-small">{{ r.importance }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-white x-small d-block">{{ r.experience_level or 'Entry to Mid-Level' }}</span>
+                                    <span class="text-muted x-small">{{ r.salary_range or 'Industry Benchmark' }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle x-small">
+                                        {{ r.market_demand or 'High Demand' }}
+                                    </span>
+                                </td>
+                                <td style="max-width: 180px;">
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for t in r.topics[:2] %}
+                                            <span class="badge bg-black border border-secondary text-light x-small">{{ t }}</span>
+                                        {% endfor %}
+                                        {% if r.topics|length > 2 %}
+                                            <span class="badge bg-secondary text-light x-small">+{{ r.topics|length - 2 }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if r.is_verified %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle small">
+                                            <i class="fa-solid fa-check-circle me-1"></i> Verified Data
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle small">
+                                            <i class="fa-solid fa-calculator me-1"></i> Estimated Data
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if r.id %}
+                                        <div class="d-inline-flex gap-2">
+                                            <button type="button" class="btn btn-outline-warning btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#editReqModal-{{ r.id }}">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+
+                                            <form method="POST" action="{{ url_for('admin_market_requirement_delete', req_id=r.id) }}" class="d-inline" onsubmit="return confirm('Delete this market requirement benchmark?');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Edit Modal -->
+                                        <div class="modal fade text-start" id="editReqModal-{{ r.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content bg-dark text-white border-secondary">
+                                                    <div class="modal-header border-secondary">
+                                                        <h5 class="modal-title fs-6 fw-bold">Edit Market Benchmark</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form method="POST" action="{{ url_for('admin_market_requirement_save') }}">
+                                                        <input type="hidden" name="req_id" value="{{ r.id }}">
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Target Career Title *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="career_title" value="{{ r.career_title }}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Skill Name *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="skill_name" value="{{ r.skill_name }}" required>
+                                                            </div>
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col-6">
+                                                                    <label class="form-label text-secondary small">Required Level</label>
+                                                                    <select class="form-select form-select-sm bg-black text-white border-secondary" name="required_level">
+                                                                        <option value="Beginner" {% if r.required_level == 'Beginner' %}selected{% endif %}>Beginner</option>
+                                                                        <option value="Intermediate" {% if r.required_level == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                                                                        <option value="Advanced" {% if r.required_level == 'Advanced' %}selected{% endif %}>Advanced</option>
+                                                                        <option value="Expert" {% if r.required_level == 'Expert' %}selected{% endif %}>Expert</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <label class="form-label text-secondary small">Importance</label>
+                                                                    <select class="form-select form-select-sm bg-black text-white border-secondary" name="importance">
+                                                                        <option value="Critical" {% if r.importance == 'Critical' %}selected{% endif %}>Critical</option>
+                                                                        <option value="Important" {% if r.importance == 'Important' %}selected{% endif %}>Important</option>
+                                                                        <option value="Useful" {% if r.importance == 'Useful' %}selected{% endif %}>Useful</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col-6">
+                                                                    <label class="form-label text-secondary small">Experience Expectation</label>
+                                                                    <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="experience_level" value="{{ r.experience_level or 'Entry to Mid-Level' }}">
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <label class="form-label text-secondary small">Market Demand</label>
+                                                                    <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="market_demand" value="{{ r.market_demand or 'High Demand' }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Salary Benchmark</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="salary_range" value="{{ r.salary_range or '₹6,00,000 - ₹12,00,000 / yr' }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Estimated Study Hours</label>
+                                                                <input type="number" step="0.5" class="form-control form-control-sm bg-black text-white border-secondary" name="estimated_hours" value="{{ r.estimated_hours }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Source / Reference</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="source_reference" value="{{ r.source_reference }}">
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="is_verified" value="true" id="editCheck-{{ r.id }}" {% if r.is_verified %}checked{% endif %}>
+                                                                <label class="form-check-label text-secondary small" for="editCheck-{{ r.id }}">
+                                                                    Mark as Verified Industry Benchmark Data
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-secondary">
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-brand-primary btn-sm">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted x-small">Catalog Baseline</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-secondary small mb-0 text-center py-4">No market requirements found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New Market Requirement Modal -->
+<div class="modal fade text-start" id="newMarketReqModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-plus text-primary me-1"></i> Add Market Requirement</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_market_requirement_save') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Target Career Title *</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="career_title" placeholder="e.g., Data Analyst" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Skill Name *</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="skill_name" placeholder="e.g., Power BI" required>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Required Level</label>
+                            <select class="form-select form-select-sm bg-black text-white border-secondary" name="required_level">
+                                <option value="Beginner">Beginner</option>
+                                <option value="Intermediate" selected>Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="Expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Importance</label>
+                            <select class="form-select form-select-sm bg-black text-white border-secondary" name="importance">
+                                <option value="Critical">Critical</option>
+                                <option value="Important" selected>Important</option>
+                                <option value="Useful">Useful</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Experience Expectation</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="experience_level" placeholder="e.g., 0 - 2 Years" value="Entry to Mid-Level">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Market Demand</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="market_demand" placeholder="e.g., Very High Demand" value="High Demand">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Salary Benchmark</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="salary_range" placeholder="e.g., ₹6,00,000 - ₹12,00,000 / yr" value="₹6,00,000 - ₹12,00,000 / yr">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Estimated Study Hours</label>
+                        <input type="number" step="0.5" class="form-control form-control-sm bg-black text-white border-secondary" name="estimated_hours" value="25.0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Topics (comma separated)</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topics" placeholder="e.g., DAX Formulas, Power Query M, Star Schema">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Source Reference</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="source_reference" value="Industry Job Postings Analysis (2026)">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_verified" value="true" id="newReqCheck" checked>
+                        <label class="form-check-label text-secondary small" for="newReqCheck">
+                            Mark as Verified Industry Benchmark Data
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand-primary btn-sm">Create Requirement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

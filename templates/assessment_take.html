@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assessment.skill_name }} Assessment - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="take-assessment-root">
+    
+    <!-- Header & Breadcrumb -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('assessment_hub') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-laptop-code me-1"></i> Assessments</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ assessment.skill_name }} Assessment</li>
+                </ol>
+            </nav>
+            <h1 class="h2 fw-bold text-white mb-0">
+                <span class="text-gradient">{{ assessment.skill_name }}</span> Knowledge Assessment
+            </h1>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold">
+                <i class="fa-solid fa-layer-group me-1"></i> Difficulty: {{ assessment.difficulty }}
+            </span>
+            <span class="badge bg-dark border border-secondary text-secondary px-3 py-2 rounded-pill">
+                <i class="fa-solid fa-clock me-1"></i> {{ assessment.total_questions }} Questions
+            </span>
+        </div>
+    </div>
+
+    <!-- Progress Indicator Card -->
+    <div class="glass-card mb-4 p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-secondary small fw-bold text-uppercase">Assessment Progress</span>
+            <span class="text-white small fw-bold" id="progress-text">0 of {{ assessment.total_questions }} Answered</span>
+        </div>
+        <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+            <div class="progress-bar bg-gradient" id="assessment-progress-bar" style="width: 0%;"></div>
+        </div>
+    </div>
+
+    <!-- Assessment Form -->
+    <form id="assessment-form" action="{{ url_for('submit_assessment_action') }}" method="POST">
+        <input type="hidden" name="skill_name" value="{{ assessment.skill_name }}">
+        <input type="hidden" name="target_role" value="{{ assessment.target_role }}">
+        <input type="hidden" name="difficulty" value="{{ assessment.difficulty }}">
+
+        <div class="d-flex flex-column gap-4" id="questions-container">
+            {% for q in assessment.questions %}
+            <div class="glass-card p-4 p-md-5 border-start border-4 border-primary question-card" data-question-id="{{ q.id }}">
+                <!-- Question Header -->
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                            {{ loop.index }}
+                        </span>
+                        <span class="badge bg-dark border border-secondary text-info small">
+                            <i class="fa-solid fa-tag me-1"></i> {{ q.topic }}
+                        </span>
+                    </div>
+                    <span class="badge {% if q.difficulty == 'Beginner' %}bg-success-subtle text-success border border-success-subtle{% elif q.difficulty == 'Intermediate' %}bg-primary-subtle text-primary border border-primary-subtle{% else %}bg-warning-subtle text-warning border border-warning-subtle{% endif %} x-small">
+                        {{ q.difficulty }}
+                    </span>
+                </div>
+
+                <!-- Question Text -->
+                <h3 class="h5 fw-semibold text-white mb-4 lh-base">
+                    {{ q.question_text }}
+                </h3>
+
+                <!-- Options List -->
+                <div class="options-group d-flex flex-column gap-2">
+                    {% for opt in q.options %}
+                    <label class="p-3 rounded-3 bg-dark border border-secondary d-flex align-items-center gap-3 cursor-pointer option-label transition-all" style="cursor: pointer;">
+                        <input type="radio" name="q_{{ q.id }}" value="{{ opt }}" class="form-check-input mt-0 answer-radio" style="cursor: pointer;">
+                        <span class="text-light small flex-grow-1">{{ opt }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit Section Card -->
+        <div class="glass-card p-4 mt-4 text-center">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <div class="text-md-start">
+                    <strong class="text-white d-block">Ready to Submit?</strong>
+                    <span class="text-secondary small">Your answers will be evaluated to identify your strong topics and recalibrate your skill gap.</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('assessment_hub') }}" class="btn btn-brand-outline">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-brand-primary btn-lg px-4" id="btn-submit-assessment">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Submit Assessment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const totalQuestions = {{ assessment.total_questions }};
+    const radioInputs = document.querySelectorAll('.answer-radio');
+    const progressBar = document.getElementById('assessment-progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const optionLabels = document.querySelectorAll('.option-label');
+
+    function updateProgress() {
+        const answeredQuestions = new Set();
+        radioInputs.forEach(input => {
+            if (input.checked) {
+                answeredQuestions.add(input.name);
+            }
+        });
+        const answeredCount = answeredQuestions.size;
+        const pct = Math.round((answeredCount / totalQuestions) * 100);
+        progressBar.style.width = pct + '%';
+        progressText.textContent = `${answeredCount} of ${totalQuestions} Answered`;
+
+        // Highlight selected options
+        optionLabels.forEach(label => {
+            const radio = label.querySelector('input[type="radio"]');
+            if (radio && radio.checked) {
+                label.classList.add('border-primary', 'bg-primary-subtle');
+                label.classList.remove('bg-dark', 'border-secondary');
+            } else {
+                label.classList.remove('border-primary', 'bg-primary-subtle');
+                label.classList.add('bg-dark', 'border-secondary');
+            }
+        });
+    }
+
+    radioInputs.forEach(input => {
+        input.addEventListener('change', updateProgress);
+    });
+
+    // Form submission validation
+    const form = document.getElementById('assessment-form');
+    form.addEventListener('submit', function(e) {
+        const answeredQuestions = new Set();
+        radioInputs.forEach(input => {
+            if (input.checked) {
+                answeredQuestions.add(input.name);
+            }
+        });
+        if (answeredQuestions.size < totalQuestions) {
+            const unanswered = totalQuestions - answeredQuestions.size;
+            if (!confirm(`You have ${unanswered} unanswered question(s). Are you sure you want to submit?`)) {
+                e.preventDefault();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

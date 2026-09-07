@@ -1,0 +1,1070 @@
+{
+  "careers": [
+    {
+      "id": "data_analyst",
+      "title": "Data Analyst",
+      "normalized_title": "data analyst",
+      "category": "Data & Analytics",
+      "description": "Transforms raw business data into actionable insights through statistical analysis, reporting, and interactive dashboards.",
+      "skills": [
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 60,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "SELECT & WHERE Filtering", "difficulty": "Easy", "hours": 6},
+            {"name": "Aggregations & GROUP BY / HAVING", "difficulty": "Easy", "hours": 6},
+            {"name": "INNER, LEFT & RIGHT JOINs", "difficulty": "Moderate", "hours": 8},
+            {"name": "Subqueries & Nested Queries", "difficulty": "Moderate", "hours": 8},
+            {"name": "Common Table Expressions (CTEs)", "difficulty": "Moderate", "hours": 8},
+            {"name": "Window Functions (RANK, ROW_NUMBER, LAG/LEAD)", "difficulty": "Difficult", "hours": 12},
+            {"name": "Database Indexes & Query Optimization", "difficulty": "Difficult", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Intermediate",
+          "estimated_hours": 50,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Python Syntax, Loops & Functions", "difficulty": "Easy", "hours": 8},
+            {"name": "Data Structures (Lists, Dictionaries, Sets)", "difficulty": "Easy", "hours": 8},
+            {"name": "Pandas DataFrames & Filtering", "difficulty": "Moderate", "hours": 10},
+            {"name": "NumPy Array Operations & Math", "difficulty": "Moderate", "hours": 8},
+            {"name": "Data Cleaning & Imputation with Pandas", "difficulty": "Moderate", "hours": 8},
+            {"name": "API Data Fetching & JSON Parsing", "difficulty": "Difficult", "hours": 8}
+          ]
+        },
+        {
+          "skill": "Excel",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 35,
+          "priority": 3,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Basic Formulas & Conditional Formatting", "difficulty": "Easy", "hours": 5},
+            {"name": "VLOOKUP, HLOOKUP & XLOOKUP", "difficulty": "Easy", "hours": 6},
+            {"name": "Pivot Tables & Slicers", "difficulty": "Moderate", "hours": 8},
+            {"name": "Power Query & Data Transformation", "difficulty": "Moderate", "hours": 8},
+            {"name": "Nested Logic & Scenario Analysis", "difficulty": "Difficult", "hours": 8}
+          ]
+        },
+        {
+          "skill": "Power BI",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 40,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Data Connectors & Power Query ETL", "difficulty": "Easy", "hours": 6},
+            {"name": "Star Schema & Data Modeling", "difficulty": "Moderate", "hours": 8},
+            {"name": "DAX Basics (CALCULATE, RELATED, SUMX)", "difficulty": "Difficult", "hours": 12},
+            {"name": "Interactive Dashboard Design & Slicers", "difficulty": "Moderate", "hours": 8},
+            {"name": "Power BI Service & Gateway Refresh", "difficulty": "Moderate", "hours": 6}
+          ]
+        },
+        {
+          "skill": "Tableau",
+          "category": "Tool",
+          "importance": "Medium",
+          "required_level": "Intermediate",
+          "estimated_hours": 30,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Worksheets, Dimensions & Measures", "difficulty": "Easy", "hours": 6},
+            {"name": "Calculated Fields & Parameters", "difficulty": "Moderate", "hours": 8},
+            {"name": "Level of Detail (LOD) Expressions", "difficulty": "Difficult", "hours": 10},
+            {"name": "Dashboard Actions & Storytelling", "difficulty": "Moderate", "hours": 6}
+          ]
+        },
+        {
+          "skill": "Statistics",
+          "category": "Analytical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 40,
+          "priority": 6,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Descriptive Statistics (Mean, Median, StdDev)", "difficulty": "Easy", "hours": 6},
+            {"name": "Probability Distributions (Normal, Binomial)", "difficulty": "Moderate", "hours": 8},
+            {"name": "Hypothesis Testing (t-test, ANOVA, Chi-Square)", "difficulty": "Difficult", "hours": 12},
+            {"name": "Correlation & Linear Regression Analysis", "difficulty": "Moderate", "hours": 8},
+            {"name": "Confidence Intervals & Sample Sizing", "difficulty": "Moderate", "hours": 6}
+          ]
+        },
+        {
+          "skill": "Data Cleaning",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 30,
+          "priority": 7,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Handling Null / Missing Values", "difficulty": "Easy", "hours": 5},
+            {"name": "Outlier Detection (Z-score, IQR)", "difficulty": "Moderate", "hours": 7},
+            {"name": "String Cleaning & Regex Pattern Matching", "difficulty": "Moderate", "hours": 8},
+            {"name": "Data Type Formatting & DateTime Parsing", "difficulty": "Easy", "hours": 4},
+            {"name": "Deduplication & Data Integrity Auditing", "difficulty": "Moderate", "hours": 6}
+          ]
+        },
+        {
+          "skill": "Data Visualization",
+          "category": "Analytical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 25,
+          "priority": 8,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Chart Selection & Visual Hierarchy Principles", "difficulty": "Easy", "hours": 4},
+            {"name": "Matplotlib & Seaborn in Python", "difficulty": "Moderate", "hours": 8},
+            {"name": "Interactive Plotly Charts", "difficulty": "Moderate", "hours": 7},
+            {"name": "Business Metric Storytelling", "difficulty": "Easy", "hours": 6}
+          ]
+        },
+        {
+          "skill": "Business Intelligence",
+          "category": "Business/Domain",
+          "importance": "Medium",
+          "required_level": "Intermediate",
+          "estimated_hours": 25,
+          "priority": 9,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "KPI Definition & OKR Tracking", "difficulty": "Easy", "hours": 5},
+            {"name": "Dimensional Modeling (Fact vs Dimension Tables)", "difficulty": "Moderate", "hours": 8},
+            {"name": "Stakeholder Requirement Documentation", "difficulty": "Easy", "hours": 6},
+            {"name": "Executive Reporting & Insights Summaries", "difficulty": "Easy", "hours": 6}
+          ]
+        },
+        {
+          "skill": "Communication",
+          "category": "Soft Skill",
+          "importance": "Medium",
+          "required_level": "Intermediate",
+          "estimated_hours": 15,
+          "priority": 10,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Translating Data into Non-Technical Insights", "difficulty": "Easy", "hours": 5},
+            {"name": "Presentation & Deck Design for Executives", "difficulty": "Easy", "hours": 5},
+            {"name": "Cross-Functional Collaboration", "difficulty": "Easy", "hours": 5}
+          ]
+        },
+        {
+          "skill": "Problem Solving",
+          "category": "Soft Skill",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 20,
+          "priority": 11,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Root Cause Analysis (5 Whys / Fishbone)", "difficulty": "Moderate", "hours": 6},
+            {"name": "Structuring Ambiguous Business Questions", "difficulty": "Moderate", "hours": 8},
+            {"name": "A/B Test Decision Frameworks", "difficulty": "Difficult", "hours": 6}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data_scientist",
+      "title": "Data Scientist",
+      "normalized_title": "data scientist",
+      "category": "AI & Data Science",
+      "description": "Develops predictive models, machine learning algorithms, and deep statistical frameworks to solve complex business problems.",
+      "skills": [
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 70,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Advanced Python & OOP Concepts", "difficulty": "Moderate", "hours": 12},
+            {"name": "Vectorized Operations with NumPy", "difficulty": "Moderate", "hours": 10},
+            {"name": "High-Performance Data Wrangling with Pandas", "difficulty": "Moderate", "hours": 14},
+            {"name": "Code Profiling & Modular Design", "difficulty": "Difficult", "hours": 14},
+            {"name": "Package Management & Virtual Environments", "difficulty": "Easy", "hours": 6},
+            {"name": "Writing Production-Ready Clean Code", "difficulty": "Difficult", "hours": 14}
+          ]
+        },
+        {
+          "skill": "Machine Learning",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 80,
+          "priority": 2,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Supervised Learning (Regression, Classification)", "difficulty": "Moderate", "hours": 15},
+            {"name": "Unsupervised Learning (K-Means, PCA, Clustering)", "difficulty": "Moderate", "hours": 15},
+            {"name": "Ensemble Methods (Random Forest, XGBoost, LightGBM)", "difficulty": "Difficult", "hours": 20},
+            {"name": "Model Evaluation (ROC-AUC, F1, Precision/Recall)", "difficulty": "Moderate", "hours": 10},
+            {"name": "Cross-Validation & Hyperparameter Tuning", "difficulty": "Moderate", "hours": 10},
+            {"name": "Handling Class Imbalance (SMOTE, Class Weights)", "difficulty": "Difficult", "hours": 10}
+          ]
+        },
+        {
+          "skill": "Scikit-learn",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 45,
+          "priority": 3,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Pipelines & ColumnTransformers", "difficulty": "Moderate", "hours": 10},
+            {"name": "Feature Preprocessing (Scaling, OneHotEncoder)", "difficulty": "Easy", "hours": 8},
+            {"name": "Model Persistence & Serialization (Joblib/Pickle)", "difficulty": "Easy", "hours": 5},
+            {"name": "Custom Estimators & Transformers", "difficulty": "Difficult", "hours": 12},
+            {"name": "GridSearchCV & RandomizedSearchCV", "difficulty": "Moderate", "hours": 10}
+          ]
+        },
+        {
+          "skill": "Statistics",
+          "category": "Analytical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 60,
+          "priority": 4,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Probability Theory & Bayes Theorem", "difficulty": "Moderate", "hours": 12},
+            {"name": "Parametric & Non-Parametric Hypothesis Testing", "difficulty": "Difficult", "hours": 14},
+            {"name": "Maximum Likelihood Estimation (MLE)", "difficulty": "Difficult", "hours": 12},
+            {"name": "Multivariate Regression & Assumptions", "difficulty": "Moderate", "hours": 12},
+            {"name": "Time Series Modeling (ARIMA, Exponential Smoothing)", "difficulty": "Difficult", "hours": 10}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Complex JOINs & Multi-table Aggregations", "difficulty": "Moderate", "hours": 10},
+            {"name": "Window Analytics Functions", "difficulty": "Difficult", "hours": 12},
+            {"name": "Querying Analytical Warehouses (BigQuery/Snowflake)", "difficulty": "Moderate", "hours": 12},
+            {"name": "Feature Store SQL Extractions", "difficulty": "Moderate", "hours": 16}
+          ]
+        },
+        {
+          "skill": "Data Modeling",
+          "category": "Analytical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 6,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Feature Engineering & Domain Signals", "difficulty": "Moderate", "hours": 10},
+            {"name": "Dimensionality Reduction (t-SNE, UMAP)", "difficulty": "Difficult", "hours": 10},
+            {"name": "Model Interpretability (SHAP, LIME)", "difficulty": "Difficult", "hours": 15}
+          ]
+        },
+        {
+          "skill": "Deep Learning",
+          "category": "Technical",
+          "importance": "Medium",
+          "required_level": "Intermediate",
+          "estimated_hours": 60,
+          "priority": 7,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Neural Network Fundamentals & Backprop", "difficulty": "Moderate", "hours": 12},
+            {"name": "PyTorch / TensorFlow Tensors & Autograd", "difficulty": "Moderate", "hours": 14},
+            {"name": "Loss Functions, Optimizers (Adam, SGD)", "difficulty": "Moderate", "hours": 10},
+            {"name": "Convolutional & Recurrent Architectures", "difficulty": "Difficult", "hours": 14},
+            {"name": "Transfer Learning Basics", "difficulty": "Moderate", "hours": 10}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "business_analyst",
+      "title": "Business Analyst",
+      "normalized_title": "business analyst",
+      "category": "Business & Analytics",
+      "description": "Bridges the gap between business stakeholders and technical teams using data-driven process modeling and requirements engineering.",
+      "skills": [
+        {
+          "skill": "Business Intelligence",
+          "category": "Business/Domain",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Business Process Model & Notation (BPMN)", "difficulty": "Moderate", "hours": 12},
+            {"name": "Gap Analysis & Current vs Future State", "difficulty": "Moderate", "hours": 10},
+            {"name": "SWOT & PESTLE Strategic Frameworks", "difficulty": "Easy", "hours": 8},
+            {"name": "Business Case Formulation & ROI", "difficulty": "Moderate", "hours": 10},
+            {"name": "KPI Matrix & Balanced Scorecard", "difficulty": "Moderate", "hours": 10}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 40,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Basic Queries, WHERE & Ordering", "difficulty": "Easy", "hours": 8},
+            {"name": "GROUP BY, HAVING & Aggregates", "difficulty": "Easy", "hours": 8},
+            {"name": "JOINs across Business Tables", "difficulty": "Moderate", "hours": 12},
+            {"name": "Data Validation & Integrity Checks", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Excel",
+          "category": "Tool",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 40,
+          "priority": 3,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Advanced Lookups (XLOOKUP, INDEX-MATCH)", "difficulty": "Easy", "hours": 8},
+            {"name": "Dynamic Pivot Tables & Power Pivot", "difficulty": "Moderate", "hours": 10},
+            {"name": "Financial Formulas (NPV, IRR, PMT)", "difficulty": "Moderate", "hours": 10},
+            {"name": "Interactive Executive Dashboards", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Power BI",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Importing Business Data & Relationships", "difficulty": "Easy", "hours": 7},
+            {"name": "DAX Core Measures for Sales & Ops", "difficulty": "Moderate", "hours": 10},
+            {"name": "Executive Dashboard Layouts & Drillthrough", "difficulty": "Moderate", "hours": 10},
+            {"name": "Publishing & Role-Based Access", "difficulty": "Easy", "hours": 8}
+          ]
+        },
+        {
+          "skill": "Requirement Gathering",
+          "category": "Business/Domain",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 30,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "User Stories & Acceptance Criteria (Gherkin)", "difficulty": "Moderate", "hours": 10},
+            {"name": "BRD & FRD Document Creation", "difficulty": "Moderate", "hours": 10},
+            {"name": "Facilitating JAD Workshops & Interviews", "difficulty": "Easy", "hours": 10}
+          ]
+        },
+        {
+          "skill": "Stakeholder Communication",
+          "category": "Soft Skill",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 25,
+          "priority": 6,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Managing Competing Priorities & Scope", "difficulty": "Moderate", "hours": 8},
+            {"name": "Executive Status Presentations", "difficulty": "Easy", "hours": 8},
+            {"name": "Change Management & Training", "difficulty": "Easy", "hours": 9}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bi_analyst",
+      "title": "Business Intelligence Analyst",
+      "normalized_title": "business intelligence analyst",
+      "category": "Data & Analytics",
+      "description": "Designs and manages enterprise reporting architectures, data models, and automated business performance dashboards.",
+      "skills": [
+        {
+          "skill": "Power BI",
+          "category": "Tool",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 60,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Advanced DAX (Time Intelligence, Iterators)", "difficulty": "Difficult", "hours": 18},
+            {"name": "Star & Snowflake Schema Data Modeling", "difficulty": "Moderate", "hours": 14},
+            {"name": "Power Query Advanced M-Code Transformations", "difficulty": "Difficult", "hours": 14},
+            {"name": "Row-Level Security (RLS) & Governance", "difficulty": "Moderate", "hours": 14}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 55,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Stored Procedures & Triggers", "difficulty": "Moderate", "hours": 12},
+            {"name": "Complex Analytical Window Functions", "difficulty": "Difficult", "hours": 14},
+            {"name": "Data Warehousing DDL & Fact/Dim Modeling", "difficulty": "Moderate", "hours": 15},
+            {"name": "Query Optimization & Execution Plans", "difficulty": "Difficult", "hours": 14}
+          ]
+        },
+        {
+          "skill": "Tableau",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 40,
+          "priority": 3,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Data Blending & Cross-Database Joins", "difficulty": "Moderate", "hours": 10},
+            {"name": "LOD Expressions (FIXED, INCLUDE, EXCLUDE)", "difficulty": "Difficult", "hours": 14},
+            {"name": "Custom Geocoding & Spatial Maps", "difficulty": "Easy", "hours": 8},
+            {"name": "Performance Recording & Optimization", "difficulty": "Moderate", "hours": 8}
+          ]
+        },
+        {
+          "skill": "Data Warehousing",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 40,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Kimball Methodology & Dimensional Modeling", "difficulty": "Moderate", "hours": 12},
+            {"name": "Slowly Changing Dimensions (SCD Type 1/2/3)", "difficulty": "Moderate", "hours": 10},
+            {"name": "Snowflake / BigQuery Architecture", "difficulty": "Moderate", "hours": 10},
+            {"name": "Data Marts & Aggregation Tables", "difficulty": "Easy", "hours": 8}
+          ]
+        },
+        {
+          "skill": "ETL Basics",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Data Extraction & Source Staging", "difficulty": "Easy", "hours": 7},
+            {"name": "Data Cleansing & Validation Rules", "difficulty": "Moderate", "hours": 10},
+            {"name": "Incremental vs Full Refresh Loads", "difficulty": "Moderate", "hours": 10},
+            {"name": "Scheduling & Pipeline Error Alerts", "difficulty": "Easy", "hours": 8}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "machine_learning_engineer",
+      "title": "Machine Learning Engineer",
+      "normalized_title": "machine learning engineer",
+      "category": "Artificial Intelligence",
+      "description": "Focuses on engineering pipelines, deploying models to production, monitoring drift, and optimizing ML infrastructure.",
+      "skills": [
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 70,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Advanced Python & Concurrency (asyncio/threading)", "difficulty": "Difficult", "hours": 15},
+            {"name": "Object-Oriented Design & Clean Architecture", "difficulty": "Moderate", "hours": 14},
+            {"name": "Unit & Integration Testing (pytest)", "difficulty": "Moderate", "hours": 12},
+            {"name": "FastAPI REST Endpoint Development", "difficulty": "Moderate", "hours": 14},
+            {"name": "Packaging & Python Wheels", "difficulty": "Moderate", "hours": 15}
+          ]
+        },
+        {
+          "skill": "Machine Learning",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 75,
+          "priority": 2,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Classification, Regression & Tree Models", "difficulty": "Moderate", "hours": 15},
+            {"name": "Gradient Boosting (XGBoost, LightGBM, CatBoost)", "difficulty": "Moderate", "hours": 15},
+            {"name": "Feature Engineering & Preprocessing Pipelines", "difficulty": "Moderate", "hours": 15},
+            {"name": "Hyperparameter Optimization (Optuna)", "difficulty": "Difficult", "hours": 15},
+            {"name": "Model Quantization & Inference Speedup", "difficulty": "Difficult", "hours": 15}
+          ]
+        },
+        {
+          "skill": "MLOps",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 65,
+          "priority": 3,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "MLflow Experiment Tracking & Model Registry", "difficulty": "Moderate", "hours": 14},
+            {"name": "Data Version Control (DVC)", "difficulty": "Moderate", "hours": 10},
+            {"name": "Continuous Training & Pipeline Automation", "difficulty": "Difficult", "hours": 15},
+            {"name": "Model Monitoring, Data & Concept Drift", "difficulty": "Difficult", "hours": 14},
+            {"name": "Feature Stores (Feast)", "difficulty": "Difficult", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Docker",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Dockerfiles & Multi-Stage Builds", "difficulty": "Moderate", "hours": 10},
+            {"name": "Docker Compose for Multi-Service Testing", "difficulty": "Easy", "hours": 8},
+            {"name": "Containerizing ML Inference Services", "difficulty": "Moderate", "hours": 10},
+            {"name": "Image Optimization & Security Scans", "difficulty": "Moderate", "hours": 7}
+          ]
+        },
+        {
+          "skill": "PyTorch",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 50,
+          "priority": 5,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Tensors, Dataset & DataLoader Classes", "difficulty": "Moderate", "hours": 10},
+            {"name": "Custom nn.Module Architectures", "difficulty": "Moderate", "hours": 12},
+            {"name": "Training Loops & Learning Rate Schedulers", "difficulty": "Moderate", "hours": 12},
+            {"name": "TorchScript & ONNX Export for Inference", "difficulty": "Difficult", "hours": 16}
+          ]
+        },
+        {
+          "skill": "CI/CD Pipelines",
+          "category": "Technical",
+          "importance": "Medium",
+          "required_level": "Intermediate",
+          "estimated_hours": 30,
+          "priority": 6,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "GitHub Actions for Automated Testing", "difficulty": "Moderate", "hours": 10},
+            {"name": "Automated Model Artifact Deployment", "difficulty": "Difficult", "hours": 12},
+            {"name": "Linters & Code Style Quality Gates", "difficulty": "Easy", "hours": 8}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ai_engineer",
+      "title": "AI Engineer",
+      "normalized_title": "ai engineer",
+      "category": "Artificial Intelligence",
+      "description": "Designs, builds, and deploys scalable artificial intelligence systems, large language model applications, and neural networks.",
+      "skills": [
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 70,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Async Python & Fast HTTP Services", "difficulty": "Difficult", "hours": 15},
+            {"name": "API Serialization & Pydantic Validation", "difficulty": "Moderate", "hours": 12},
+            {"name": "Profiling Heavy GPU / Memory Workloads", "difficulty": "Difficult", "hours": 15},
+            {"name": "Secure Credentials & Environment Config", "difficulty": "Easy", "hours": 8},
+            {"name": "Error Handling & Logging Best Practices", "difficulty": "Moderate", "hours": 20}
+          ]
+        },
+        {
+          "skill": "Large Language Models (LLMs)",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 65,
+          "priority": 2,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Prompt Engineering & Few-Shot Techniques", "difficulty": "Easy", "hours": 8},
+            {"name": "LangChain & LlamaIndex Frameworks", "difficulty": "Moderate", "hours": 16},
+            {"name": "Retrieval-Augmented Generation (RAG)", "difficulty": "Difficult", "hours": 18},
+            {"name": "Model Quantization (GGUF, AWQ, bitsandbytes)", "difficulty": "Difficult", "hours": 12},
+            {"name": "Fine-Tuning with LoRA / QLoRA", "difficulty": "Difficult", "hours": 11}
+          ]
+        },
+        {
+          "skill": "Vector Databases",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 3,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Vector Embeddings & Cosine Distance", "difficulty": "Moderate", "hours": 8},
+            {"name": "ChromaDB / Pinecone / Qdrant Setup", "difficulty": "Moderate", "hours": 10},
+            {"name": "Hybrid Keyword + Semantic Search", "difficulty": "Difficult", "hours": 10},
+            {"name": "Index Chunking Strategies & Re-ranking", "difficulty": "Moderate", "hours": 7}
+          ]
+        },
+        {
+          "skill": "Deep Learning",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 65,
+          "priority": 4,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Transformer Architecture (Self-Attention)", "difficulty": "Difficult", "hours": 18},
+            {"name": "PyTorch Deep Learning Foundations", "difficulty": "Moderate", "hours": 16},
+            {"name": "Fine-tuning Pretrained Transformer Checkpoints", "difficulty": "Difficult", "hours": 16},
+            {"name": "Evaluation Metrics for Generative AI (ROUGE, BLEU, BERTScore)", "difficulty": "Moderate", "hours": 15}
+          ]
+        },
+        {
+          "skill": "Natural Language Processing (NLP)",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Tokenization & BPE (Byte Pair Encoding)", "difficulty": "Easy", "hours": 8},
+            {"name": "Named Entity Recognition (NER)", "difficulty": "Moderate", "hours": 12},
+            {"name": "Text Embeddings Generation (SentenceTransformers)", "difficulty": "Moderate", "hours": 14},
+            {"name": "Hugging Face Pipelines & Datasets", "difficulty": "Moderate", "hours": 16}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "product_analyst",
+      "title": "Product Analyst",
+      "normalized_title": "product analyst",
+      "category": "Product & Growth",
+      "description": "Analyzes user behavior, product metrics, onboarding funnels, and feature retention to drive product growth.",
+      "skills": [
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 55,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Event Log Queries & Timestamp Handling", "difficulty": "Moderate", "hours": 12},
+            {"name": "Cohort Retention Queries & Window Functions", "difficulty": "Difficult", "hours": 16},
+            {"name": "User Sessionization Logic", "difficulty": "Difficult", "hours": 14},
+            {"name": "Aggregating Funnel Drop-off Rates", "difficulty": "Moderate", "hours": 13}
+          ]
+        },
+        {
+          "skill": "A/B Testing",
+          "category": "Analytical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 45,
+          "priority": 2,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Hypothesis Formulation & Success Metrics", "difficulty": "Easy", "hours": 8},
+            {"name": "Sample Size Determination & Minimum Detectable Effect", "difficulty": "Moderate", "hours": 12},
+            {"name": "P-values, Significance & False Discovery Rate", "difficulty": "Difficult", "hours": 15},
+            {"name": "Variance Reduction Techniques (CUPED)", "difficulty": "Difficult", "hours": 10}
+          ]
+        },
+        {
+          "skill": "Product Analytics",
+          "category": "Analytical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 40,
+          "priority": 3,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "DAU/MAU, Stickiness & Retention Curves", "difficulty": "Easy", "hours": 8},
+            {"name": "Funnel Analysis & Drop-off Diagnostics", "difficulty": "Moderate", "hours": 10},
+            {"name": "Feature Adoption & North Star Metric Definition", "difficulty": "Moderate", "hours": 10},
+            {"name": "User Segmentation by Behavioral Triggers", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 40,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Pandas for User Event Cleaning", "difficulty": "Moderate", "hours": 12},
+            {"name": "Statistical Significance Scripting in SciPy", "difficulty": "Moderate", "hours": 14},
+            {"name": "Plotting Retention Heatmaps in Seaborn", "difficulty": "Easy", "hours": 14}
+          ]
+        },
+        {
+          "skill": "Data Visualization",
+          "category": "Analytical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 30,
+          "priority": 5,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Executive Dashboard Storytelling", "difficulty": "Easy", "hours": 8},
+            {"name": "Amplitude / Mixpanel Dashboard Setup", "difficulty": "Moderate", "hours": 12},
+            {"name": "Visualizing User Journey Flows", "difficulty": "Easy", "hours": 10}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "financial_analyst",
+      "title": "Financial Analyst",
+      "normalized_title": "financial analyst",
+      "category": "Finance & Economics",
+      "description": "Evaluates financial health, investment viability, budgeting forecasts, and economic variance using data modeling.",
+      "skills": [
+        {
+          "skill": "Financial Modeling",
+          "category": "Analytical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 60,
+          "priority": 1,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Three-Statement Model Integration", "difficulty": "Difficult", "hours": 18},
+            {"name": "Discounted Cash Flow (DCF) Valuation", "difficulty": "Difficult", "hours": 16},
+            {"name": "Scenario & Sensitivity Analysis", "difficulty": "Moderate", "hours": 14},
+            {"name": "Cap Table & Equity Dilution Modeling", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Excel",
+          "category": "Tool",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Financial Functions (XIRR, XNPV, OFFSET)", "difficulty": "Moderate", "hours": 12},
+            {"name": "Dynamic Index-Match & Matrix Formulas", "difficulty": "Moderate", "hours": 12},
+            {"name": "Macro Basics & Financial Automation", "difficulty": "Moderate", "hours": 14},
+            {"name": "Audit Tools & Formula Precedents", "difficulty": "Easy", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Financial Analysis",
+          "category": "Business/Domain",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 45,
+          "priority": 3,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Ratio Analysis (Liquidity, Solvency, Profitability)", "difficulty": "Easy", "hours": 10},
+            {"name": "Budget vs Actual Variance Analysis", "difficulty": "Moderate", "hours": 14},
+            {"name": "Working Capital & Cash Flow Management", "difficulty": "Moderate", "hours": 11},
+            {"name": "Cost of Capital (WACC) Calculation", "difficulty": "Difficult", "hours": 10}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Financial Ledger Extraction Queries", "difficulty": "Moderate", "hours": 12},
+            {"name": "Monthly & Quarterly Aggregations", "difficulty": "Easy", "hours": 11},
+            {"name": "Reconciliation & Anomaly Detection Queries", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Power BI",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 30,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "P&L Statement Visual Layouts", "difficulty": "Moderate", "hours": 10},
+            {"name": "Financial DAX KPI Cards", "difficulty": "Moderate", "hours": 10},
+            {"name": "Budget Forecast vs Actuals Gauges", "difficulty": "Easy", "hours": 10}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "marketing_analyst",
+      "title": "Marketing Analyst",
+      "normalized_title": "marketing analyst",
+      "category": "Marketing & Growth",
+      "description": "Evaluates digital campaign performance, customer acquisition costs (CAC), lifetime value (LTV), and multi-touch attribution.",
+      "skills": [
+        {
+          "skill": "Marketing Analytics",
+          "category": "Business/Domain",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Customer Acquisition Cost (CAC) & LTV Modeling", "difficulty": "Moderate", "hours": 14},
+            {"name": "Multi-Touch Attribution Models (First, Last, Linear, Shapley)", "difficulty": "Difficult", "hours": 16},
+            {"name": "ROAS (Return on Ad Spend) & Blended Payback", "difficulty": "Easy", "hours": 8},
+            {"name": "Audience RFM (Recency, Frequency, Monetary) Segmentation", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 45,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Attribution Querying & Conversion Paths", "difficulty": "Difficult", "hours": 15},
+            {"name": "Joining Ad Networks & Internal CRM Data", "difficulty": "Moderate", "hours": 15},
+            {"name": "Aggregating Campaign Performance Metrics", "difficulty": "Easy", "hours": 15}
+          ]
+        },
+        {
+          "skill": "Excel",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 35,
+          "priority": 3,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Media Mix Planning & Budget Spreadsheets", "difficulty": "Moderate", "hours": 10},
+            {"name": "Pivot Tables for Campaign Channel Splits", "difficulty": "Easy", "hours": 10},
+            {"name": "Forecast Models for Monthly Conversions", "difficulty": "Moderate", "hours": 15}
+          ]
+        },
+        {
+          "skill": "Power BI",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 35,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Connecting to Google Ads & Meta APIs", "difficulty": "Moderate", "hours": 10},
+            {"name": "Executive Marketing Performance Dashboards", "difficulty": "Moderate", "hours": 13},
+            {"name": "Funnel Conversion Visualizations", "difficulty": "Easy", "hours": 12}
+          ]
+        },
+        {
+          "skill": "A/B Testing",
+          "category": "Analytical",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 30,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Landing Page & Ad Copy Experimentation", "difficulty": "Easy", "hours": 8},
+            {"name": "Statistical Confidence in Marketing Tests", "difficulty": "Moderate", "hours": 12},
+            {"name": "Post-Test Incrementality Measurement", "difficulty": "Difficult", "hours": 10}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "python_developer",
+      "title": "Python Developer",
+      "normalized_title": "python developer",
+      "category": "Software Engineering",
+      "description": "Designs, writes, tests, and maintains robust backend software applications, data pipelines, and RESTful APIs in Python.",
+      "skills": [
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 75,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Object-Oriented Programming (Classes, Inheritance, Polymorphism)", "difficulty": "Moderate", "hours": 15},
+            {"name": "Decorators, Generators & Context Managers", "difficulty": "Difficult", "hours": 15},
+            {"name": "Data Structures & Algorithms in Python", "difficulty": "Difficult", "hours": 20},
+            {"name": "Concurrency with Asyncio, Threading & Multiprocessing", "difficulty": "Difficult", "hours": 15},
+            {"name": "Unit Testing with PyTest & Mocking", "difficulty": "Moderate", "hours": 10}
+          ]
+        },
+        {
+          "skill": "RESTful API Development",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Flask / FastAPI Application Structure", "difficulty": "Moderate", "hours": 12},
+            {"name": "Request Validation, Schemas & Serialization", "difficulty": "Moderate", "hours": 12},
+            {"name": "JWT Authentication & Session Management", "difficulty": "Moderate", "hours": 12},
+            {"name": "API Rate Limiting & Error Handling Middleware", "difficulty": "Moderate", "hours": 14}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 50,
+          "priority": 3,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Relational Schema Design & Normalization", "difficulty": "Moderate", "hours": 12},
+            {"name": "SQLAlchemy ORM & Migrations (Alembic)", "difficulty": "Moderate", "hours": 14},
+            {"name": "Query Optimization, Indexes & Foreign Keys", "difficulty": "Difficult", "hours": 14},
+            {"name": "Transactions, ACID & Locking Mechanisms", "difficulty": "Difficult", "hours": 10}
+          ]
+        },
+        {
+          "skill": "Git",
+          "category": "Tool",
+          "importance": "High",
+          "required_level": "Intermediate",
+          "estimated_hours": 25,
+          "priority": 4,
+          "difficulty": "Easy",
+          "topics": [
+            {"name": "Branching, Merging & Rebase", "difficulty": "Easy", "hours": 8},
+            {"name": "Resolving Merge Conflicts", "difficulty": "Moderate", "hours": 7},
+            {"name": "Pull Request Workflow & Code Reviews", "difficulty": "Easy", "hours": 5},
+            {"name": "Git Hooks & Pre-commit Linters", "difficulty": "Easy", "hours": 5}
+          ]
+        },
+        {
+          "skill": "Docker",
+          "category": "Tool",
+          "importance": "Medium",
+          "required_level": "Intermediate",
+          "estimated_hours": 30,
+          "priority": 5,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Dockerfile Best Practices for Python", "difficulty": "Easy", "hours": 8},
+            {"name": "Docker Compose for App + DB Services", "difficulty": "Moderate", "hours": 10},
+            {"name": "Managing Container Volumes & Networks", "difficulty": "Moderate", "hours": 12}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data_engineer",
+      "title": "Data Engineer",
+      "normalized_title": "data engineer",
+      "category": "Data & Engineering",
+      "description": "Builds robust ETL pipelines, data warehouses, and big data streaming platforms to feed downstream analytics.",
+      "skills": [
+        {
+          "skill": "Python",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 65,
+          "priority": 1,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Data Ingestion & Batch ETL Scripts", "difficulty": "Moderate", "hours": 15},
+            {"name": "Working with Data Formats (Parquet, Avro, JSON)", "difficulty": "Moderate", "hours": 15},
+            {"name": "PySpark Programming Basics", "difficulty": "Difficult", "hours": 20},
+            {"name": "Custom Pipeline Error Recovery", "difficulty": "Moderate", "hours": 15}
+          ]
+        },
+        {
+          "skill": "SQL",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 60,
+          "priority": 2,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Advanced DDL, Partitioning & Clustering", "difficulty": "Difficult", "hours": 16},
+            {"name": "Analytical Window Functions & Rollups", "difficulty": "Difficult", "hours": 14},
+            {"name": "Warehouse Optimization in Snowflake/BigQuery", "difficulty": "Difficult", "hours": 16},
+            {"name": "Data Quality Auditing Queries", "difficulty": "Moderate", "hours": 14}
+          ]
+        },
+        {
+          "skill": "ETL Pipelines",
+          "category": "Technical",
+          "importance": "Critical",
+          "required_level": "Advanced",
+          "estimated_hours": 65,
+          "priority": 3,
+          "difficulty": "Difficult",
+          "topics": [
+            {"name": "Apache Airflow DAGs & Task Dependencies", "difficulty": "Difficult", "hours": 20},
+            {"name": "dbt (Data Build Tool) Modeling", "difficulty": "Moderate", "hours": 15},
+            {"name": "Incremental Ingestion & Change Data Capture (CDC)", "difficulty": "Difficult", "hours": 18},
+            {"name": "Monitoring Pipeline SLAs & Retries", "difficulty": "Moderate", "hours": 12}
+          ]
+        },
+        {
+          "skill": "Data Warehousing",
+          "category": "Technical",
+          "importance": "High",
+          "required_level": "Advanced",
+          "estimated_hours": 45,
+          "priority": 4,
+          "difficulty": "Moderate",
+          "topics": [
+            {"name": "Star Schema & Dimensional Modeling", "difficulty": "Moderate", "hours": 12},
+            {"name": "Cloud Data Lakes (S3 / GCS + Lakehouse)", "difficulty": "Moderate", "hours": 15},
+            {"name": "Slowly Changing Dimensions (SCD Type 2)", "difficulty": "Moderate", "hours": 18}
+          ]
+        }
+      ]
+    }
+  ]
+}

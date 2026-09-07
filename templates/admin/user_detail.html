@@ -1,0 +1,304 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}User 360 &bull; {{ target_user.full_name }} - Admin Panel{% endblock %}
+{% block page_title %}User Inspection &bull; {{ target_user.full_name }}{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Breadcrumb & Actions -->
+    <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <a href="{{ url_for('admin_users_view') }}" class="btn btn-brand-outline btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to User Directory
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+            <!-- Toggle Admin Role -->
+            <form method="POST" action="{{ url_for('admin_user_toggle_role', user_id=target_user.id) }}" class="d-inline">
+                {% if target_user.is_admin %}
+                    <button type="submit" class="btn btn-outline-warning btn-sm" onclick="return confirm('Revoke administrator privileges for {{ target_user.full_name }}?');">
+                        <i class="fa-solid fa-user-gear me-1"></i> Revoke Admin
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-outline-info btn-sm" onclick="return confirm('Promote {{ target_user.full_name }} to Administrator?');">
+                        <i class="fa-solid fa-shield me-1"></i> Make Admin
+                    </button>
+                {% endif %}
+            </form>
+
+            <!-- Toggle Account Active Status -->
+            <form method="POST" action="{{ url_for('admin_user_toggle_status', user_id=target_user.id) }}" class="d-inline">
+                {% if target_user.is_active %}
+                    <button type="submit" class="btn btn-outline-warning btn-sm" onclick="return confirm('Deactivate account for {{ target_user.full_name }}?');">
+                        <i class="fa-solid fa-user-slash me-1"></i> Deactivate Account
+                    </button>
+                {% else %}
+                    <button type="submit" class="btn btn-outline-success btn-sm">
+                        <i class="fa-solid fa-user-check me-1"></i> Activate Account
+                    </button>
+                {% endif %}
+            </form>
+
+            <!-- Delete User Account -->
+            <form method="POST" action="{{ url_for('admin_user_delete', user_id=target_user.id) }}" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('WARNING: Permanently delete {{ target_user.full_name }}\'s account and all data? This cannot be undone.');">
+                    <i class="fa-solid fa-trash-can me-1"></i> Delete User
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Profile Header Card -->
+    <div class="glass-card mb-4 p-4 border-start border-4 {% if target_user.is_active %}border-success{% else %}border-danger{% endif %}">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 60px; height: 60px;">
+                {{ target_user.full_name[0]|upper }}
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <h2 class="h4 fw-bold text-white mb-0">{{ target_user.full_name }}</h2>
+                    {% if target_user.is_active %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle small">Active</span>
+                    {% else %}
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle small">Inactive</span>
+                    {% endif %}
+                    {% if target_user.is_admin %}
+                        <span class="badge bg-warning text-dark small fw-bold">Admin</span>
+                    {% else %}
+                        <span class="badge bg-secondary text-white small">Learner</span>
+                    {% endif %}
+                </div>
+                <div class="text-secondary small mt-1">
+                    <i class="fa-solid fa-envelope me-1"></i> {{ target_user.email }} &bull;
+                    <i class="fa-solid fa-calendar me-1 ms-2"></i> Joined {{ target_user.created_at }} &bull;
+                    <i class="fa-solid fa-id-badge me-1 ms-2"></i> ID #{{ target_user.id }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Background & Skills & Gap Analysis -->
+        <div class="col-lg-6">
+            <!-- Academic & Experience Profile -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-primary"></i> Academic & Career Background
+                </h5>
+                <div class="row g-3 small">
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Current Status:</span>
+                        <strong class="text-info">{{ target_user.profile.current_status or 'Not Specified' }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Education / Qualification:</span>
+                        <strong class="text-white">{{ target_user.profile.education or target_user.profile.degree or '—' }}</strong>
+                    </div>
+
+                    {% if target_user.profile.branch %}
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Branch / Specialization:</span>
+                        <strong class="text-white">{{ target_user.profile.branch }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if target_user.profile.semester_year %}
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Current Semester / Year:</span>
+                        <strong class="text-white">{{ target_user.profile.semester_year }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if target_user.profile.graduation_year %}
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Graduation Year:</span>
+                        <strong class="text-white">{{ target_user.profile.graduation_year }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if target_user.profile.current_role %}
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Current Role:</span>
+                        <strong class="text-white">{{ target_user.profile.current_role }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if target_user.profile.experience_years %}
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Years of Experience:</span>
+                        <strong class="text-white">{{ target_user.profile.experience_years }}</strong>
+                    </div>
+                    {% endif %}
+
+                    {% if target_user.profile.career_break_duration %}
+                    <div class="col-6">
+                        <span class="text-secondary d-block">Career Break Duration:</span>
+                        <strong class="text-white">{{ target_user.profile.career_break_duration }}</strong>
+                    </div>
+                    {% endif %}
+
+                    <div class="col-12">
+                        <span class="text-secondary d-block">Target Career Pathways:</span>
+                        {% if target_user.target_careers %}
+                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                {% for tc in target_user.target_careers %}
+                                    <span class="badge bg-primary text-white small">{{ tc }}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <span class="text-muted">None selected</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills & Proficiency Ratings -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-code text-info"></i> Recorded Skills & Proficiency ({{ target_user.skills|length }})
+                </h5>
+                {% if target_user.skills %}
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for s in target_user.skills %}
+                            <div class="p-2 rounded bg-dark border border-secondary small">
+                                <strong class="text-white d-block">{{ s.skill_name }}</strong>
+                                <span class="badge bg-secondary x-small">{{ s.proficiency_level }} ({{ s.proficiency_score }}%)</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No self-reported skills yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Latest Skill Gap Analysis -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-warning"></i> Skill Gap Evaluation
+                </h5>
+                {% if target_user.skill_gap %}
+                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                        <span class="text-white small">Target Role: <strong>{{ target_user.skill_gap.target_role }}</strong></span>
+                        <span class="badge bg-primary fs-6">{{ target_user.skill_gap.readiness_score }}% Readiness</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm small align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Required Skill</th>
+                                    <th>User Level</th>
+                                    <th>Target Level</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in target_user.skill_gap.items %}
+                                    <tr>
+                                        <td class="fw-bold text-white">{{ item.skill }}</td>
+                                        <td class="text-secondary">{{ item.user_level }}</td>
+                                        <td class="text-secondary">{{ item.required_level }}</td>
+                                        <td>
+                                            {% if item.status == 'Strong' %}
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle x-small">Strong</span>
+                                            {% elif item.status == 'Partial' %}
+                                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle x-small">Partial</span>
+                                            {% else %}
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle x-small">Missing</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No skill gap evaluations performed yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Courses, Assessments, Feedbacks, Suggestions -->
+        <div class="col-lg-6">
+            <!-- Enrolled & Completed Courses -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-primary"></i> Course Progress ({{ target_user.courses|length }})
+                </h5>
+                {% if target_user.courses %}
+                    <div class="d-flex flex-column gap-2">
+                        {% for c in target_user.courses %}
+                            <div class="p-2 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center small">
+                                <div>
+                                    <strong class="text-white d-block">{{ c.title }}</strong>
+                                    <span class="text-muted x-small">{{ c.provider }} &bull; {{ c.skill }}</span>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge {% if c.status == 'Completed' %}bg-success{% else %}bg-primary{% endif %} x-small mb-1 d-block">{{ c.status }}</span>
+                                    <span class="text-secondary x-small">{{ c.progress_percentage }}%</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No course enrollments found.</p>
+                {% endif %}
+            </div>
+
+            <!-- Assessments History -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-laptop-code text-info"></i> Assessment Results ({{ target_user.assessments|length }})
+                </h5>
+                {% if target_user.assessments %}
+                    <div class="d-flex flex-column gap-2">
+                        {% for a in target_user.assessments %}
+                            <div class="p-2 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center small">
+                                <div>
+                                    <strong class="text-white d-block">{{ a.skill }} Assessment</strong>
+                                    <span class="text-muted x-small">{{ a.date }}</span>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge {% if a.passed %}bg-success{% else %}bg-danger{% endif %} x-small mb-1 d-block">
+                                        {{ a.score_percentage }}% ({{ 'Passed' if a.passed else 'Failed' }})
+                                    </span>
+                                    <span class="text-secondary x-small">{{ a.correct_answers }}/{{ a.total_questions }} correct</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No assessments taken yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Suggestions Submitted -->
+            <div class="glass-card p-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-lightbulb text-warning"></i> Suggestions & Feedback History ({{ target_user.suggestions|length }})
+                </h5>
+                {% if target_user.suggestions %}
+                    <div class="d-flex flex-column gap-2">
+                        {% for s in target_user.suggestions %}
+                            <div class="p-2 rounded bg-dark border border-secondary small">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="badge bg-secondary x-small">{{ s.category }}</span>
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle x-small">{{ s.status }}</span>
+                                </div>
+                                <strong class="text-white d-block">{{ s.title }}</strong>
+                                <p class="text-secondary x-small mb-1 text-truncate">{{ s.description }}</p>
+                                {% if s.admin_response %}
+                                    <div class="p-1 px-2 rounded bg-primary-subtle bg-opacity-10 border border-primary-subtle x-small text-light">
+                                        <strong>Admin:</strong> {{ s.admin_response }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No suggestions submitted by this user.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

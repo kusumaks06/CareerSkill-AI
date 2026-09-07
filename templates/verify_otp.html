@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Email OTP - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-auto">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card shadow-lg p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="brand-icon-box mx-auto mb-3">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h2 class="h3 fw-bold text-white">Verify your email</h2>
+                    <p class="text-secondary small mb-1">We've sent a 6-digit verification code to your email:</p>
+                    <strong class="text-info small">{{ email }}</strong>
+                </div>
+
+                <form action="{{ url_for('verify_otp') }}" method="POST">
+                    <div class="mb-4">
+                        <label for="otp" class="form-label text-secondary small fw-semibold text-center d-block">
+                            Enter 6-Digit Verification Code
+                        </label>
+                        <div class="d-flex justify-content-center">
+                            <input 
+                                type="text" 
+                                class="form-control bg-dark border-secondary text-white text-center fw-bold fs-4" 
+                                id="otp" 
+                                name="otp" 
+                                placeholder="123456" 
+                                maxlength="6" 
+                                minlength="6"
+                                pattern="\d{6}"
+                                inputmode="numeric"
+                                style="letter-spacing: 0.4rem; max-width: 260px;" 
+                                required 
+                                autofocus 
+                                autocomplete="one-time-code">
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="text-secondary small"><i class="fa-regular fa-clock me-1"></i> OTP expires in 10 minutes.</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mb-4">
+                        <button type="submit" class="btn btn-brand-primary btn-lg" id="btnVerifyOtp">
+                            <i class="fa-solid fa-circle-check me-1"></i> Verify OTP
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Resend OTP Form & Cooldown UI -->
+                <div class="pt-3 border-top border-secondary text-center">
+                    <p class="text-secondary small mb-2">Didn't receive the OTP?</p>
+                    <form action="{{ url_for('resend_otp') }}" method="POST" id="resendOtpForm">
+                        <button type="submit" class="btn btn-outline-info btn-sm rounded-pill px-3" id="btnResendOtp">
+                            <i class="fa-solid fa-rotate-right me-1"></i> <span id="resendBtnText">Resend OTP</span>
+                        </button>
+                    </form>
+                    <div id="cooldownTimerText" class="text-muted small mt-2" style="display: none;">
+                        Please wait <span id="cooldownSeconds" class="text-info fw-bold">60</span> seconds before requesting another OTP.
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('forgot_password') }}" class="small text-secondary text-decoration-none hover-white">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Change Email
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resendBtn = document.getElementById('btnResendOtp');
+    const cooldownText = document.getElementById('cooldownTimerText');
+    const secondsSpan = document.getElementById('cooldownSeconds');
+    const resendBtnText = document.getElementById('resendBtnText');
+
+    let cooldownRemaining = 60;
+
+    function startCooldownTimer() {
+        resendBtn.disabled = true;
+        cooldownText.style.display = 'block';
+        
+        const interval = setInterval(function() {
+            cooldownRemaining--;
+            secondsSpan.textContent = cooldownRemaining;
+            resendBtnText.textContent = 'Resend in ' + cooldownRemaining + 's';
+
+            if (cooldownRemaining <= 0) {
+                clearInterval(interval);
+                resendBtn.disabled = false;
+                cooldownText.style.display = 'none';
+                resendBtnText.textContent = 'Resend OTP';
+            }
+        }, 1000);
+    }
+
+    startCooldownTimer();
+});
+</script>
+{% endblock %}

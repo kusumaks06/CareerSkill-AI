@@ -1,0 +1,441 @@
+{% extends 'base.html' %}
+
+{% block title %}Market Trend Analytics & Salary Insights - CareerSkill AI{% endblock %}
+
+{% block extra_css %}
+<!-- Include Plotly JS CDN for interactive charts -->
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="market-trends-root">
+    
+    <!-- Top Header & Context Card -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-info">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-7">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-chart-line me-1"></i> Market Intelligence
+                    </span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                        <i class="fa-solid fa-arrows-rotate me-1"></i> Live 2026 Industry Data
+                    </span>
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    Market Trend Analytics & <span class="text-gradient">Salary Insights</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Comprehensive compensation benchmarks, skill demand velocity, and tech stack adoption synthesized across 125,000+ job postings for AI & Data careers.
+                </p>
+            </div>
+
+            <!-- Controls: Role Selector & Currency Switcher -->
+            <div class="col-lg-5 text-lg-end">
+                <div class="d-flex flex-column flex-sm-row justify-content-lg-end align-items-center gap-2">
+                    <!-- Currency Selector -->
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Currency toggle">
+                        <button type="button" class="btn {% if currency == 'usd' %}btn-primary{% else %}btn-dark border-secondary text-secondary{% endif %} btn-currency" data-currency="usd">
+                            <i class="fa-solid fa-dollar-sign me-1"></i> USD ($)
+                        </button>
+                        <button type="button" class="btn {% if currency == 'inr' %}btn-primary{% else %}btn-dark border-secondary text-secondary{% endif %} btn-currency" data-currency="inr">
+                            <i class="fa-solid fa-indian-rupee-sign me-1"></i> INR (LPA)
+                        </button>
+                    </div>
+
+                    <!-- Role Dropdown Selector -->
+                    <div class="flex-grow-1" style="min-width: 220px;">
+                        <select class="form-select form-select-sm bg-dark text-white border-secondary" id="role-select">
+                            <option value="all" {% if selected_role_id == 'all' %}selected{% endif %}>⚡ All Tech Roles (Overview)</option>
+                            {% for r in available_roles %}
+                                <option value="{{ r.id }}" {% if selected_role_id == r.id %}selected{% endif %}>
+                                    {{ r.title }} ({{ r.category }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Role Filter Chips -->
+    <div class="d-flex align-items-center gap-2 mb-4 overflow-x-auto pb-2" style="scrollbar-width: thin;">
+        <span class="text-secondary small fw-bold text-nowrap"><i class="fa-solid fa-filter me-1"></i> Quick Filters:</span>
+        <button class="btn btn-sm {% if selected_role_id == 'all' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="all">
+            All Roles
+        </button>
+        <button class="btn btn-sm {% if selected_role_id == 'data_analyst' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="data_analyst">
+            Data Analyst
+        </button>
+        <button class="btn btn-sm {% if selected_role_id == 'data_scientist' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="data_scientist">
+            Data Scientist
+        </button>
+        <button class="btn btn-sm {% if selected_role_id == 'ai_engineer' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="ai_engineer">
+            AI Engineer
+        </button>
+        <button class="btn btn-sm {% if selected_role_id == 'ml_engineer' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="ml_engineer">
+            ML Engineer
+        </button>
+        <button class="btn btn-sm {% if selected_role_id == 'data_engineer' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="data_engineer">
+            Data Engineer
+        </button>
+        <button class="btn btn-sm {% if selected_role_id == 'cloud_engineer' %}btn-brand-primary{% else %}btn-brand-outline{% endif %} rounded-pill px-3 py-1 text-nowrap btn-quick-filter" data-role="cloud_engineer">
+            Cloud Engineer
+        </button>
+    </div>
+
+    <!-- 4 Key Market KPI Metric Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Postings Analyzed -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-info">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Openings Analyzed</span>
+                <div class="h3 fw-bold text-info mb-0" id="kpi-openings">
+                    {{ overview.total_openings_formatted }}
+                </div>
+                <span class="text-muted x-small">Active Industry Benchmark</span>
+            </div>
+        </div>
+
+        <!-- Mid-Level Median Salary -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-primary">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Median Mid-Level Comp</span>
+                <div class="h3 fw-bold text-gradient mb-0" id="kpi-salary">
+                    {{ overview.currency_prefix }}{{ "{:,}".format(overview.avg_salary_mid) if currency == 'usd' else overview.avg_salary_mid }}{{ overview.currency_suffix }}
+                </div>
+                <span class="text-muted x-small">3-5 Years Experience</span>
+            </div>
+        </div>
+
+        <!-- Fastest Growing Skill -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-success">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Fastest Growing Skill</span>
+                <div class="h5 fw-bold text-success mb-0 text-truncate" title="{{ overview.fastest_growing_skill }}" id="kpi-growth-skill">
+                    {{ overview.fastest_growing_skill }}
+                </div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill x-small mt-1" id="kpi-growth-rate">
+                    +{{ overview.fastest_growing_skill_rate }}% YoY
+                </span>
+            </div>
+        </div>
+
+        <!-- Top Hiring Sector -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-warning">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Top Hiring Sector</span>
+                <div class="h5 fw-bold text-warning mb-0 text-truncate" title="{{ overview.top_hiring_sector }}" id="kpi-sector">
+                    {{ overview.top_hiring_sector }}
+                </div>
+                <span class="text-muted x-small" id="kpi-sector-share">
+                    {{ overview.top_hiring_sector_share }}% Market Share
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Role Deep-Dive Card (If specific role selected) -->
+    {% if selected_role_data %}
+    <div class="glass-card p-4 mb-4 border-top border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-bullseye me-1"></i> Role Deep-Dive
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-secondary small">
+                        Demand Index: <strong class="text-white">{{ selected_role_data.demand_index }}/100</strong>
+                    </span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                        <i class="fa-solid fa-arrow-trend-up me-1"></i> +{{ selected_role_data.growth_rate_pct }}% Projected Growth
+                    </span>
+                </div>
+                <h3 class="h4 fw-bold text-white mb-2">
+                    {{ selected_role_data.title }}
+                </h3>
+                <p class="text-secondary small mb-3">
+                    Active Openings in Dataset: <strong class="text-white">{{ "{:,}".format(selected_role_data.active_openings) }}</strong> &bull; Category: <span class="text-info">{{ selected_role_data.category }}</span>
+                </p>
+
+                <!-- Core Tools Badges -->
+                <div class="d-flex align-items-center gap-1 flex-wrap">
+                    <span class="text-secondary small me-2"><i class="fa-solid fa-toolbox me-1"></i> Core Tech Stack:</span>
+                    {% for tool in selected_role_data.top_tools %}
+                        <span class="badge bg-dark border border-secondary text-white px-2 py-1 small">
+                            {{ tool }}
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex flex-column gap-2 justify-content-lg-end">
+                    <a href="{{ url_for('career_analysis', role=selected_role_data.title) }}" class="btn btn-brand-primary btn-sm">
+                        <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Check My Skill Gap for This Role
+                    </a>
+                    <a href="{{ url_for('course_recommendations', role=selected_role_data.title) }}" class="btn btn-brand-outline btn-sm">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> View Recommended Courses
+                    </a>
+                    <a href="{{ url_for('roadmap', role=selected_role_data.title) }}" class="btn btn-brand-outline btn-sm">
+                        <i class="fa-solid fa-road me-1"></i> Generate AI Learning Roadmap
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Visualizations Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Chart 1: Salary Benchmarks by Seniority -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-money-bill-trend-up"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-white mb-0">Salary Progression by Seniority</h3>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-secondary small">Entry → Lead</span>
+                    </div>
+                    <p class="text-secondary small mb-3">
+                        Compensation trajectory from entry-level to lead roles (USD vs INR).
+                    </p>
+                </div>
+                <div id="chart-salary" class="chart-container w-100"></div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Top In-Demand Tech Skills & Growth -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-fire"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-white mb-0">Skills Demand Frequency vs Growth</h3>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-secondary small">Market Share %</span>
+                    </div>
+                    <p class="text-secondary small mb-3">
+                        Percentage of active job listings requiring each skill alongside projected YoY growth.
+                    </p>
+                </div>
+                <div id="chart-skills-growth" class="chart-container w-100"></div>
+            </div>
+        </div>
+
+        <!-- Chart 3: Industry Sector Hiring Distribution -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-building"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-white mb-0">Hiring by Industry Sector</h3>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-secondary small">Sector Share</span>
+                    </div>
+                    <p class="text-secondary small mb-3">
+                        Breakdown of employer recruitment across Tech, Finance, Healthcare, and Retail domains.
+                    </p>
+                </div>
+                <div id="chart-industry" class="chart-container w-100"></div>
+            </div>
+        </div>
+
+        <!-- Chart 4: Skill ROI & Salary Boost Matrix -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-white mb-0">Skill ROI: Demand vs Salary Boost</h3>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-secondary small">ROI Matrix</span>
+                    </div>
+                    <p class="text-secondary small mb-3">
+                        High-leverage skills positioned by market demand and their premium on compensation.
+                    </p>
+                </div>
+                <div id="chart-skill-roi" class="chart-container w-100"></div>
+            </div>
+        </div>
+
+        <!-- Chart 5: Work Arrangement Modes -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-laptop-house"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-white mb-0">Work Arrangement Breakdown</h3>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-secondary small">Remote vs Hybrid vs On-site</span>
+                    </div>
+                    <p class="text-secondary small mb-2">
+                        Distribution of remote, hybrid, and in-person employment models.
+                    </p>
+                </div>
+                <div id="chart-work-modes" class="chart-container w-100"></div>
+            </div>
+        </div>
+
+        <!-- Chart 6: Developer & Data Stack Adoption -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="fa-solid fa-cubes"></i>
+                            </div>
+                            <h3 class="h5 fw-bold text-white mb-0">Top Frameworks & Tools Adoption</h3>
+                        </div>
+                        <span class="badge bg-dark border border-secondary text-secondary small">Stack Rankings</span>
+                    </div>
+                    <p class="text-secondary small mb-3">
+                        Most frequently requested software tools, platforms, and frameworks.
+                    </p>
+                </div>
+                <div id="chart-tools" class="chart-container w-100"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Strategic Takeaways for Students & Job Seekers -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-warning">
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <h3 class="h5 fw-bold text-white mb-0">Key Market Takeaways & Strategic Guidance</h3>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-dark border border-secondary h-100">
+                    <strong class="text-info d-block mb-1"><i class="fa-solid fa-layer-group me-1"></i> The Modern Hybrid Stack</strong>
+                    <p class="text-secondary small mb-0">
+                        Employers heavily favor candidates combining robust relational database foundations (SQL) with high-level programming (Python) and BI storytelling (Power BI / Tableau).
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-dark border border-secondary h-100">
+                    <strong class="text-warning d-block mb-1"><i class="fa-solid fa-rocket me-1"></i> The AI Premium</strong>
+                    <p class="text-secondary small mb-0">
+                        Mastering deep learning, vector databases, and MLOps grants a <strong>25%–35% compensation boost</strong> over traditional software engineering baselines.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded bg-dark border border-secondary h-100">
+                    <strong class="text-success d-block mb-1"><i class="fa-solid fa-network-wired me-1"></i> Remote Accessibility</strong>
+                    <p class="text-secondary small mb-0">
+                        Over <strong>58% of analytics and AI postings</strong> offer full or hybrid remote flexibility, expanding career opportunities beyond local tech hubs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Footer Action -->
+    <div class="text-center py-3">
+        <a href="{{ url_for('get_started') }}" class="btn btn-brand-primary btn-lg px-4 me-2 mb-2">
+            <i class="fa-solid fa-magnifying-glass-chart me-1"></i> Start Your Career Gap Diagnostic
+        </a>
+        <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-lg px-4 mb-2">
+            <i class="fa-solid fa-graduation-cap me-1"></i> Browse Curated Learning Courses
+        </a>
+    </div>
+
+</div>
+
+<!-- Plotly Initialization Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const plotlyConfig = {responsive: true, displayModeBar: false};
+
+    // Raw JSON data from server
+    let chartSalaryJson = {{ chart_salary_json|safe }};
+    let chartSkillsJson = {{ chart_skills_json|safe }};
+    let chartIndustryJson = {{ chart_industry_json|safe }};
+    let chartRoiJson = {{ chart_roi_json|safe }};
+    let chartWorkModesJson = {{ chart_work_modes_json|safe }};
+    let chartToolsJson = {{ chart_tools_json|safe }};
+
+    function renderAllCharts() {
+        if (chartSalaryJson) {
+            Plotly.newPlot('chart-salary', chartSalaryJson.data, chartSalaryJson.layout, plotlyConfig);
+        }
+        if (chartSkillsJson) {
+            Plotly.newPlot('chart-skills-growth', chartSkillsJson.data, chartSkillsJson.layout, plotlyConfig);
+        }
+        if (chartIndustryJson) {
+            Plotly.newPlot('chart-industry', chartIndustryJson.data, chartIndustryJson.layout, plotlyConfig);
+        }
+        if (chartRoiJson) {
+            Plotly.newPlot('chart-roi', chartRoiJson.data, chartRoiJson.layout, plotlyConfig);
+        }
+        if (chartWorkModesJson) {
+            Plotly.newPlot('chart-work-modes', chartWorkModesJson.data, chartWorkModesJson.layout, plotlyConfig);
+        }
+        if (chartToolsJson) {
+            Plotly.newPlot('chart-tools', chartToolsJson.data, chartToolsJson.layout, plotlyConfig);
+        }
+    }
+
+    renderAllCharts();
+
+    // Current filter states
+    let currentRole = "{{ selected_role_id }}";
+    let currentCurrency = "{{ currency }}";
+
+    // Handle Currency Toggle
+    document.querySelectorAll('.btn-currency').forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentCurrency = this.dataset.currency;
+            updateMarketTrendsData(currentRole, currentCurrency);
+        });
+    });
+
+    // Handle Role Select Change
+    const roleSelect = document.getElementById('role-select');
+    if (roleSelect) {
+        roleSelect.addEventListener('change', function() {
+            currentRole = this.value;
+            updateMarketTrendsData(currentRole, currentCurrency);
+        });
+    }
+
+    // Handle Quick Filter Pills
+    document.querySelectorAll('.btn-quick-filter').forEach(btn => {
+        btn.addEventListener('click', function() {
+            currentRole = this.dataset.role;
+            if (roleSelect) roleSelect.value = currentRole;
+            updateMarketTrendsData(currentRole, currentCurrency);
+        });
+    });
+
+    // Fetch and dynamically update charts via AJAX without reload
+    function updateMarketTrendsData(role, currency) {
+        // Navigate or update
+        window.location.href = `/market-trends?role=${encodeURIComponent(role)}&currency=${encodeURIComponent(currency)}`;
+    }
+});
+</script>
+{% endblock %}

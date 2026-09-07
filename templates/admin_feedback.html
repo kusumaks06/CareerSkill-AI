@@ -1,0 +1,319 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Feedback & Course Quality Dashboard | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Admin Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-warning">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-user-shield me-1"></i> Admin Portal
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-secondary px-3 py-1 rounded-pill small">
+                        Course Quality & User Reviews
+                    </span>
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    Course Feedback <span class="text-gradient">& Quality Analytics</span>
+                </h1>
+                <p class="text-secondary mb-0">
+                    Monitor user ratings, curriculum usefulness, skill growth feedback, and qualitative suggestions across all recommended courses.
+                </p>
+            </div>
+
+            <div class="col-lg-5 text-lg-end">
+                <div class="btn-group mb-2" role="group">
+                    <a href="{{ url_for('admin_feedback') }}" class="btn btn-brand-primary btn-sm active">
+                        <i class="fa-solid fa-star me-1"></i> Course Ratings ({{ analytics.total_reviews }})
+                    </a>
+                    <a href="{{ url_for('admin_suggestions') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fa-solid fa-lightbulb me-1 text-info"></i> Suggestions & Feedback
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Metric Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total Reviews -->
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Total Reviews</span>
+                <div class="h2 fw-bold text-white mb-0" id="kpi-total-reviews">{{ analytics.total_reviews }}</div>
+                <span class="text-muted small">Submitted Reviews</span>
+            </div>
+        </div>
+
+        <!-- Average Rating -->
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Average Rating</span>
+                <div class="h2 fw-bold text-warning mb-0" id="kpi-avg-rating">
+                    {{ analytics.average_rating }} <i class="fa-solid fa-star fs-5 ms-1"></i>
+                </div>
+                <span class="text-muted small">Out of 5.0 Stars</span>
+            </div>
+        </div>
+
+        <!-- Recommendation Rate -->
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Recommendation Rate</span>
+                <div class="h2 fw-bold text-success mb-0" id="kpi-recommend-rate">{{ analytics.recommendation_rate }}%</div>
+                <span class="text-muted small">Users Recommend</span>
+            </div>
+        </div>
+
+        <!-- Skill Improvement Rate -->
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Skill Impact Rate</span>
+                <div class="h2 fw-bold text-info mb-0" id="kpi-skill-rate">{{ analytics.skill_improvement_rate }}%</div>
+                <span class="text-muted small">Reported Growth</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating & Usefulness Breakdown Banners -->
+    <div class="row g-4 mb-4">
+        <!-- Rating Breakdown -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-star text-warning"></i> Rating Distribution
+                </h5>
+                {% for star_val in [5, 4, 3, 2, 1] %}
+                    {% set count = analytics.rating_counts[star_val] if analytics.rating_counts else 0 %}
+                    {% set pct = ((count / analytics.total_reviews) * 100)|round|int if analytics.total_reviews > 0 else 0 %}
+                    <div class="d-flex align-items-center gap-3 mb-2 small text-secondary">
+                        <span class="text-warning fw-bold" style="width: 50px;">{{ star_val }} <i class="fa-solid fa-star"></i></span>
+                        <div class="progress flex-grow-1" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                            <div class="progress-bar bg-warning" style="width: {{ pct }}%;"></div>
+                        </div>
+                        <span class="text-white" style="width: 40px; text-align: right;">{{ count }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Usefulness Breakdown -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-info"></i> Course Usefulness Verdicts
+                </h5>
+                <div class="row g-2">
+                    {% for opt, color in [('Very Useful', 'success'), ('Useful', 'primary'), ('Partially Useful', 'warning'), ('Not Useful', 'danger')] %}
+                        {% set count = analytics.usefulness_counts[opt] if analytics.usefulness_counts else 0 %}
+                        {% set pct = ((count / analytics.total_reviews) * 100)|round|int if analytics.total_reviews > 0 else 0 %}
+                        <div class="col-6">
+                            <div class="p-3 rounded bg-dark border border-secondary text-center">
+                                <span class="badge bg-{{ color }}-subtle text-{{ color }} border border-{{ color }}-subtle small mb-1">{{ opt }}</span>
+                                <div class="h4 fw-bold text-white mb-0">{{ count }}</div>
+                                <span class="text-muted small">{{ pct }}% of reviews</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_feedback') }}" class="row g-2 align-items-center" id="admin-feedback-filter-form">
+            <!-- Search Query -->
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search user, course, comment..." value="{{ search_query }}">
+                </div>
+            </div>
+
+            <!-- Course Filter -->
+            <div class="col-6 col-md-3">
+                <select name="course_id" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="" {% if not selected_course_id %}selected{% endif %}>All Courses</option>
+                    {% for c in courses %}
+                        <option value="{{ c.id }}" {% if selected_course_id == c.id %}selected{% endif %}>{{ c.title }} ({{ c.skill }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="col-6 col-md-2">
+                <select name="min_rating" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="" {% if not min_rating %}selected{% endif %}>All Ratings</option>
+                    <option value="5" {% if min_rating == '5' %}selected{% endif %}>5 Stars</option>
+                    <option value="4" {% if min_rating == '4' %}selected{% endif %}>4+ Stars</option>
+                    <option value="3" {% if min_rating == '3' %}selected{% endif %}>3+ Stars</option>
+                    <option value="2" {% if min_rating == '2' %}selected{% endif %}>2+ Stars</option>
+                </select>
+            </div>
+
+            <!-- Usefulness Filter -->
+            <div class="col-6 col-md-2">
+                <select name="usefulness" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all" {% if usefulness_filter == 'all' or not usefulness_filter %}selected{% endif %}>All Usefulness</option>
+                    <option value="Very Useful" {% if usefulness_filter == 'Very Useful' %}selected{% endif %}>Very Useful</option>
+                    <option value="Useful" {% if usefulness_filter == 'Useful' %}selected{% endif %}>Useful</option>
+                    <option value="Partially Useful" {% if usefulness_filter == 'Partially Useful' %}selected{% endif %}>Partially Useful</option>
+                    <option value="Not Useful" {% if usefulness_filter == 'Not Useful' %}selected{% endif %}>Not Useful</option>
+                </select>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="col-6 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">
+                    <i class="fa-solid fa-filter me-1"></i> Filter
+                </button>
+                <a href="{{ url_for('admin_feedback') }}" class="btn btn-brand-outline btn-sm">
+                    Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Feedbacks List Table & Cards -->
+    <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h4 class="h5 fw-bold text-white mb-0">
+                <i class="fa-solid fa-list-check text-primary me-2"></i> User Course Feedback Records ({{ feedbacks|length }})
+            </h4>
+        </div>
+
+        {% if feedbacks %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0" id="admin-feedback-table">
+                    <thead>
+                        <tr class="border-secondary text-secondary small text-uppercase">
+                            <th scope="col">User</th>
+                            <th scope="col">Course & Skill</th>
+                            <th scope="col" class="text-center">Rating</th>
+                            <th scope="col">Usefulness</th>
+                            <th scope="col">Skill Impact</th>
+                            <th scope="col" class="text-center">Recommend</th>
+                            <th scope="col">Comments</th>
+                            <th scope="col" class="text-end">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in feedbacks %}
+                            <tr class="border-secondary border-opacity-50">
+                                <!-- User -->
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="brand-icon-box" style="width: 32px; height: 32px; font-size: 0.85rem; background: rgba(99, 102, 241, 0.2);">
+                                            <i class="fa-solid fa-user text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <strong class="text-white d-block">{{ item.user_name }}</strong>
+                                            <span class="text-muted small">{{ item.user_email }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Course -->
+                                <td>
+                                    <strong class="text-white d-block text-truncate" style="max-width: 220px;" title="{{ item.course_title }}">
+                                        {{ item.course_title }}
+                                    </strong>
+                                    <div class="d-flex gap-1 align-items-center">
+                                        <span class="badge bg-secondary text-white small">{{ item.course_skill }}</span>
+                                        <span class="text-muted small">&bull; {{ item.course_provider }}</span>
+                                    </div>
+                                </td>
+
+                                <!-- Rating -->
+                                <td class="text-center">
+                                    <div class="text-warning text-nowrap">
+                                        {% for _ in range(item.rating) %}
+                                            <i class="fa-solid fa-star small"></i>
+                                        {% endfor %}
+                                        {% for _ in range(5 - item.rating) %}
+                                            <i class="fa-regular fa-star text-secondary small"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <span class="badge bg-dark border border-secondary text-warning small mt-1">{{ item.rating }}/5</span>
+                                </td>
+
+                                <!-- Usefulness -->
+                                <td>
+                                    <span class="badge {% if item.usefulness == 'Very Useful' %}bg-success-subtle text-success border border-success-subtle{% elif item.usefulness == 'Useful' %}bg-primary-subtle text-primary border border-primary-subtle{% elif item.usefulness == 'Partially Useful' %}bg-warning-subtle text-warning border border-warning-subtle{% else %}bg-danger-subtle text-danger border border-danger-subtle{% endif %} px-2 py-1 small">
+                                        {{ item.usefulness }}
+                                    </span>
+                                </td>
+
+                                <!-- Skill Improved -->
+                                <td>
+                                    <span class="badge {% if item.improved_skill == 'Yes' %}bg-success text-white{% elif item.improved_skill == 'Partially' %}bg-warning text-dark{% else %}bg-secondary text-white{% endif %} small">
+                                        {{ item.improved_skill }}
+                                    </span>
+                                </td>
+
+                                <!-- Would Recommend -->
+                                <td class="text-center">
+                                    {% if item.would_recommend == 'Yes' %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                                            <i class="fa-solid fa-thumbs-up me-1"></i> Yes
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 small">
+                                            <i class="fa-solid fa-thumbs-down me-1"></i> No
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <!-- Comments -->
+                                <td>
+                                    <div style="max-width: 280px;" class="small">
+                                        {% if item.liked_aspects %}
+                                            <div class="text-light mb-1">
+                                                <i class="fa-solid fa-heart text-danger me-1 small"></i>
+                                                <em>"{{ item.liked_aspects }}"</em>
+                                            </div>
+                                        {% endif %}
+                                        {% if item.improvement_suggestions %}
+                                            <div class="text-secondary">
+                                                <i class="fa-solid fa-wrench text-warning me-1 small"></i>
+                                                <em>"{{ item.improvement_suggestions }}"</em>
+                                            </div>
+                                        {% endif %}
+                                        {% if not item.liked_aspects and not item.improvement_suggestions %}
+                                            <span class="text-muted">No additional comments</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <!-- Date -->
+                                <td class="text-end text-nowrap text-secondary small">
+                                    {{ item.date_formatted or item.created_at }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fa-solid fa-comments text-secondary fa-3x mb-3 opacity-50"></i>
+                <h5 class="text-white fw-bold">No Course Feedback Found</h5>
+                <p class="text-secondary small mb-3">
+                    {% if search_query or min_rating or (usefulness_filter and usefulness_filter != 'all') %}
+                        No feedback matches your selected filters. Try clearing search parameters.
+                    {% else %}
+                        No user has submitted course feedback yet. Once users complete courses and submit feedback, reviews will appear here.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('admin_feedback') }}" class="btn btn-brand-outline btn-sm">
+                    Clear Filters
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

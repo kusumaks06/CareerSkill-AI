@@ -1,0 +1,1162 @@
+{% extends 'base.html' %}
+
+{% block title %}Career Onboarding - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-4 my-auto">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-11">
+
+            <!-- Profile Completion Header & Progress -->
+            <div class="profile-progress-header mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="brand-icon-box" style="width: 28px; height: 28px; font-size: 0.85rem;">
+                            <i class="fa-solid fa-id-card-clip"></i>
+                        </div>
+                        <span class="fw-bold text-white">Target Role: <span class="text-gradient" id="headerTargetRole">{{ target_role }}</span></span>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold" id="completionBadge">
+                        Profile Completion: 15%
+                    </span>
+                </div>
+                <div class="progress" style="height: 6px; background: rgba(255,255,255,0.08);">
+                    <div class="progress-bar bg-gradient" id="completionBar" role="progressbar" style="width: 15%; background: var(--accent-gradient);" aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+            <!-- Stepper Navigation (1 to 7) -->
+            <div class="stepper-nav">
+                <button type="button" class="step-node active" data-step="1" id="stepNode1">
+                    <div class="step-circle">1</div>
+                    <span class="step-label">Background</span>
+                </button>
+                <button type="button" class="step-node" data-step="2" id="stepNode2">
+                    <div class="step-circle">2</div>
+                    <span class="step-label">Experience</span>
+                </button>
+                <button type="button" class="step-node" data-step="3" id="stepNode3">
+                    <div class="step-circle">3</div>
+                    <span class="step-label">Skills</span>
+                </button>
+                <button type="button" class="step-node" data-step="4" id="stepNode4">
+                    <div class="step-circle">4</div>
+                    <span class="step-label">Time</span>
+                </button>
+                <button type="button" class="step-node" data-step="5" id="stepNode5">
+                    <div class="step-circle">5</div>
+                    <span class="step-label">Preferences</span>
+                </button>
+                <button type="button" class="step-node" data-step="6" id="stepNode6">
+                    <div class="step-circle">6</div>
+                    <span class="step-label">Goal</span>
+                </button>
+                <button type="button" class="step-node" data-step="7" id="stepNode7">
+                    <div class="step-circle">7</div>
+                    <span class="step-label">Summary</span>
+                </button>
+            </div>
+
+            <!-- Main Form Card -->
+            <div class="glass-card shadow-lg p-4 p-md-5">
+                <form id="onboardingForm" action="{{ url_for('onboarding') }}" method="POST">
+                    
+                    <!-- Hidden inputs -->
+                    <input type="hidden" name="user_id" id="userIdInput" value="{{ user.id if user else '' }}">
+                    <input type="hidden" name="target_role" id="hiddenTargetRole" value="{{ target_role }}">
+                    <input type="hidden" name="skills_data_json" id="skillsDataJson" value="[]">
+                    <input type="hidden" name="learning_prefs_json" id="learningPrefsJson" value="[]">
+                    <input type="hidden" name="career_goals_json" id="careerGoalsJson" value="[]">
+
+                    <!-- Validation Alert Banner -->
+                    <div id="stepValidationAlert" class="alert alert-danger py-2 px-3 mb-4 small d-none" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        <span id="stepValidationMessage">Please fill in all required fields.</span>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 1: BACKGROUND & EDUCATION
+                         ======================================================== -->
+                    <div class="onboarding-step-panel active" id="stepPanel1">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 1 of 7</span>
+                            <h2 class="h3 fw-bold text-white mt-1">Tell us about your background</h2>
+                            <p class="text-secondary small">Your academic baseline helps calibrate skill prerequisites and timelines.</p>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label text-secondary small fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white" id="fullName" name="full_name" value="{{ user.full_name if user else '' }}" placeholder="Jane Doe" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label text-secondary small fw-semibold">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control bg-dark border-secondary text-white" id="email" name="email" value="{{ user.email if user else '' }}" placeholder="jane@example.com" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="highestEducation" class="form-label text-secondary small fw-semibold">Highest Education <span class="text-danger">*</span></label>
+                                <select class="form-select bg-dark border-secondary text-white" id="highestEducation" name="highest_education" required>
+                                    <option value="Undergraduate / Bachelor's" selected>Undergraduate / Bachelor's</option>
+                                    <option value="Postgraduate / Master's">Postgraduate / Master's</option>
+                                    <option value="Diploma / Polytechnic">Diploma / Polytechnic</option>
+                                    <option value="High School">High School</option>
+                                    <option value="Doctorate / PhD">Doctorate / PhD</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="degree" class="form-label text-secondary small fw-semibold">Degree <span class="text-danger">*</span></label>
+                                <select class="form-select bg-dark border-secondary text-white" id="degree" name="degree" required>
+                                    <option value="BE / BTech" selected>BE / BTech</option>
+                                    <option value="BCA">BCA</option>
+                                    <option value="BSc">BSc</option>
+                                    <option value="MCA">MCA</option>
+                                    <option value="MTech">MTech</option>
+                                    <option value="MBA">MBA</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-8">
+                                <label for="branch" class="form-label text-secondary small fw-semibold">Branch / Specialization <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white" id="branch" name="branch" list="branchSuggestions" placeholder="e.g., Artificial Intelligence & Data Science, Computer Science..." required>
+                                <datalist id="branchSuggestions">
+                                    <option value="Artificial Intelligence & Data Science"></option>
+                                    <option value="Computer Science & Engineering"></option>
+                                    <option value="Information Science & Engineering"></option>
+                                    <option value="Data Analytics"></option>
+                                    <option value="Electronics & Communication"></option>
+                                    <option value="Mechanical Engineering"></option>
+                                </datalist>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="graduationYear" class="form-label text-secondary small fw-semibold">Graduation Year <span class="text-danger">*</span></label>
+                                <select class="form-select bg-dark border-secondary text-white" id="graduationYear" name="graduation_year">
+                                    <option value="2027">2027</option>
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2022">2022</option>
+                                    <option value="Earlier">Earlier</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-semibold d-block">Current Status <span class="text-danger">*</span></label>
+                            <div class="row g-2">
+                                <div class="col-6 col-md-3">
+                                    <div class="selectable-box text-center active selected" data-input-target="currentStatus" data-value="Student">
+                                        <i class="fa-solid fa-graduation-cap text-primary mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Student</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="selectable-box text-center" data-input-target="currentStatus" data-value="Fresher">
+                                        <i class="fa-solid fa-seedling text-success mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Fresher</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="selectable-box text-center" data-input-target="currentStatus" data-value="Working Professional">
+                                        <i class="fa-solid fa-briefcase text-info mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Working Professional</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="selectable-box text-center" data-input-target="currentStatus" data-value="Career Switcher">
+                                        <i class="fa-solid fa-arrows-rotate text-warning mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Career Switcher</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="current_status" id="currentStatus" value="Student">
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-brand-primary btn-next-step" data-next="2">
+                                Continue to Experience <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 2: EXPERIENCE & PROJECTS
+                         ======================================================== -->
+                    <div class="onboarding-step-panel" id="stepPanel2">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 2 of 7</span>
+                            <h2 class="h3 fw-bold text-white mt-1">Your experience & past projects</h2>
+                            <p class="text-secondary small">Tell us about any work or hands-on projects you've undertaken.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-semibold d-block">How much experience do you currently have? <span class="text-danger">*</span></label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="selectable-box text-center selected" data-input-target="experienceLevel" data-value="No experience">
+                                        <span class="small fw-semibold text-white">No experience</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="selectable-box text-center" data-input-target="experienceLevel" data-value="Less than 1 year">
+                                        <span class="small fw-semibold text-white">Less than 1 year</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="selectable-box text-center" data-input-target="experienceLevel" data-value="1–2 years">
+                                        <span class="small fw-semibold text-white">1–2 years</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="selectable-box text-center" data-input-target="experienceLevel" data-value="2–5 years">
+                                        <span class="small fw-semibold text-white">2–5 years</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="selectable-box text-center" data-input-target="experienceLevel" data-value="5+ years">
+                                        <span class="small fw-semibold text-white">5+ years</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="experience_level" id="experienceLevel" value="No experience">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-semibold d-block">Have you worked on projects related to your target career? <span class="text-danger">*</span></label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="has_projects_radio" id="projectYes" value="yes">
+                                    <label class="form-check-label text-white" for="projectYes">Yes</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="has_projects_radio" id="projectNo" value="no" checked>
+                                    <label class="form-check-label text-white" for="projectNo">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="projectDescriptionWrapper" class="mb-4 d-none">
+                            <label for="projectExperience" class="form-label text-secondary small fw-semibold">Project Names & Descriptions</label>
+                            <textarea class="form-control bg-dark border-secondary text-white" id="projectExperience" name="project_experience" rows="3" placeholder="e.g., Built an EDA Dashboard using Streamlit & Plotly; Developed a customer churn predictor with Scikit-learn..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-brand-outline btn-prev-step" data-prev="1">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-brand-primary btn-next-step" data-next="3">
+                                Continue to Skills <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 3: CURRENT SKILLS INVENTORY
+                         ======================================================== -->
+                    <div class="onboarding-step-panel" id="stepPanel3">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 3 of 7</span>
+                            <h2 class="h3 fw-bold text-white mt-1">What skills do you already have?</h2>
+                            <p class="text-secondary small">Search and add your technical and domain skills. Set your proficiency level and confidence.</p>
+                        </div>
+
+                        <!-- Skill Search & Add Bar -->
+                        <div class="mb-3">
+                            <label class="form-label text-secondary small fw-semibold">Search & Add Skill</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" class="form-control bg-dark border-secondary text-white" id="skillSearchInput" placeholder="Type a skill" list="allSkillsDataList" autocomplete="off">
+                                <button type="button" class="btn btn-brand-primary" id="btnAddSkill">
+                                    <i class="fa-solid fa-plus me-1"></i> Add Skill
+                                </button>
+                            </div>
+                            <datalist id="allSkillsDataList">
+                                <option value="Python"></option>
+                                <option value="SQL"></option>
+                                <option value="Excel"></option>
+                                <option value="Power BI"></option>
+                                <option value="Tableau"></option>
+                                <option value="Pandas"></option>
+                                <option value="NumPy"></option>
+                                <option value="Statistics"></option>
+                                <option value="Machine Learning"></option>
+                                <option value="Data Visualization"></option>
+                                <option value="Communication"></option>
+                                <option value="Problem Solving"></option>
+                                <option value="Deep Learning"></option>
+                                <option value="PyTorch"></option>
+                                <option value="TensorFlow"></option>
+                                <option value="Scikit-learn"></option>
+                                <option value="Git"></option>
+                                <option value="Docker"></option>
+                                <option value="AWS"></option>
+                            </datalist>
+                        </div>
+
+                        <!-- Quick Suggested Skills Chips -->
+                        <div class="mb-4">
+                            <span class="text-secondary small fw-semibold d-block mb-2">Suggested skills to quickly add:</span>
+                            <div class="suggestion-chips-container" id="suggestedSkillsPool">
+                                <span class="role-chip skill-suggest-chip" data-skill="Python">+ Python</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="SQL">+ SQL</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Excel">+ Excel</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Power BI">+ Power BI</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Tableau">+ Tableau</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Pandas">+ Pandas</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="NumPy">+ NumPy</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Statistics">+ Statistics</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Machine Learning">+ Machine Learning</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Data Visualization">+ Data Visualization</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Communication">+ Communication</span>
+                                <span class="role-chip skill-suggest-chip" data-skill="Problem Solving">+ Problem Solving</span>
+                            </div>
+                        </div>
+
+                        <!-- Added Skills Container -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-white fw-bold">Your Added Skills (<span id="addedSkillsCount">0</span>)</span>
+                                <span class="text-secondary small">At least 1 skill required</span>
+                            </div>
+
+                            <div id="addedSkillsList">
+                                <!-- Dynamically Rendered Skill Cards -->
+                                <div class="text-center py-4 text-muted border border-dashed rounded-3" id="noSkillsPlaceholder">
+                                    <i class="fa-solid fa-layer-group fs-3 mb-2 d-block opacity-50"></i>
+                                    No skills added yet. Search above or click suggested chips.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-brand-outline btn-prev-step" data-prev="2">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-brand-primary btn-next-step" data-next="4">
+                                Continue to Learning Time <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 4: LEARNING TIME COMMITMENT
+                         ======================================================== -->
+                    <div class="onboarding-step-panel" id="stepPanel4">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 4 of 7</span>
+                            <h2 class="h3 fw-bold text-white mt-1">How much time can you realistically spend learning?</h2>
+                            <p class="text-secondary small">We'll use your weekly availability to calculate realistic roadmap milestones.</p>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="hoursPerDaySelect" class="form-label text-secondary small fw-semibold">Daily Time Commitment <span class="text-danger">*</span></label>
+                                <select class="form-select bg-dark border-secondary text-white" id="hoursPerDaySelect" name="learning_hours_per_day">
+                                    <option value="30 minutes/day" data-hours="0.5">30 minutes/day</option>
+                                    <option value="1 hour/day" data-hours="1.0">1 hour/day</option>
+                                    <option value="1.5 hours/day" data-hours="1.5">1.5 hours/day</option>
+                                    <option value="2 hours/day" data-hours="2.0" selected>2 hours/day</option>
+                                    <option value="3 hours/day" data-hours="3.0">3 hours/day</option>
+                                    <option value="More than 3 hours/day" data-hours="4.0">More than 3 hours/day</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="daysPerWeekSelect" class="form-label text-secondary small fw-semibold">Days per week <span class="text-danger">*</span></label>
+                                <select class="form-select bg-dark border-secondary text-white" id="daysPerWeekSelect" name="learning_days_per_week">
+                                    <option value="1">1 day / week</option>
+                                    <option value="2">2 days / week</option>
+                                    <option value="3">3 days / week</option>
+                                    <option value="4">4 days / week</option>
+                                    <option value="5" selected>5 days / week</option>
+                                    <option value="6">6 days / week</option>
+                                    <option value="7">7 days / week (Everyday)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Live Dynamic Weekly Calculation Display Banner -->
+                        <div class="hours-preview-badge mb-4">
+                            <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Calculated Weekly Learning Velocity</span>
+                            <div class="display-6 fw-bold text-gradient" id="weeklyHoursCalculated">10 hours / week</div>
+                            <span class="text-secondary small" id="weeklyHoursFormula">2 hours/day &times; 5 days = 10 hours/week</span>
+                        </div>
+                        <input type="hidden" name="learning_hours_per_week" id="hiddenWeeklyHours" value="10.0">
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-brand-outline btn-prev-step" data-prev="3">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-brand-primary btn-next-step" data-next="5">
+                                Continue to Preferences <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 5: LEARNING PREFERENCES
+                         ======================================================== -->
+                    <div class="onboarding-step-panel" id="stepPanel5">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 5 of 7</span>
+                            <h2 class="h3 fw-bold text-white mt-1">How do you prefer to learn?</h2>
+                            <p class="text-secondary small">Select all the learning modes that suit your study habits.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-semibold d-block">Preferred Learning Modes (Multiple selections allowed)</label>
+                            <div class="row g-2" id="learningModesContainer">
+                                <div class="col-6 col-md-4">
+                                    <div class="selectable-box multiselect-box selected" data-value="Video Courses">
+                                        <i class="fa-solid fa-video text-danger mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Video Courses</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="selectable-box multiselect-box" data-value="Reading">
+                                        <i class="fa-solid fa-book-open text-info mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Reading</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="selectable-box multiselect-box selected" data-value="Hands-on Practice">
+                                        <i class="fa-solid fa-code text-success mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Hands-on Practice</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="selectable-box multiselect-box selected" data-value="Projects">
+                                        <i class="fa-solid fa-diagram-project text-warning mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Projects</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="selectable-box multiselect-box" data-value="Quizzes">
+                                        <i class="fa-solid fa-list-check text-purple mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Quizzes</span>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="selectable-box multiselect-box" data-value="Interactive Learning">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-primary mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Interactive Learning</span>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="selectable-box multiselect-box" data-value="Live Classes">
+                                        <i class="fa-solid fa-chalkboard-user text-cyan mb-1 d-block fs-5"></i>
+                                        <span class="small fw-semibold text-white">Live Classes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-secondary small fw-semibold d-block">Preferred Difficulty</label>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <div class="selectable-box text-center" data-input-target="preferredDifficulty" data-value="Easy">
+                                        <span class="small fw-semibold text-white">Easy</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="selectable-box text-center selected" data-input-target="preferredDifficulty" data-value="Balanced">
+                                        <span class="small fw-semibold text-white">Balanced</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="selectable-box text-center" data-input-target="preferredDifficulty" data-value="Challenging">
+                                        <span class="small fw-semibold text-white">Challenging</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" name="preferred_difficulty" id="preferredDifficulty" value="Balanced">
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-brand-outline btn-prev-step" data-prev="4">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-brand-primary btn-next-step" data-next="6">
+                                Continue to Career Goal <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 6: MAIN CAREER GOAL
+                         ======================================================== -->
+                    <div class="onboarding-step-panel" id="stepPanel6">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 6 of 7</span>
+                            <h2 class="h3 fw-bold text-white mt-1">What is your main career goal?</h2>
+                            <p class="text-secondary small">Choose what you are aiming to accomplish with this learning roadmap.</p>
+                        </div>
+
+                        <div class="row g-3 mb-4" id="careerGoalsContainer">
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box selected" data-value="Get my first job">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-briefcase text-primary fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Get my first job</strong>
+                                            <span class="text-secondary small">Entry level role in target industry</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Get an internship">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-graduation-cap text-success fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Get an internship</strong>
+                                            <span class="text-secondary small">Hands-on student/fresher internship</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Switch career">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-arrows-turn-to-dots text-warning fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Switch career</strong>
+                                            <span class="text-secondary small">Pivot from non-tech or another domain</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Get promoted">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-chart-line-up text-info fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Get promoted</strong>
+                                            <span class="text-secondary small">Advance to mid/senior levels</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Improve my skills">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-bolt text-warning fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Improve my skills</strong>
+                                            <span class="text-secondary small">Upskill in high-demand technologies</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Prepare for interviews">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-comments text-purple fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Prepare for interviews</strong>
+                                            <span class="text-secondary small">Technical coding & domain prep</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Build a portfolio">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-folder-open text-cyan fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Build a portfolio</strong>
+                                            <span class="text-secondary small">Showcase real projects on GitHub</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="selectable-box multiselect-goal-box" data-value="Explore a new career">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-compass text-danger fs-5"></i>
+                                        <div>
+                                            <strong class="text-white d-block">Explore a new career</strong>
+                                            <span class="text-secondary small">Discover domain requirements</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-brand-outline btn-prev-step" data-prev="5">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back
+                            </button>
+                            <button type="button" class="btn btn-brand-primary btn-next-step" data-next="7">
+                                Review Profile Summary <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ========================================================
+                         STEP 7: PROFILE SUMMARY & REVIEW
+                         ======================================================== -->
+                    <div class="onboarding-step-panel" id="stepPanel7">
+                        <div class="mb-4">
+                            <span class="text-info text-uppercase small fw-bold tracking-wider">Step 7 of 7 &bull; Profile Summary</span>
+                            <h2 class="h3 fw-bold text-white mt-1">YOUR CAREER PROFILE</h2>
+                            <p class="text-secondary small">Review your information before calculating your skill gap.</p>
+                        </div>
+
+                        <!-- Required Sections Checklist -->
+                        <div class="p-3 mb-4 rounded-3 bg-dark border border-secondary">
+                            <span class="text-secondary small text-uppercase fw-bold d-block mb-2">Required Sections Configured:</span>
+                            <div class="row g-2 small">
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Education</div>
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Experience</div>
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Target Career</div>
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Current Skills</div>
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Learning Time</div>
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Learning Preference</div>
+                                <div class="col-6 col-md-3 text-success"><i class="fa-solid fa-circle-check me-1"></i> Career Goal</div>
+                            </div>
+                        </div>
+
+                        <!-- Summary Item: Target Career -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Target Role</span>
+                                    <h4 class="text-white fw-bold mb-0" id="summaryTargetRole">{{ target_role }}</h4>
+                                </div>
+                                <a href="{{ url_for('get_started') }}" class="btn-edit-section text-decoration-none">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Summary Item: Education -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Education</span>
+                                    <div class="text-white fw-semibold" id="summaryEducation">BE — Artificial Intelligence & Data Science</div>
+                                </div>
+                                <button type="button" class="btn-edit-section btn-jump-step" data-step="1">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                            <div class="small text-secondary" id="summaryStatus">Status: Student &bull; Graduating: 2026</div>
+                        </div>
+
+                        <!-- Summary Item: Experience -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Experience</span>
+                                    <div class="text-white fw-semibold" id="summaryExperience">Fresher</div>
+                                </div>
+                                <button type="button" class="btn-edit-section btn-jump-step" data-step="2">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                            <div class="small text-secondary" id="summaryProjects">Projects: None specified</div>
+                        </div>
+
+                        <!-- Summary Item: Current Skills -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Current Skills</span>
+                                    <div id="summarySkillsList" class="mt-2">
+                                        <!-- Rendered Skill Items -->
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-edit-section btn-jump-step" data-step="3">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Summary Item: Learning Time -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Learning Time</span>
+                                    <div class="text-white fw-semibold" id="summaryLearningTime">10 hours/week</div>
+                                </div>
+                                <button type="button" class="btn-edit-section btn-jump-step" data-step="4">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Summary Item: Learning Preferences -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Learning Preference</span>
+                                    <div class="text-white fw-semibold" id="summaryPreferences">Video + Practice + Projects</div>
+                                </div>
+                                <button type="button" class="btn-edit-section btn-jump-step" data-step="5">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                            <div class="small text-secondary" id="summaryDifficulty">Difficulty: Balanced</div>
+                        </div>
+
+                        <!-- Summary Item: Career Goal -->
+                        <div class="summary-section-card">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="text-secondary small text-uppercase fw-bold">Career Goal</span>
+                                    <div class="text-white fw-semibold" id="summaryGoals">Get my first job</div>
+                                </div>
+                                <button type="button" class="btn-edit-section btn-jump-step" data-step="6">
+                                    <i class="fa-solid fa-pencil me-1"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Final Button -->
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-brand-primary btn-lg py-3 shadow" id="btnAnalyzeGap">
+                                <i class="fa-solid fa-wand-magic-sparkles me-2"></i> Analyze My Career Gap
+                            </button>
+                        </div>
+
+                        <div class="d-flex justify-content-start mt-3">
+                            <button type="button" class="btn btn-brand-outline btn-prev-step" data-prev="6">
+                                <i class="fa-solid fa-arrow-left me-1"></i> Back
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 1;
+    const totalSteps = 7;
+
+    // Data structures for state
+    let userSkills = [
+        { name: 'Python', proficiency: 'Intermediate', confidence: 4 },
+        { name: 'SQL', proficiency: 'Beginner', confidence: 3 }
+    ];
+
+    // Stepper navigation and panels
+    const stepPanels = document.querySelectorAll('.onboarding-step-panel');
+    const stepNodes = document.querySelectorAll('.step-node');
+    const completionBadge = document.getElementById('completionBadge');
+    const completionBar = document.getElementById('completionBar');
+    const validationAlert = document.getElementById('stepValidationAlert');
+    const validationMsg = document.getElementById('stepValidationMessage');
+
+    // Initialize UI
+    renderSkillsList();
+    recalculateWeeklyHours();
+    updateProgressUI();
+
+    // -------------------------------------------------------------
+    // STEP NAVIGATION LOGIC
+    // -------------------------------------------------------------
+    document.querySelectorAll('.btn-next-step').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const nextStep = parseInt(this.getAttribute('data-next'));
+            if (validateStep(currentStep)) {
+                hideValidationAlert();
+                goToStep(nextStep);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-prev-step').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const prevStep = parseInt(this.getAttribute('data-prev'));
+            hideValidationAlert();
+            goToStep(prevStep);
+        });
+    });
+
+    document.querySelectorAll('.step-node, .btn-jump-step').forEach(node => {
+        node.addEventListener('click', function() {
+            const targetStep = parseInt(this.getAttribute('data-step'));
+            if (targetStep < currentStep || validateStep(currentStep)) {
+                hideValidationAlert();
+                goToStep(targetStep);
+            }
+        });
+    });
+
+    function goToStep(step) {
+        currentStep = step;
+        stepPanels.forEach(panel => panel.classList.remove('active'));
+        const activePanel = document.getElementById('stepPanel' + step);
+        if (activePanel) activePanel.classList.add('active');
+
+        // Update stepper nodes
+        stepNodes.forEach(node => {
+            const s = parseInt(node.getAttribute('data-step'));
+            node.classList.remove('active', 'completed');
+            if (s === step) {
+                node.classList.add('active');
+            } else if (s < step) {
+                node.classList.add('completed');
+            }
+        });
+
+        if (step === 7) {
+            updateSummaryData();
+        }
+
+        updateProgressUI();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateProgressUI() {
+        // Compute completion percentage based on current step and valid inputs
+        let pct = Math.min(100, Math.round((currentStep / totalSteps) * 100));
+        if (currentStep === 7) pct = 90; // Exactly 90% on summary review as specified in requirements
+        completionBadge.textContent = 'Profile Completion: ' + pct + '%';
+        completionBar.style.width = pct + '%';
+    }
+
+    // -------------------------------------------------------------
+    // VALIDATION PER STEP
+    // -------------------------------------------------------------
+    function validateStep(step) {
+        if (step === 1) {
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const degree = document.getElementById('degree').value.trim();
+            const branch = document.getElementById('branch').value.trim();
+            if (!fullName || !email || !degree || !branch) {
+                showValidationAlert("Please fill in your Full Name, Email, Degree, and Branch.");
+                return false;
+            }
+        } else if (step === 3) {
+            if (userSkills.length === 0) {
+                showValidationAlert("Please add at least one current skill before proceeding.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function showValidationAlert(msg) {
+        validationMsg.textContent = msg;
+        validationAlert.classList.remove('d-none');
+    }
+
+    function hideValidationAlert() {
+        validationAlert.classList.add('d-none');
+    }
+
+    // -------------------------------------------------------------
+    // STEP 1: SINGLE-SELECT CARDS (Current Status)
+    // -------------------------------------------------------------
+    document.querySelectorAll('[data-input-target]').forEach(box => {
+        box.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-input-target');
+            const val = this.getAttribute('data-value');
+            
+            // Unselect sibling boxes with same target
+            document.querySelectorAll(`[data-input-target="${targetId}"]`).forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            
+            document.getElementById(targetId).value = val;
+        });
+    });
+
+    // -------------------------------------------------------------
+    // STEP 2: PROJECT EXPERIENCE TOGGLE
+    // -------------------------------------------------------------
+    const projectYesRadio = document.getElementById('projectYes');
+    const projectNoRadio = document.getElementById('projectNo');
+    const projectDescWrapper = document.getElementById('projectDescriptionWrapper');
+
+    projectYesRadio.addEventListener('change', function() {
+        if (this.checked) projectDescWrapper.classList.remove('d-none');
+    });
+    projectNoRadio.addEventListener('change', function() {
+        if (this.checked) projectDescWrapper.classList.add('d-none');
+    });
+
+    // -------------------------------------------------------------
+    // STEP 3: SKILLS MANAGER (Search + Suggestions + Custom Skills)
+    // -------------------------------------------------------------
+    const skillSearchInput = document.getElementById('skillSearchInput');
+    const btnAddSkill = document.getElementById('btnAddSkill');
+    const addedSkillsList = document.getElementById('addedSkillsList');
+    const addedSkillsCount = document.getElementById('addedSkillsCount');
+    const suggestedSkillsPool = document.getElementById('suggestedSkillsPool');
+
+    btnAddSkill.addEventListener('click', function() {
+        addSkillFromInput();
+    });
+
+    skillSearchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addSkillFromInput();
+        }
+    });
+
+    function addSkillFromInput() {
+        const skillName = skillSearchInput.value.trim();
+        if (!skillName) return;
+
+        // Check if already present
+        if (userSkills.some(s => s.name.toLowerCase() === skillName.toLowerCase())) {
+            showValidationAlert(`'${skillName}' is already in your skills list.`);
+            return;
+        }
+
+        userSkills.push({
+            name: skillName,
+            proficiency: 'Intermediate',
+            confidence: 3
+        });
+
+        skillSearchInput.value = '';
+        hideValidationAlert();
+        renderSkillsList();
+    }
+
+    // Handle clicking suggested chips
+    document.querySelectorAll('.skill-suggest-chip').forEach(chip => {
+        chip.addEventListener('click', function() {
+            const skillName = this.getAttribute('data-skill');
+            if (userSkills.some(s => s.name.toLowerCase() === skillName.toLowerCase())) {
+                return;
+            }
+            userSkills.push({
+                name: skillName,
+                proficiency: 'Intermediate',
+                confidence: 3
+            });
+            renderSkillsList();
+        });
+    });
+
+    function renderSkillsList() {
+        addedSkillsCount.textContent = userSkills.length;
+        addedSkillsList.innerHTML = '';
+
+        if (userSkills.length === 0) {
+            addedSkillsList.innerHTML = `
+                <div class="text-center py-4 text-muted border border-dashed rounded-3" id="noSkillsPlaceholder">
+                    <i class="fa-solid fa-layer-group fs-3 mb-2 d-block opacity-50"></i>
+                    No skills added yet. Search above or click suggested chips.
+                </div>
+            `;
+            return;
+        }
+
+        userSkills.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'user-skill-card';
+            card.innerHTML = `
+                <div class="row align-items-center gy-2">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill small">${index + 1}</span>
+                            <span class="fw-bold text-white">${item.name}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="small text-secondary fw-semibold d-block mb-1">Proficiency Level:</label>
+                        <select class="form-select form-select-sm bg-dark border-secondary text-white skill-prof-select" data-index="${index}">
+                            <option value="Beginner" ${item.proficiency === 'Beginner' ? 'selected' : ''}>Beginner</option>
+                            <option value="Intermediate" ${item.proficiency === 'Intermediate' ? 'selected' : ''}>Intermediate</option>
+                            <option value="Advanced" ${item.proficiency === 'Advanced' ? 'selected' : ''}>Advanced</option>
+                            <option value="Expert" ${item.proficiency === 'Expert' ? 'selected' : ''}>Expert</option>
+                            <option value="I don't know this skill" ${item.proficiency === "I don't know this skill" ? 'selected' : ''}>I don't know this skill</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="small text-secondary fw-semibold d-block mb-1">Confidence:</label>
+                        <select class="form-select form-select-sm bg-dark border-secondary text-white skill-conf-select" data-index="${index}">
+                            <option value="1" ${item.confidence == 1 ? 'selected' : ''}>1 — Very Low</option>
+                            <option value="2" ${item.confidence == 2 ? 'selected' : ''}>2 — Low</option>
+                            <option value="3" ${item.confidence == 3 ? 'selected' : ''}>3 — Average</option>
+                            <option value="4" ${item.confidence == 4 ? 'selected' : ''}>4 — High</option>
+                            <option value="5" ${item.confidence == 5 ? 'selected' : ''}>5 — Very High</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-1 text-end">
+                        <button type="button" class="btn-remove-skill" data-index="${index}" title="Remove Skill">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            addedSkillsList.appendChild(card);
+        });
+
+        // Attach listeners for change & remove
+        document.querySelectorAll('.skill-prof-select').forEach(sel => {
+            sel.addEventListener('change', function() {
+                const idx = parseInt(this.getAttribute('data-index'));
+                userSkills[idx].proficiency = this.value;
+            });
+        });
+
+        document.querySelectorAll('.skill-conf-select').forEach(sel => {
+            sel.addEventListener('change', function() {
+                const idx = parseInt(this.getAttribute('data-index'));
+                userSkills[idx].confidence = parseInt(this.value);
+            });
+        });
+
+        document.querySelectorAll('.btn-remove-skill').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const idx = parseInt(this.getAttribute('data-index'));
+                userSkills.splice(idx, 1);
+                renderSkillsList();
+            });
+        });
+    }
+
+    // -------------------------------------------------------------
+    // STEP 4: LEARNING TIME CALCULATION
+    // -------------------------------------------------------------
+    const hoursPerDaySelect = document.getElementById('hoursPerDaySelect');
+    const daysPerWeekSelect = document.getElementById('daysPerWeekSelect');
+    const weeklyHoursCalculated = document.getElementById('weeklyHoursCalculated');
+    const weeklyHoursFormula = document.getElementById('weeklyHoursFormula');
+    const hiddenWeeklyHours = document.getElementById('hiddenWeeklyHours');
+
+    hoursPerDaySelect.addEventListener('change', recalculateWeeklyHours);
+    daysPerWeekSelect.addEventListener('change', recalculateWeeklyHours);
+
+    function recalculateWeeklyHours() {
+        const selectedOpt = hoursPerDaySelect.options[hoursPerDaySelect.selectedIndex];
+        const hoursPerDay = parseFloat(selectedOpt.getAttribute('data-hours')) || 2.0;
+        const daysPerWeek = parseInt(daysPerWeekSelect.value) || 5;
+
+        const totalHours = (hoursPerDay * daysPerWeek).toFixed(1);
+        const formattedTotal = totalHours.endsWith('.0') ? parseInt(totalHours) : totalHours;
+
+        weeklyHoursCalculated.textContent = formattedTotal + ' hours / week';
+        weeklyHoursFormula.innerHTML = `${selectedOpt.value.replace('/day', '')}/day &times; ${daysPerWeek} days = <strong>${formattedTotal} hours/week</strong>`;
+        hiddenWeeklyHours.value = formattedTotal;
+    }
+
+    // -------------------------------------------------------------
+    // STEP 5: LEARNING PREFERENCES (MULTI-SELECT)
+    // -------------------------------------------------------------
+    document.querySelectorAll('.multiselect-box').forEach(box => {
+        box.addEventListener('click', function() {
+            this.classList.toggle('selected');
+        });
+    });
+
+    function getSelectedLearningPreferences() {
+        const selected = [];
+        document.querySelectorAll('.multiselect-box.selected').forEach(b => {
+            selected.push(b.getAttribute('data-value'));
+        });
+        return selected.length > 0 ? selected : ['Video Courses', 'Hands-on Practice', 'Projects'];
+    }
+
+    // -------------------------------------------------------------
+    // STEP 6: CAREER GOALS (MULTI-SELECT)
+    // -------------------------------------------------------------
+    document.querySelectorAll('.multiselect-goal-box').forEach(box => {
+        box.addEventListener('click', function() {
+            this.classList.toggle('selected');
+        });
+    });
+
+    function getSelectedCareerGoals() {
+        const selected = [];
+        document.querySelectorAll('.multiselect-goal-box.selected').forEach(b => {
+            selected.push(b.getAttribute('data-value'));
+        });
+        return selected.length > 0 ? selected : ['Get my first job'];
+    }
+
+    // -------------------------------------------------------------
+    // STEP 7: SUMMARY & FORM SUBMISSION
+    // -------------------------------------------------------------
+    function updateSummaryData() {
+        const degreeVal = document.getElementById('degree').value;
+        const branchVal = document.getElementById('branch').value || 'AI & Data Science';
+        const gradYear = document.getElementById('graduationYear').value;
+        const statusVal = document.getElementById('currentStatus').value;
+        const expVal = document.getElementById('experienceLevel').value;
+        const hasProj = document.getElementById('projectYes').checked;
+        const projDesc = document.getElementById('projectExperience').value.trim();
+        const diffVal = document.getElementById('preferredDifficulty').value;
+
+        document.getElementById('summaryEducation').textContent = `${degreeVal} — ${branchVal}`;
+        document.getElementById('summaryStatus').textContent = `Status: ${statusVal} • Graduating: ${gradYear}`;
+        document.getElementById('summaryExperience').textContent = expVal;
+        document.getElementById('summaryProjects').textContent = hasProj && projDesc ? `Projects: ${projDesc}` : (hasProj ? 'Projects: Yes' : 'Projects: None');
+
+        // Skills summary pills
+        const summarySkillsList = document.getElementById('summarySkillsList');
+        summarySkillsList.innerHTML = '';
+        userSkills.forEach(s => {
+            const span = document.createElement('div');
+            span.className = 'badge bg-dark border border-primary-subtle text-light p-2 me-2 mb-2 text-start';
+            span.innerHTML = `<span class="text-info fw-bold">${s.name}</span> — <span class="text-secondary">${s.proficiency}</span>`;
+            summarySkillsList.appendChild(span);
+        });
+
+        // Time summary
+        const calcHours = document.getElementById('hiddenWeeklyHours').value;
+        document.getElementById('summaryLearningTime').textContent = `${calcHours} hours/week`;
+
+        // Preferences summary
+        const prefs = getSelectedLearningPreferences();
+        // Shorten labels for clean summary: e.g. Video Courses -> Video, Hands-on Practice -> Practice
+        const cleanPrefs = prefs.map(p => p.replace(' Courses', '').replace('Hands-on ', ''));
+        document.getElementById('summaryPreferences').textContent = cleanPrefs.join(' + ');
+        document.getElementById('summaryDifficulty').textContent = `Difficulty: ${diffVal}`;
+
+        // Goals summary
+        const goals = getSelectedCareerGoals();
+        document.getElementById('summaryGoals').textContent = goals.join(', ');
+    }
+
+    // Final Form Submission Handler
+    const onboardingForm = document.getElementById('onboardingForm');
+    onboardingForm.addEventListener('submit', function(e) {
+        if (!validateStep(1) || !validateStep(3)) {
+            e.preventDefault();
+            return false;
+        }
+
+        // Serialize state into hidden inputs
+        document.getElementById('skillsDataJson').value = JSON.stringify(userSkills);
+        document.getElementById('learningPrefsJson').value = JSON.stringify(getSelectedLearningPreferences());
+        document.getElementById('careerGoalsJson').value = JSON.stringify(getSelectedCareerGoals());
+
+        completionBadge.textContent = 'Profile Completion: 100%';
+        completionBar.style.width = '100%';
+    });
+});
+</script>
+{% endblock %}

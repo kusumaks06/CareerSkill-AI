@@ -1,0 +1,235 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Skill Management - Admin Panel{% endblock %}
+{% block page_title %}Skills Repository & Syllabus{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-warning">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Skill Repository & <span class="text-gradient">Market Demand Status</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Maintain canonical skill definitions, category mapping, sub-topic syllabi, and mark skills as in-demand, emerging, or outdated.
+                </p>
+            </div>
+            <button type="button" class="btn btn-brand-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newSkillModal">
+                <i class="fa-solid fa-plus me-1"></i> Add New Skill
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_skills_view') }}" class="row g-2 align-items-center">
+            <div class="col-md-9">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search skill name, category, or demand status..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">Search</button>
+                <a href="{{ url_for('admin_skills_view') }}" class="btn btn-brand-outline btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Skills Table -->
+    <div class="glass-card p-4">
+        {% if skills %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>Skill Name</th>
+                            <th>Category</th>
+                            <th>Demand Status</th>
+                            <th>Difficulty</th>
+                            <th>Description</th>
+                            <th>Syllabus Topics</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in skills %}
+                            <tr>
+                                <td>
+                                    <strong class="text-white small d-block">{{ s.name }}</strong>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white small">{{ s.category }}</span>
+                                </td>
+                                <td>
+                                    {% if s.demand_status == 'In-Demand' %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle small fw-bold">
+                                            <i class="fa-solid fa-fire me-1"></i> In-Demand
+                                        </span>
+                                    {% elif s.demand_status == 'Emerging' %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-bold">
+                                            <i class="fa-solid fa-arrow-trend-up me-1"></i> Emerging
+                                        </span>
+                                    {% elif s.demand_status == 'Outdated' or s.demand_status == 'Outdated / Deprecated' %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle small fw-bold">
+                                            <i class="fa-solid fa-clock-rotate-left me-1"></i> Outdated
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-subtle text-light border border-secondary small">
+                                            {{ s.demand_status or 'Stable' }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary text-info x-small">{{ s.difficulty }}</span>
+                                </td>
+                                <td style="max-width: 230px;">
+                                    <p class="text-secondary small mb-0 text-truncate" title="{{ s.description }}">{{ s.description or '—' }}</p>
+                                </td>
+                                <td style="max-width: 200px;">
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for t in s.topics[:3] %}
+                                            <span class="badge bg-black border border-secondary text-light x-small">{{ t }}</span>
+                                        {% endfor %}
+                                        {% if s.topics|length > 3 %}
+                                            <span class="badge bg-secondary text-light x-small">+{{ s.topics|length - 3 }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    {% if s.id %}
+                                        <div class="d-inline-flex gap-2">
+                                            <button type="button" class="btn btn-outline-warning btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#editSkillModal-{{ s.id }}">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+
+                                            <form method="POST" action="{{ url_for('admin_skill_delete', skill_id=s.id) }}" class="d-inline" onsubmit="return confirm('Delete skill definition for {{ s.name }}?');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Edit Skill Modal -->
+                                        <div class="modal fade text-start" id="editSkillModal-{{ s.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content bg-dark text-white border-secondary">
+                                                    <div class="modal-header border-secondary">
+                                                        <h5 class="modal-title fs-6 fw-bold">Edit Skill &bull; {{ s.name }}</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form method="POST" action="{{ url_for('admin_skill_save') }}">
+                                                        <input type="hidden" name="skill_id" value="{{ s.id }}">
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Skill Name *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="name" value="{{ s.name }}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Category</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="category" value="{{ s.category }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Market Demand Status</label>
+                                                                <select class="form-select form-select-sm bg-black text-white border-secondary" name="demand_status">
+                                                                    <option value="In-Demand" {% if s.demand_status == 'In-Demand' %}selected{% endif %}>In-Demand (High Industry Adoption)</option>
+                                                                    <option value="Emerging" {% if s.demand_status == 'Emerging' %}selected{% endif %}>Emerging (High Growth Potential)</option>
+                                                                    <option value="Stable" {% if s.demand_status == 'Stable' %}selected{% endif %}>Stable (Standard Core Requirement)</option>
+                                                                    <option value="Outdated" {% if s.demand_status == 'Outdated' or s.demand_status == 'Outdated / Deprecated' %}selected{% endif %}>Outdated / Deprecated</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Difficulty Level</label>
+                                                                <select class="form-select form-select-sm bg-black text-white border-secondary" name="difficulty">
+                                                                    <option value="Easy" {% if s.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                                                                    <option value="Moderate" {% if s.difficulty == 'Moderate' %}selected{% endif %}>Moderate</option>
+                                                                    <option value="Difficult" {% if s.difficulty == 'Difficult' %}selected{% endif %}>Difficult</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Description</label>
+                                                                <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="description" rows="3">{{ s.description }}</textarea>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Topics (comma separated)</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topics" value="{{ s.topics|join(', ') }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-secondary">
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-brand-primary btn-sm">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted x-small">Catalog Derived</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-secondary small mb-0 text-center py-4">No skills found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New Skill Modal -->
+<div class="modal fade text-start" id="newSkillModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-plus text-primary me-1"></i> Add New Skill</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_skill_save') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Skill Name *</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="name" placeholder="e.g., dbt (data build tool)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Category</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="category" placeholder="e.g., Technical, Analytics, Soft Skills" value="Technical">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Market Demand Status</label>
+                        <select class="form-select form-select-sm bg-black text-white border-secondary" name="demand_status">
+                            <option value="In-Demand" selected>In-Demand (High Industry Adoption)</option>
+                            <option value="Emerging">Emerging (High Growth Potential)</option>
+                            <option value="Stable">Stable (Standard Core Requirement)</option>
+                            <option value="Outdated">Outdated / Deprecated</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Difficulty</label>
+                        <select class="form-select form-select-sm bg-black text-white border-secondary" name="difficulty">
+                            <option value="Easy">Easy</option>
+                            <option value="Moderate" selected>Moderate</option>
+                            <option value="Difficult">Difficult</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Description</label>
+                        <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="description" rows="3" placeholder="Skill overview and conceptual purpose..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Topics (comma separated)</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topics" placeholder="e.g., Data Modeling, Jinja Templating, Testing, Documentation">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand-primary btn-sm">Create Skill Definition</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

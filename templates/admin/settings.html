@@ -1,0 +1,104 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Admin Settings - CareerSkill AI{% endblock %}
+{% block page_title %}Platform Settings & System Information{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-secondary">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    System Configuration & <span class="text-gradient">Platform Settings</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Application runtime environment, database metadata, and safe diagnostic utilities.
+                </p>
+            </div>
+            <span class="badge bg-secondary text-white px-3 py-2 rounded-pill small">
+                CareerSkill AI v2.4 Enterprise
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- System Telemetry & Environment -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-server text-primary"></i> Application Runtime Details
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm small align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-secondary">Application Name</td>
+                                <td class="text-white fw-bold">CareerSkill AI</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Version</td>
+                                <td class="text-white">2.4.0 (Final Year Capstone Edition)</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Runtime Framework</td>
+                                <td class="text-white">Python 3.14 &bull; Flask &bull; SQLAlchemy ORM</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Database Engine</td>
+                                <td class="text-white">SQLite 3 (WAL mode)</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Security Protocol</td>
+                                <td class="text-white">PBKDF2-SHA256 &bull; Session Auth &bull; Role Authorization</td>
+                            </tr>
+                            <tr>
+                                <td class="text-secondary">Machine Learning Stack</td>
+                                <td class="text-white">Scikit-learn (TF-IDF & Cosine Similarity), Pandas, NumPy</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Safe Administrative Actions -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench text-warning"></i> Platform Maintenance & Diagnostics
+                </h5>
+                <p class="text-secondary small mb-3">
+                    Safe diagnostic operations for curriculum synchronization and catalog verification.
+                </p>
+
+                <div class="d-flex flex-column gap-3">
+                    <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong class="text-white small d-block">Curated Course Catalog</strong>
+                            <span class="text-muted x-small">Re-verify and sync curated learning resources</span>
+                        </div>
+                        <form method="POST" action="{{ url_for('admin_settings_seed_courses') }}">
+                            <button type="submit" class="btn btn-brand-outline btn-sm">
+                                <i class="fa-solid fa-arrows-rotate me-1"></i> Verify Catalog
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="p-3 rounded bg-dark border border-secondary d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong class="text-white small d-block">Assessment Questions Pool</strong>
+                            <span class="text-muted x-small">Re-verify and sync diagnostic question pool</span>
+                        </div>
+                        <form method="POST" action="{{ url_for('admin_settings_seed_questions') }}">
+                            <button type="submit" class="btn btn-brand-outline btn-sm">
+                                <i class="fa-solid fa-arrows-rotate me-1"></i> Verify Pool
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

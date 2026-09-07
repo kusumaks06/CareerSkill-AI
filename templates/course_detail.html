@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - Course Details | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb & Back Navigation -->
+    <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('course_recommendations') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-graduation-cap me-1"></i> Recommendations</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ course.title }}</li>
+            </ol>
+        </nav>
+        <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Recommendations
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <!-- Main Course Details (Left Column) -->
+        <div class="col-lg-8">
+            <div class="glass-card p-4 p-md-5 mb-4 border-start border-4 border-primary">
+                <!-- Badges Header -->
+                <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                    <span class="badge bg-secondary text-white border border-secondary px-3 py-1 small">
+                        <i class="{% if course.resource_type == 'Course' %}fa-solid fa-chalkboard-user{% elif course.resource_type == 'Practice' %}fa-solid fa-code{% elif course.resource_type == 'Project' %}fa-solid fa-diagram-project{% elif course.resource_type == 'Tutorial' %}fa-solid fa-laptop-code{% elif course.resource_type == 'Certification' %}fa-solid fa-certificate{% else %}fa-solid fa-book-open{% endif %} me-1"></i>
+                        {{ course.resource_type|upper }}
+                    </span>
+
+                    {% if course.is_free %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 small">
+                            <i class="fa-solid fa-tag me-1"></i> 100% Free Resource
+                        </span>
+                    {% else %}
+                        <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 small">
+                            <i class="fa-solid fa-credit-card me-1"></i> Paid Course / Subscription
+                        </span>
+                    {% endif %}
+
+                    <span class="badge bg-dark border border-secondary text-light px-3 py-1 small">
+                        <i class="fa-solid fa-layer-group me-1"></i> {{ course.level }} Level
+                    </span>
+                </div>
+
+                <h1 class="h2 fw-bold text-white mb-2">{{ course.title }}</h1>
+
+                <div class="d-flex align-items-center gap-3 text-secondary small mb-4 flex-wrap">
+                    <span><i class="fa-solid fa-building me-1 text-primary"></i> Provider: <strong class="text-white">{{ course.provider }}</strong></span>
+                    <span>&bull;</span>
+                    <span><i class="fa-solid fa-globe me-1"></i> Language: <strong class="text-white">{{ course.language }}</strong></span>
+                    <span>&bull;</span>
+                    <span>
+                        {% if course.rating %}
+                            <i class="fa-solid fa-star text-warning me-1"></i> <strong>{{ course.rating }}</strong> / 5.0 Rating
+                        {% else %}
+                            <span class="text-muted"><i class="fa-regular fa-star me-1"></i> Rating not available</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- Course Description -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-white mb-2">About this Learning Resource</h5>
+                    <p class="text-secondary lh-lg mb-0">
+                        {{ course.description }}
+                    </p>
+                </div>
+
+                <!-- Why Recommended For You Box -->
+                <div class="p-4 rounded bg-primary-subtle bg-opacity-10 border border-primary-subtle mb-4">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="fa-solid fa-bullseye text-primary fs-5"></i>
+                        <h5 class="fw-bold text-white mb-0">Why This Course is Recommended For You</h5>
+                    </div>
+                    <p class="text-secondary small mb-0 lh-base">
+                        {{ why_recommended|safe }}
+                    </p>
+                </div>
+
+                <!-- Syllabus / Topics Covered -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-white mb-3">Topics Covered & Syllabus</h5>
+                    {% set topics = course.get_topics() %}
+                    {% if topics %}
+                        <div class="row g-2">
+                            {% for topic in topics %}
+                                <div class="col-md-6">
+                                    <div class="p-2 rounded bg-dark border border-secondary border-opacity-50 d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-circle-check text-success small"></i>
+                                        <span class="text-white small">{{ topic }}</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-secondary small">Comprehensive modular curriculum covering foundational and advanced techniques.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Action Button Strip -->
+                <div class="pt-3 border-top border-secondary d-flex align-items-center gap-2 flex-wrap">
+                    <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-brand-primary px-4 py-2" id="detail-start-learning">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-2"></i> Start Learning on {{ course.provider }}
+                    </a>
+                    
+                    <a href="{{ url_for('complete_course_action', course_id=course.id) }}" class="btn btn-success px-3 py-2" id="btn-complete-review">
+                        <i class="fa-solid fa-circle-check me-1"></i> Mark Completed & Review
+                    </a>
+
+                    <a href="{{ url_for('course_feedback_view', course_id=course.id) }}" class="btn btn-brand-outline px-3 py-2">
+                        <i class="fa-solid fa-star text-warning me-1"></i> Feedback / Rating
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar (Right Column) -->
+        <div class="col-lg-4">
+            <!-- Skill Gap Alignment Card -->
+            <div class="glass-card p-4 mb-4">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-chart-simple text-primary"></i> Skill Gap Alignment
+                </h5>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small d-block">Target Career Role</span>
+                    <strong class="text-white">{{ target_role }}</strong>
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small d-block">Primary Target Skill</span>
+                    <span class="badge bg-primary text-white fs-6 py-1 px-3 mt-1">{{ course.skill }}</span>
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small d-block">Required Market Level</span>
+                    <strong class="text-info">{{ required_level }}</strong>
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom border-secondary">
+                    <span class="text-secondary small d-block">Your Current Proficiency</span>
+                    <span class="badge {% if user_level == 'No Knowledge' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %} small">
+                        {{ user_level }}
+                    </span>
+                </div>
+
+                <div class="mb-0">
+                    <span class="text-secondary small d-block">Estimated Study Time</span>
+                    <strong class="text-success fs-5">{{ course.duration_hours }} hours</strong>
+                    <span class="text-muted small d-block">~{{ estimated_weeks }} week(s) at {{ weekly_hours }}h/week pace</span>
+                </div>
+            </div>
+
+            <!-- Recommendation Match Score -->
+            <div class="glass-card p-4 text-center">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Recommendation Match</span>
+                <div class="h2 fw-bold text-gradient mb-2">{{ recommendation_score }}%</div>
+                <div class="progress mb-3" style="height: 8px; background-color: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-gradient" style="width: {{ recommendation_score }}%;"></div>
+                </div>
+                <p class="text-secondary small mb-0">
+                    Calculated from your missing topics, career priority, and learning style.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-status-toggle').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const courseId = this.dataset.courseId;
+            const newStatus = this.dataset.status;
+
+            fetch('/api/recommendations/status', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({course_id: courseId, status: newStatus})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Status updated to ' + newStatus + '!');
+                    window.location.reload();
+                } else {
+                    alert('Could not update status: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    });
+
+    document.getElementById('detail-start-learning').addEventListener('click', function() {
+        const courseId = "{{ course.id }}";
+        fetch('/api/recommendations/status', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({course_id: courseId, status: 'In Progress'})
+        }).catch(err => console.error(err));
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,652 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Personalized Learning Recommendations - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Card -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> Personalized Recommendations
+                    </span>
+                    {% if data.is_custom_role %}
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-1 rounded-pill small">
+                            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Synthesized Role
+                        </span>
+                    {% else %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                            <i class="fa-solid fa-shield-check me-1"></i> Verified Market Data
+                        </span>
+                    {% endif %}
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    Your Personalized <span class="text-gradient">Learning Recommendations</span>
+                </h1>
+                <p class="text-secondary mb-0">
+                    Courses selected based on your target career, current skills, skill gaps and learning preferences.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex gap-2 justify-content-lg-end flex-wrap">
+                    <a href="{{ url_for('career_analysis') }}" class="btn btn-brand-outline btn-sm">
+                        <i class="fa-solid fa-chart-pie me-1"></i> View Skill Gap
+                    </a>
+                    <form action="{{ url_for('refresh_recommendations') }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-brand-primary btn-sm" id="btn-refresh-recs">
+                            <i class="fa-solid fa-arrows-rotate me-1"></i> Refresh Recommendations
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Role & Gap Metric Strip -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Target Career</span>
+                <div class="h5 fw-bold text-white mb-0 text-truncate" title="{{ data.target_role }}">{{ data.target_role }}</div>
+                <span class="text-muted small">{{ data.market_status }}</span>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Career Readiness</span>
+                <div class="h3 fw-bold text-gradient mb-0">{{ data.readiness_score }}%</div>
+                <div class="progress mt-2" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-gradient" style="width: {{ data.readiness_score }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Skills to Improve</span>
+                <div class="h3 fw-bold text-warning mb-0">{{ data.skills_to_improve_count }}</div>
+                <span class="text-muted small">Identified Gaps</span>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Learning Velocity</span>
+                <div class="h3 fw-bold text-info mb-0">{{ data.weekly_hours }}h</div>
+                <span class="text-muted small">Available per week</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- "Why are we recommending these?" Banner -->
+    <div class="glass-card p-4 mb-4 border border-primary-subtle bg-primary-subtle bg-opacity-10">
+        <div class="d-flex align-items-start gap-3">
+            <div class="brand-icon-box flex-shrink-0" style="width: 40px; height: 40px; font-size: 1.1rem; background: rgba(99, 102, 241, 0.2);">
+                <i class="fa-solid fa-lightbulb text-warning"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold text-white mb-1">Why are we recommending these?</h5>
+                <p class="text-secondary small mb-0 lh-base">
+                    {{ data.gap_summary_explanation|safe }}
+                </p>
+                {% if data.is_custom_role %}
+                    <div class="alert alert-warning-subtle border border-warning-subtle text-warning p-2 mt-2 mb-0 rounded small">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        Recommendations are based on related market roles because limited exact data is available for this custom title.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Tabs -->
+    <div class="d-flex gap-2 mb-4 border-bottom border-secondary pb-3 flex-wrap">
+        <button type="button" class="btn btn-sm btn-brand-primary tab-filter-btn active" data-filter-status="all">
+            <i class="fa-solid fa-list-check me-1"></i> All Recommendations ({{ data.recommendations|length }})
+        </button>
+        <button type="button" class="btn btn-sm btn-brand-outline tab-filter-btn" data-filter-status="in_progress">
+            <i class="fa-solid fa-spinner me-1"></i> In Progress ({{ data.in_progress_recommendations|length }})
+        </button>
+        <button type="button" class="btn btn-sm btn-brand-outline tab-filter-btn" data-filter-status="completed">
+            <i class="fa-solid fa-circle-check text-success me-1"></i> Completed ({{ data.completed_recommendations|length }})
+        </button>
+    </div>
+
+    <!-- Interactive Filters & Sort Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <div class="row g-2 align-items-center">
+            <!-- Skill Filter -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label text-secondary small mb-1">Skill</label>
+                <select id="filter-skill" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all">All Skills</option>
+                    {% set unique_skills = [] %}
+                    {% for rec in data.recommendations %}
+                        {% if rec.skill not in unique_skills %}
+                            {% set _ = unique_skills.append(rec.skill) %}
+                            <option value="{{ rec.skill }}">{{ rec.skill }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Resource Type Filter -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label text-secondary small mb-1">Resource Type</label>
+                <select id="filter-type" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all">All Types</option>
+                    <option value="Course">Course</option>
+                    <option value="Tutorial">Tutorial</option>
+                    <option value="Practice">Practice</option>
+                    <option value="Project">Project</option>
+                    <option value="Documentation">Documentation</option>
+                    <option value="Certification">Certification</option>
+                </select>
+            </div>
+
+            <!-- Difficulty Filter -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label text-secondary small mb-1">Difficulty</label>
+                <select id="filter-difficulty" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all">All Difficulties</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="Difficult">Difficult</option>
+                </select>
+            </div>
+
+            <!-- Cost Filter -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label text-secondary small mb-1">Cost</label>
+                <select id="filter-cost" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all">All (Free & Paid)</option>
+                    <option value="free">Free Only</option>
+                    <option value="paid">Paid</option>
+                </select>
+            </div>
+
+            <!-- Duration Filter -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label text-secondary small mb-1">Duration</label>
+                <select id="filter-duration" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all">Any Duration</option>
+                    <option value="short">Short (&lt; 8 hours)</option>
+                    <option value="medium">Medium (8 - 20 hours)</option>
+                    <option value="long">Comprehensive (20+ hours)</option>
+                </select>
+            </div>
+
+            <!-- Sort By -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label text-secondary small mb-1">Sort By</label>
+                <select id="filter-sort" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="best_match">Best Match (Default)</option>
+                    <option value="priority">Priority</option>
+                    <option value="shortest">Shortest Duration</option>
+                    <option value="rating">Highest Rating</option>
+                    <option value="beginner">Beginner Friendly</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Cards List -->
+    <div id="course-cards-container" class="row g-4 mb-5">
+        {% for course in data.recommendations %}
+            <div class="col-lg-6 course-item"
+                 data-skill="{{ course.skill }}"
+                 data-type="{{ course.resource_type }}"
+                 data-difficulty="{{ course.difficulty }}"
+                 data-cost="{{ 'free' if course.is_free else 'paid' }}"
+                 data-duration="{{ course.duration_hours }}"
+                 data-priority="{{ course.priority }}"
+                 data-score="{{ course.recommendation_score }}"
+                 data-rating="{{ course.rating if course.rating else 0 }}"
+                 data-level="{{ course.level }}"
+                 data-status="{{ course.status|lower|replace(' ', '_') }}">
+                
+                <div class="glass-card h-100 p-4 d-flex flex-column position-relative border {% if course.priority == 'CRITICAL' %}border-danger border-opacity-50{% elif course.priority == 'HIGH' %}border-warning border-opacity-50{% else %}border-secondary border-opacity-25{% endif %}">
+                    
+                    <!-- Top Ribbon / Badges -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <!-- Resource Type Badge -->
+                            <span class="badge bg-secondary text-white border border-secondary px-2 py-1 small">
+                                <i class="{% if course.resource_type == 'Course' %}fa-solid fa-chalkboard-user{% elif course.resource_type == 'Practice' %}fa-solid fa-code{% elif course.resource_type == 'Project' %}fa-solid fa-diagram-project{% elif course.resource_type == 'Tutorial' %}fa-solid fa-laptop-code{% elif course.resource_type == 'Certification' %}fa-solid fa-certificate{% else %}fa-solid fa-book-open{% endif %} me-1"></i>
+                                {{ course.resource_type|upper }}
+                            </span>
+
+                            <!-- Free/Paid Badge -->
+                            {% if course.is_free %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                                    <i class="fa-solid fa-tag me-1"></i> FREE
+                                </span>
+                            {% else %}
+                                <span class="badge bg-info-subtle text-info border border-info-subtle px-2 py-1 small">
+                                    <i class="fa-solid fa-credit-card me-1"></i> PAID
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Priority Badge & Recommendation Score -->
+                        <div class="d-flex align-items-center gap-2">
+                            {% if course.priority == 'CRITICAL' %}
+                                <span class="badge bg-danger text-white fw-bold px-2 py-1 small">
+                                    <i class="fa-solid fa-fire me-1"></i> CRITICAL
+                                </span>
+                            {% elif course.priority == 'HIGH' %}
+                                <span class="badge bg-warning text-dark fw-bold px-2 py-1 small">
+                                    <i class="fa-solid fa-bolt me-1"></i> HIGH
+                                </span>
+                            {% elif course.priority == 'MEDIUM' %}
+                                <span class="badge bg-primary text-white px-2 py-1 small">
+                                    MEDIUM
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary text-light px-2 py-1 small">
+                                    LOW
+                                </span>
+                            {% endif %}
+
+                            <span class="badge bg-primary-subtle text-primary border border-primary fw-bold px-2 py-1" title="Match Score">
+                                {{ course.recommendation_score }}% Match
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Course Title & Provider -->
+                    <h3 class="h5 fw-bold text-white mb-1">
+                        <a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-white text-decoration-none hover-primary">
+                            {{ course.title }}
+                        </a>
+                    </h3>
+                    <div class="d-flex align-items-center gap-2 mb-3 text-secondary small">
+                        <span><i class="fa-solid fa-building me-1"></i> {{ course.provider }}</span>
+                        <span>&bull;</span>
+                        <span>
+                            {% if course.rating %}
+                                <i class="fa-solid fa-star text-warning me-1"></i> {{ course.rating }} / 5.0
+                            {% else %}
+                                <span class="text-muted"><i class="fa-regular fa-star me-1"></i> Rating not available</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Gap Context Box -->
+                    <div class="p-3 mb-3 rounded bg-dark border border-secondary border-opacity-50">
+                        <div class="row g-2 text-center text-md-start">
+                            <div class="col-6 col-md-3">
+                                <span class="text-secondary small d-block">Skill Target</span>
+                                <strong class="text-white small">{{ course.skill }}</strong>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="text-secondary small d-block">Your Level</span>
+                                <span class="badge {% if course.user_level == 'No Knowledge' %}bg-danger-subtle text-danger{% else %}bg-warning-subtle text-warning{% endif %} small">
+                                    {{ course.user_level }}
+                                </span>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="text-secondary small d-block">Required</span>
+                                <strong class="text-info small">{{ course.required_level }}</strong>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <span class="text-secondary small d-block">Est. Completion</span>
+                                <strong class="text-success small">{{ course.duration_hours }}h (~{{ course.estimated_weeks }}w)</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- "Why This Course?" Callout -->
+                    <div class="p-3 mb-3 rounded bg-primary-subtle bg-opacity-10 border-start border-3 border-primary">
+                        <span class="text-primary small fw-bold text-uppercase d-block mb-1">
+                            <i class="fa-solid fa-quote-left me-1"></i> Why Recommended:
+                        </span>
+                        <p class="text-secondary small mb-0 lh-sm">
+                            {{ course.why_recommended|safe }}
+                        </p>
+                    </div>
+
+                    <!-- Topic Match Checklist -->
+                    {% if course.matched_topics %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-secondary small fw-bold">Topics You Need:</span>
+                                <span class="badge bg-success-subtle text-success small">Match: {{ course.topic_match_percent }}%</span>
+                            </div>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for top in course.matched_topics %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle small py-1 px-2">
+                                        <i class="fa-solid fa-check me-1"></i> {{ top }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% elif course.topics %}
+                        <div class="mb-3">
+                            <span class="text-secondary small fw-bold d-block mb-1">Topics Covered:</span>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for top in course.topics[:4] %}
+                                    <span class="badge bg-dark border border-secondary text-secondary small py-1 px-2">
+                                        {{ top }}
+                                    </span>
+                                {% endfor %}
+                                {% if course.topics|length > 4 %}
+                                    <span class="badge bg-dark border border-secondary text-muted small py-1 px-2">
+                                        +{{ course.topics|length - 4 }} more
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Course Progress Bar & Hours -->
+                    <div class="p-2 mb-3 rounded bg-black bg-opacity-40 border border-secondary border-opacity-25">
+                        <div class="d-flex justify-content-between small text-secondary mb-1">
+                            <span>Status: <strong class="{% if course.status == 'Completed' %}text-success{% elif course.status == 'In Progress' %}text-warning{% else %}text-muted{% endif %}">{{ course.status if course.status else 'Not Started' }}</strong></span>
+                            <span><strong class="text-info">{{ course.duration_hours if course.status == 'Completed' else (course.duration_hours * 0.5 if course.status == 'In Progress' else 0)|round(1) }}</strong> / {{ course.duration_hours }} hrs ({{ 100 if course.status == 'Completed' else (50 if course.status == 'In Progress' else 0) }}%)</span>
+                        </div>
+                        <div class="progress" style="height: 5px; background-color: rgba(255,255,255,0.05);">
+                            <div class="progress-bar {% if course.status == 'Completed' %}bg-success{% elif course.status == 'In Progress' %}bg-warning{% else %}bg-secondary{% endif %}" style="width: {{ 100 if course.status == 'Completed' else (50 if course.status == 'In Progress' else 0) }}%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Status Notification if Completed -->
+                    {% if course.status == 'Completed' %}
+                        <div class="alert alert-success-subtle border border-success-subtle p-2 mb-3 rounded d-flex align-items-center justify-content-between flex-wrap gap-1 small">
+                            <span><i class="fa-solid fa-circle-check text-success me-1"></i> <strong>Completed!</strong></span>
+                            <a href="{{ url_for('course_feedback_view', course_id=course.id) }}" class="btn btn-sm btn-outline-warning py-0 px-2 rounded-pill">
+                                <i class="fa-solid fa-star me-1"></i> Feedback / Rating
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <!-- Action Buttons Footer -->
+                    <div class="mt-auto pt-3 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                        <div class="d-flex gap-2">
+                            <a href="{{ course.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-brand-primary btn-sm btn-start-learning" data-course-id="{{ course.id }}">
+                                <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Start Learning
+                            </a>
+                            <a href="{{ url_for('course_detail', course_id=course.id) }}" class="btn btn-brand-outline btn-sm">
+                                Details
+                            </a>
+                        </div>
+
+                        <div class="d-flex gap-1">
+                            {% if course.status != 'Completed' %}
+                                <a href="{{ url_for('complete_course_action', course_id=course.id) }}" class="btn btn-sm btn-outline-success" title="Mark Completed & Review">
+                                    <i class="fa-solid fa-check me-1"></i> Complete
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('course_feedback_view', course_id=course.id) }}" class="btn btn-sm btn-outline-warning" title="View or Edit Review">
+                                    <i class="fa-solid fa-star"></i> Review
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Empty State / Filter No Match Message -->
+    <div id="no-courses-matched" class="glass-card p-5 text-center my-4 d-none">
+        <i class="fa-solid fa-filter-circle-xmark fa-3x text-secondary mb-3"></i>
+        <h4 class="text-white fw-bold">No Courses Match Selected Filters</h4>
+        <p class="text-secondary small mb-3">Try adjusting your skill, difficulty, or duration filters to see more recommendations.</p>
+        <button type="button" id="btn-reset-filters" class="btn btn-brand-primary btn-sm">
+            Reset Filters
+        </button>
+    </div>
+
+    <!-- Fallback Section for Skills with No Exact Database Match -->
+    {% if data.fallback_skills %}
+        <div class="glass-card p-4 mb-5 border border-warning-subtle">
+            <div class="d-flex align-items-center gap-2 mb-3">
+                <i class="fa-solid fa-circle-info text-warning fs-5"></i>
+                <h4 class="h5 fw-bold text-white mb-0">Additional Recommended Practice & Documentation</h4>
+            </div>
+            <p class="text-secondary small mb-3">
+                No exact packaged course was found for these specific niche skills. Here are curated project ideas, documentation, and practice topics:
+            </p>
+
+            <div class="row g-3">
+                {% for fallback in data.fallback_skills %}
+                    <div class="col-md-6">
+                        <div class="p-3 rounded bg-dark border border-secondary">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-warning">{{ fallback.skill_name }}</strong>
+                                <span class="badge bg-secondary small">{{ fallback.importance }} Priority</span>
+                            </div>
+                            <p class="text-secondary small mb-2">
+                                <strong>Suggested Capstone:</strong> {{ fallback.suggested_project }}
+                            </p>
+                            {% if fallback.remaining_topics %}
+                                <div class="mb-2">
+                                    <span class="text-muted small d-block mb-1">Key Topics to Practice:</span>
+                                    {% for top in fallback.remaining_topics[:3] %}
+                                        <span class="badge bg-dark border border-secondary text-secondary small me-1 mb-1">{{ top }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <a href="{{ fallback.suggested_docs_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-sm">
+                                <i class="fa-solid fa-magnifying-glass me-1"></i> Search Documentation & Tutorials
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Dynamic Learning Plan Preview: YOUR RECOMMENDED ORDER -->
+    <div class="glass-card p-4 border-top border-4 border-primary">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold small">
+                    <i class="fa-solid fa-route me-1"></i> Sequential Pathway
+                </span>
+                <h3 class="h4 fw-bold text-white mb-0 mt-1">
+                    YOUR RECOMMENDED ORDER
+                </h3>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('roadmap', role=data.target_role) }}" class="btn btn-brand-primary btn-sm">
+                    <i class="fa-solid fa-road me-1"></i> View Full AI Roadmap <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+            {% for step in data.learning_plan_preview %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="p-3 rounded bg-dark border border-secondary h-100 d-flex flex-column position-relative">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary fw-bold rounded-pill">Step {{ step.step }}</span>
+                            <span class="badge bg-secondary text-white small">{{ step.category }}</span>
+                        </div>
+                        <h5 class="h6 fw-bold text-white mb-1">{{ step.title }}</h5>
+                        <p class="text-secondary small mb-2 flex-grow-1 text-truncate" title="{{ step.course_title }}">
+                            {{ step.course_title }}
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary text-secondary small">
+                            <span><i class="fa-regular fa-clock me-1"></i> {{ step.duration_hours }}h</span>
+                            <a href="{{ url_for('course_detail', course_id=step.course_id) }}" class="text-primary text-decoration-none small">
+                                View <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Interactive Client-side Filter & Sort Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = Array.from(document.querySelectorAll('.course-item'));
+    const container = document.getElementById('course-cards-container');
+    const noMatchMessage = document.getElementById('no-courses-matched');
+
+    const skillFilter = document.getElementById('filter-skill');
+    const typeFilter = document.getElementById('filter-type');
+    const diffFilter = document.getElementById('filter-difficulty');
+    const costFilter = document.getElementById('filter-cost');
+    const durationFilter = document.getElementById('filter-duration');
+    const sortSelect = document.getElementById('filter-sort');
+    const tabButtons = document.querySelectorAll('.tab-filter-btn');
+
+    let activeStatus = 'all';
+
+    function applyFiltersAndSort() {
+        const skill = skillFilter.value;
+        const type = typeFilter.value;
+        const diff = diffFilter.value;
+        const cost = costFilter.value;
+        const duration = durationFilter.value;
+        const sortBy = sortSelect.value;
+
+        let visibleCards = [];
+
+        cards.forEach(card => {
+            const cardSkill = card.dataset.skill;
+            const cardType = card.dataset.type;
+            const cardDiff = card.dataset.difficulty;
+            const cardCost = card.dataset.cost;
+            const cardDuration = parseFloat(card.dataset.duration || 0);
+            const cardStatus = card.dataset.status;
+
+            let matches = true;
+
+            // Status tab filter
+            if (activeStatus === 'in_progress' && cardStatus !== 'in_progress') matches = false;
+            if (activeStatus === 'completed' && cardStatus !== 'completed') matches = false;
+
+            // Skill filter
+            if (skill !== 'all' && cardSkill !== skill) matches = false;
+
+            // Type filter
+            if (type !== 'all' && cardType !== type) matches = false;
+
+            // Difficulty filter
+            if (diff !== 'all' && cardDiff !== diff) matches = false;
+
+            // Cost filter
+            if (cost !== 'all' && cardCost !== cost) matches = false;
+
+            // Duration filter
+            if (duration === 'short' && cardDuration >= 8) matches = false;
+            if (duration === 'medium' && (cardDuration < 8 || cardDuration > 20)) matches = false;
+            if (duration === 'long' && cardDuration <= 20) matches = false;
+
+            if (matches) {
+                card.classList.remove('d-none');
+                visibleCards.push(card);
+            } else {
+                card.classList.add('d-none');
+            }
+        });
+
+        // Sorting
+        const priorityRank = {'CRITICAL': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1};
+
+        visibleCards.sort((a, b) => {
+            if (sortBy === 'best_match') {
+                return (parseInt(b.dataset.score) || 0) - (parseInt(a.dataset.score) || 0);
+            } else if (sortBy === 'priority') {
+                const prA = priorityRank[a.dataset.priority] || 0;
+                const prB = priorityRank[b.dataset.priority] || 0;
+                if (prB !== prA) return prB - prA;
+                return (parseInt(b.dataset.score) || 0) - (parseInt(a.dataset.score) || 0);
+            } else if (sortBy === 'shortest') {
+                return (parseFloat(a.dataset.duration) || 0) - (parseFloat(b.dataset.duration) || 0);
+            } else if (sortBy === 'rating') {
+                return (parseFloat(b.dataset.rating) || 0) - (parseFloat(a.dataset.rating) || 0);
+            } else if (sortBy === 'beginner') {
+                const levelRank = {'Beginner': 3, 'All Levels': 2, 'Intermediate': 1, 'Advanced': 0};
+                return (levelRank[b.dataset.level] || 0) - (levelRank[a.dataset.level] || 0);
+            }
+            return 0;
+        });
+
+        // Re-append sorted cards in DOM
+        visibleCards.forEach(card => container.appendChild(card));
+
+        if (visibleCards.length === 0) {
+            noMatchMessage.classList.remove('d-none');
+        } else {
+            noMatchMessage.classList.add('d-none');
+        }
+    }
+
+    [skillFilter, typeFilter, diffFilter, costFilter, durationFilter, sortSelect].forEach(el => {
+        el.addEventListener('change', applyFiltersAndSort);
+    });
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            tabButtons.forEach(b => {
+                b.classList.remove('btn-brand-primary', 'active');
+                b.classList.add('btn-brand-outline');
+            });
+            this.classList.remove('btn-brand-outline');
+            this.classList.add('btn-brand-primary', 'active');
+            activeStatus = this.dataset.filterStatus;
+            applyFiltersAndSort();
+        });
+    });
+
+    document.getElementById('btn-reset-filters').addEventListener('click', function() {
+        skillFilter.value = 'all';
+        typeFilter.value = 'all';
+        diffFilter.value = 'all';
+        costFilter.value = 'all';
+        durationFilter.value = 'all';
+        sortSelect.value = 'best_match';
+        applyFiltersAndSort();
+    });
+
+    // Handle Status Updates via AJAX
+    document.querySelectorAll('.btn-status-toggle').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const courseId = this.dataset.courseId;
+            const newStatus = this.dataset.status;
+
+            fetch('/api/recommendations/status', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({course_id: courseId, status: newStatus})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Could not update status: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    });
+
+    // Start learning tracker
+    document.querySelectorAll('.btn-start-learning').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const courseId = this.dataset.courseId;
+            fetch('/api/recommendations/status', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({course_id: courseId, status: 'In Progress'})
+            }).catch(err => console.error(err));
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Assessment Management - Admin Panel{% endblock %}
+{% block page_title %}Assessment Questions & Diagnostics{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-info">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Assessment Questions & <span class="text-gradient">Diagnostics Pool</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Create diagnostic assessment questions, review student attempt performance, and analyze pass rate benchmarks.
+                </p>
+            </div>
+            <button type="button" class="btn btn-brand-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newQuestionModal">
+                <i class="fa-solid fa-plus me-1"></i> Add Question
+            </button>
+        </div>
+    </div>
+
+    <!-- Assessment Performance Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Question Pool</span>
+                <div class="h3 fw-bold text-white mb-0">{{ analytics.total_questions }}</div>
+                <span class="text-muted x-small">Active Questions</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Total Attempts</span>
+                <div class="h3 fw-bold text-info mb-0">{{ analytics.total_attempts }}</div>
+                <span class="text-muted x-small">Student Submissions</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Average Score</span>
+                <div class="h3 fw-bold text-warning mb-0">{{ analytics.avg_score }}%</div>
+                <span class="text-muted x-small">Cohort Mean</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Overall Pass Rate</span>
+                <div class="h3 fw-bold text-success mb-0">{{ analytics.pass_rate }}%</div>
+                <span class="text-muted x-small">{{ analytics.passed_count }} Passed / {{ analytics.failed_count }} Failed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_assessments_view') }}" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search question text or topic..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="skill" placeholder="Filter by skill..." value="{{ skill_filter }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <select name="difficulty" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="all" {% if difficulty_filter == 'all' or not difficulty_filter %}selected{% endif %}>All Difficulties</option>
+                    <option value="Easy" {% if difficulty_filter == 'Easy' %}selected{% endif %}>Easy</option>
+                    <option value="Moderate" {% if difficulty_filter == 'Moderate' %}selected{% endif %}>Moderate</option>
+                    <option value="Difficult" {% if difficulty_filter == 'Difficult' %}selected{% endif %}>Difficult</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">Filter</button>
+                <a href="{{ url_for('admin_assessments_view') }}" class="btn btn-brand-outline btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Questions Table -->
+    <div class="glass-card p-4">
+        {% if questions %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>Skill & Topic</th>
+                            <th>Question</th>
+                            <th>Correct Answer</th>
+                            <th>Difficulty</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q in questions %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-bold d-block mb-1">{{ q.skill }}</span>
+                                    <span class="text-muted x-small">{{ q.topic }}</span>
+                                </td>
+                                <td style="max-width: 320px;">
+                                    <p class="text-white small mb-1 text-truncate" title="{{ q.question }}">{{ q.question }}</p>
+                                    <span class="text-muted x-small">{{ q.options|length }} options &bull; Expl: {{ q.explanation[:40] if q.explanation else '—' }}...</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle small">{{ q.correct_answer }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary text-secondary small">{{ q.difficulty }}</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <button type="button" class="btn btn-outline-warning btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#editQModal-{{ q.id }}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+
+                                        <form method="POST" action="{{ url_for('admin_assessment_delete', question_id=q.id) }}" class="d-inline" onsubmit="return confirm('Delete this question?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Edit Modal -->
+                                    <div class="modal fade text-start" id="editQModal-{{ q.id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content bg-dark text-white border-secondary">
+                                                <div class="modal-header border-secondary">
+                                                    <h5 class="modal-title fs-6 fw-bold">Edit Question &bull; #{{ q.id }}</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form method="POST" action="{{ url_for('admin_assessment_save') }}">
+                                                    <input type="hidden" name="question_id" value="{{ q.id }}">
+                                                    <div class="modal-body">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-6">
+                                                                <label class="form-label text-secondary small">Skill Name *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="skill" value="{{ q.skill }}" required>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label text-secondary small">Topic</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topic" value="{{ q.topic }}">
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label text-secondary small">Question Text *</label>
+                                                                <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="question" rows="3" required>{{ q.question }}</textarea>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label text-secondary small">Options (one per line, 4 options expected) *</label>
+                                                                <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="options" rows="4" required>{{ q.options|join('\n') }}</textarea>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <label class="form-label text-secondary small">Exact Correct Answer *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="correct_answer" value="{{ q.correct_answer }}" required>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label class="form-label text-secondary small">Difficulty</label>
+                                                                <select class="form-select form-select-sm bg-black text-white border-secondary" name="difficulty">
+                                                                    <option value="Easy" {% if q.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                                                                    <option value="Moderate" {% if q.difficulty == 'Moderate' %}selected{% endif %}>Moderate</option>
+                                                                    <option value="Difficult" {% if q.difficulty == 'Difficult' %}selected{% endif %}>Difficult</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label text-secondary small">Explanation & Learning Rationale</label>
+                                                                <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="explanation" rows="2">{{ q.explanation }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-secondary">
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-brand-primary btn-sm">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-secondary small mb-0 text-center py-4">No questions found matching criteria.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New Question Modal -->
+<div class="modal fade text-start" id="newQuestionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-plus text-primary me-1"></i> Add Diagnostic Question</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_assessment_save') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Skill Name *</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="skill" placeholder="e.g., Python, SQL, Machine Learning" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Topic</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topic" placeholder="e.g., List Comprehensions">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Question Text *</label>
+                            <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="question" rows="3" placeholder="Enter problem or scenario description..." required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Options (one per line, 4 options) *</label>
+                            <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="options" rows="4" placeholder="Option A&#10;Option B&#10;Option C&#10;Option D" required></textarea>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label text-secondary small">Exact Correct Answer *</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="correct_answer" placeholder="Must exactly match one option above" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary small">Difficulty</label>
+                            <select class="form-select form-select-sm bg-black text-white border-secondary" name="difficulty">
+                                <option value="Easy">Easy</option>
+                                <option value="Moderate" selected>Moderate</option>
+                                <option value="Difficult">Difficult</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Explanation & Learning Rationale</label>
+                            <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="explanation" rows="2" placeholder="Why this answer is correct..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand-primary btn-sm">Create Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

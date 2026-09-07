@@ -1,0 +1,270 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Course Management - Admin Panel{% endblock %}
+{% block page_title %}Learning Course Catalog{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Course Catalog & <span class="text-gradient">Curriculum Governance</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Add, audit, modify, and monitor enrollment and completion rates across all recommended course resources.
+                </p>
+            </div>
+            <button type="button" class="btn btn-brand-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newCourseModal">
+                <i class="fa-solid fa-plus me-1"></i> Add New Course
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_courses_view') }}" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search course title or description..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="skill" placeholder="Filter by skill..." value="{{ skill_filter }}">
+            </div>
+            <div class="col-6 col-md-2">
+                <input type="text" class="form-control form-control-sm bg-dark text-white border-secondary" name="provider" placeholder="Filter by provider..." value="{{ provider_filter }}">
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">Filter</button>
+                <a href="{{ url_for('admin_courses_view') }}" class="btn btn-brand-outline btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Courses Table -->
+    <div class="glass-card p-4">
+        {% if courses %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>Course Title & Provider</th>
+                            <th>Target Skill</th>
+                            <th>Level & Duration</th>
+                            <th>Rating & Reviews</th>
+                            <th>Completions</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in courses %}
+                            <tr>
+                                <td style="max-width: 280px;">
+                                    <strong class="text-white small d-block text-truncate" title="{{ c.title }}">{{ c.title }}</strong>
+                                    <span class="text-muted x-small">{{ c.provider }} &bull; <a href="{{ c.url }}" target="_blank" class="text-info text-decoration-none">Link &nearr;</a></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle small fw-bold">{{ c.skill }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white x-small d-block mb-1">{{ c.level }}</span>
+                                    <span class="text-muted x-small">{{ c.duration_hours }}h &bull; {{ 'Free' if c.is_free else 'Paid' }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-warning small fw-bold"><i class="fa-solid fa-star me-1"></i> {{ c.rating or '4.8' }}</span>
+                                    <span class="text-muted x-small d-block">{{ c.feedback_count }} reviews</span>
+                                </td>
+                                <td>
+                                    <span class="text-white small fw-bold">{{ c.completed_count }}</span>
+                                    <span class="text-muted x-small">/ {{ c.enrolled_count }} enrolled</span>
+                                </td>
+                                <td>
+                                    {% if c.is_active %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle small">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle small">Disabled</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2">
+                                        <button type="button" class="btn btn-outline-warning btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#editCourseModal-{{ c.id }}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+
+                                        <form method="POST" action="{{ url_for('admin_course_toggle_status', course_id=c.id) }}" class="d-inline">
+                                            {% if c.is_active %}
+                                                <button type="submit" class="btn btn-outline-secondary btn-sm py-1 px-2" title="Deactivate Course">
+                                                    <i class="fa-solid fa-eye-slash"></i>
+                                                </button>
+                                            {% else %}
+                                                <button type="submit" class="btn btn-outline-success btn-sm py-1 px-2" title="Activate Course">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                            {% endif %}
+                                        </form>
+
+                                        <form method="POST" action="{{ url_for('admin_course_delete', course_id=c.id) }}" class="d-inline" onsubmit="return confirm('Delete this course record?');">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                    <!-- Edit Course Modal -->
+                                    <div class="modal fade text-start" id="editCourseModal-{{ c.id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content bg-dark text-white border-secondary">
+                                                <div class="modal-header border-secondary">
+                                                    <h5 class="modal-title fs-6 fw-bold">Edit Course &bull; {{ c.title }}</h5>
+                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <form method="POST" action="{{ url_for('admin_course_save') }}">
+                                                    <input type="hidden" name="course_id" value="{{ c.id }}">
+                                                    <div class="modal-body">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-8">
+                                                                <label class="form-label text-secondary small">Course Title *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="title" value="{{ c.title }}" required>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <label class="form-label text-secondary small">Provider *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="provider" value="{{ c.provider }}" required>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label text-secondary small">Primary Target Skill *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="skill" value="{{ c.skill }}" required>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="form-label text-secondary small">Course URL *</label>
+                                                                <input type="url" class="form-control form-control-sm bg-black text-white border-secondary" name="url" value="{{ c.url }}" required>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="form-label text-secondary small">Level</label>
+                                                                <select class="form-select form-select-sm bg-black text-white border-secondary" name="level">
+                                                                    <option value="Beginner" {% if c.level == 'Beginner' %}selected{% endif %}>Beginner</option>
+                                                                    <option value="Intermediate" {% if c.level == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                                                                    <option value="Advanced" {% if c.level == 'Advanced' %}selected{% endif %}>Advanced</option>
+                                                                    <option value="All Levels" {% if c.level == 'All Levels' %}selected{% endif %}>All Levels</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="form-label text-secondary small">Duration (Hours)</label>
+                                                                <input type="number" step="0.5" class="form-control form-control-sm bg-black text-white border-secondary" name="duration_hours" value="{{ c.duration_hours }}">
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="form-label text-secondary small">Difficulty</label>
+                                                                <select class="form-select form-select-sm bg-black text-white border-secondary" name="difficulty">
+                                                                    <option value="Easy" {% if c.difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                                                                    <option value="Moderate" {% if c.difficulty == 'Moderate' %}selected{% endif %}>Moderate</option>
+                                                                    <option value="Difficult" {% if c.difficulty == 'Difficult' %}selected{% endif %}>Difficult</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <label class="form-label text-secondary small">Rating</label>
+                                                                <input type="number" step="0.1" max="5.0" class="form-control form-control-sm bg-black text-white border-secondary" name="rating" value="{{ c.rating }}">
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label text-secondary small">Topics Covered (comma separated)</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topics" value="{{ c.topics|join(', ') }}">
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <label class="form-label text-secondary small">Description</label>
+                                                                <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="description" rows="2">{{ c.description }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer border-secondary">
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" class="btn btn-brand-primary btn-sm">Save Changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-secondary small mb-0 text-center py-4">No courses found matching filters.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New Course Modal -->
+<div class="modal fade text-start" id="newCourseModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-plus text-primary me-1"></i> Add New Course</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_course_save') }}">
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label text-secondary small">Course Title *</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="title" placeholder="e.g., Complete SQL Bootcamp 2026" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary small">Provider *</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="provider" placeholder="e.g., Coursera, Udemy, Kaggle" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Primary Target Skill *</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="skill" placeholder="e.g., SQL" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small">Course URL *</label>
+                            <input type="url" class="form-control form-control-sm bg-black text-white border-secondary" name="url" placeholder="https://..." required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-secondary small">Level</label>
+                            <select class="form-select form-select-sm bg-black text-white border-secondary" name="level">
+                                <option value="Beginner" selected>Beginner</option>
+                                <option value="Intermediate">Intermediate</option>
+                                <option value="Advanced">Advanced</option>
+                                <option value="All Levels">All Levels</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-secondary small">Duration (Hours)</label>
+                            <input type="number" step="0.5" class="form-control form-control-sm bg-black text-white border-secondary" name="duration_hours" value="12.0">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-secondary small">Difficulty</label>
+                            <select class="form-select form-select-sm bg-black text-white border-secondary" name="difficulty">
+                                <option value="Easy">Easy</option>
+                                <option value="Moderate" selected>Moderate</option>
+                                <option value="Difficult">Difficult</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-secondary small">Rating</label>
+                            <input type="number" step="0.1" max="5.0" class="form-control form-control-sm bg-black text-white border-secondary" name="rating" value="4.8">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Topics Covered (comma separated)</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="topics" placeholder="e.g., Joins, Aggregations, Subqueries, CTEs">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small">Description</label>
+                            <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="description" rows="2" placeholder="Course overview and learning objectives..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand-primary btn-sm">Create Course Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

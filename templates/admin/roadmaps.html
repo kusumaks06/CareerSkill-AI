@@ -1,0 +1,112 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Roadmap Analytics - Admin Panel{% endblock %}
+{% block page_title %}AI Career Roadmaps Oversight{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-success">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    AI Career Roadmaps & <span class="text-gradient">Pathway Adoption</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Monitor student progression through milestone phases, most recommended competencies, and task completion rates.
+                </p>
+            </div>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill small">
+                {{ analytics.total_roadmaps }} Active Roadmaps
+            </span>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Generated Roadmaps</span>
+                <div class="h3 fw-bold text-white mb-0">{{ analytics.total_roadmaps }}</div>
+                <span class="text-muted x-small">Personalized Pathways</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Average Progress</span>
+                <div class="h3 fw-bold text-gradient mb-0">{{ analytics.avg_progress }}%</div>
+                <span class="text-muted x-small">Across Cohort</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Completed Milestones</span>
+                <div class="h3 fw-bold text-success mb-0">{{ analytics.completed_milestones_count }}</div>
+                <span class="text-muted x-small">Checked Off Tasks</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary x-small text-uppercase fw-bold d-block mb-1">Pending Milestones</span>
+                <div class="h3 fw-bold text-warning mb-0">{{ analytics.incomplete_milestones_count }}</div>
+                <span class="text-muted x-small">In-flight Pathway Tasks</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popular Target Careers & Top Recommended Skills -->
+    <div class="row g-4 mb-4">
+        <!-- Target Career Frequency -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-briefcase text-primary"></i> Most Common Target Careers in Roadmaps
+                </h5>
+                {% if analytics.top_careers %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in analytics.top_careers %}
+                            <div>
+                                <div class="d-flex justify-content-between small text-secondary mb-1">
+                                    <span class="text-white fw-bold">{{ item.career }}</span>
+                                    <span><strong>{{ item.count }}</strong> roadmaps</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                                    <div class="progress-bar bg-primary" style="width: {{ (item.count / analytics.total_roadmaps * 100)|round|int if analytics.total_roadmaps > 0 else 0 }}%;"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No active roadmaps generated yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Top Recommended Milestone Skills -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4 h-100">
+                <h5 class="fw-bold text-white mb-3 d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-code text-info"></i> Most Recommended Skills in Pathways
+                </h5>
+                {% if analytics.top_skills %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for item in analytics.top_skills %}
+                            <div>
+                                <div class="d-flex justify-content-between small text-secondary mb-1">
+                                    <span class="text-white fw-bold">{{ item.skill }}</span>
+                                    <span><strong>{{ item.count }}</strong> milestone occurrences</span>
+                                </div>
+                                <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                                    <div class="progress-bar bg-info" style="width: {{ (item.count / 20 * 100)|round|int }}%;"></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-secondary small mb-0">No roadmap milestone data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

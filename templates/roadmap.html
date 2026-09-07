@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Career Roadmap - {{ target_role }} | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="roadmap-root" data-roadmap-id="{{ roadmap.id if roadmap and roadmap.id else '' }}" data-user-id="{{ user.id if user else '' }}">
+    
+    <!-- Top Header & Breadcrumb -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-road me-1"></i> AI Career Pathway
+                    </span>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill small">
+                        <i class="fa-solid fa-calendar-check me-1"></i> {{ roadmap.total_weeks }} Weeks Plan
+                    </span>
+                    {% if roadmap.status == 'Completed' %}
+                        <span class="badge bg-success text-white px-3 py-1 rounded-pill small">
+                            <i class="fa-solid fa-circle-check me-1"></i> Roadmap Completed!
+                        </span>
+                    {% endif %}
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    AI Career Learning Roadmap: <span class="text-gradient">{{ target_role }}</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    A personalized, milestone-driven pathway organized across 5 progressive phases based on your skill gaps and weekly velocity.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex gap-2 justify-content-lg-end flex-wrap">
+                    <a href="{{ url_for('course_recommendations', role=target_role) }}" class="btn btn-brand-outline btn-sm">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> Recommended Courses
+                    </a>
+                    <button type="button" class="btn btn-brand-outline btn-sm" id="btn-print-roadmap" onclick="window.print()">
+                        <i class="fa-solid fa-print me-1"></i> Print / Save PDF
+                    </button>
+                    <form action="{{ url_for('generate_roadmap_action') }}" method="POST" class="d-inline">
+                        <input type="hidden" name="target_role" value="{{ target_role }}">
+                        <button type="submit" class="btn btn-brand-primary btn-sm" id="btn-regenerate-roadmap">
+                            <i class="fa-solid fa-arrows-rotate me-1"></i> Refresh Roadmap
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Role & Velocity Metrics Strip -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Target Career</span>
+                <div class="h5 fw-bold text-white mb-0 text-truncate" title="{{ target_role }}">{{ target_role }}</div>
+                <span class="text-muted small">Sequential Pathway</span>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Roadmap Progress</span>
+                <div class="h3 fw-bold text-gradient mb-0" id="header-progress-pct">{{ roadmap.completion_percentage }}%</div>
+                <div class="progress mt-2" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-gradient" id="header-progress-bar" style="width: {{ roadmap.completion_percentage }}%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Total Timeline</span>
+                <div class="h3 fw-bold text-info mb-0">{{ roadmap.total_weeks }} <span class="fs-6 text-muted">weeks</span></div>
+                <span class="text-muted small">~{{ roadmap.total_hours|round|int }} study hours</span>
+            </div>
+        </div>
+
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-3 text-center h-100">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Weekly Velocity</span>
+                <div class="h3 fw-bold text-success mb-0">{{ roadmap.weekly_hours }}h</div>
+                <span class="text-muted small">Available per week</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phase Quick Filter Navigation Tabs -->
+    <div class="d-flex gap-2 mb-4 border-bottom border-secondary pb-3 flex-wrap">
+        <button type="button" class="btn btn-sm btn-brand-primary phase-filter-btn active" data-phase="all">
+            <i class="fa-solid fa-list-check me-1"></i> All Phases ({{ roadmap.phases|length }})
+        </button>
+        {% for phase in roadmap.phases %}
+            <button type="button" class="btn btn-sm btn-brand-outline phase-filter-btn" data-phase="{{ phase.number }}">
+                <i class="{{ phase.icon }} me-1"></i> Phase {{ phase.number }} ({{ phase.milestones|length }} milestones)
+            </button>
+        {% endfor %}
+    </div>
+
+    <!-- Roadmap Timeline Container -->
+    <div class="roadmap-timeline-container">
+        {% for phase in roadmap.phases %}
+            <div class="phase-section mb-5" data-phase-id="{{ phase.number }}">
+                
+                <!-- Phase Header Card -->
+                <div class="glass-card p-3 p-md-4 mb-4 border-start border-4 {% if phase.number == 1 %}border-info{% elif phase.number == 2 %}border-primary{% elif phase.number == 3 %}border-warning{% elif phase.number == 4 %}border-danger{% else %}border-success{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="brand-icon-box" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                                <i class="{{ phase.icon }}"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary text-white small">PHASE {{ phase.number }}</span>
+                                    <h3 class="h5 fw-bold text-white mb-0">{{ phase.name }}</h3>
+                                </div>
+                                <p class="text-secondary small mb-0 mt-1">{{ phase.summary }}</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-dark border border-secondary text-secondary small">
+                                <i class="fa-regular fa-clock me-1"></i> ~{{ phase.total_hours|round|int }}h
+                            </span>
+                            <span class="badge {% if phase.is_completed %}bg-success text-white{% else %}bg-secondary text-white-50{% endif %} px-2 py-1 small phase-status-badge" id="phase-badge-{{ phase.number }}">
+                                {% if phase.is_completed %}
+                                    <i class="fa-solid fa-circle-check me-1"></i> Phase Complete
+                                {% else %}
+                                    <i class="fa-regular fa-circle me-1"></i> In Progress
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase Milestones List -->
+                <div class="row g-4">
+                    {% for milestone in phase.milestones %}
+                        <div class="col-12 milestone-card" id="milestone-card-{{ milestone.id }}" data-milestone-id="{{ milestone.id }}">
+                            <div class="glass-card p-4 border position-relative {% if milestone.is_completed %}border-success border-opacity-50 bg-success bg-opacity-5{% elif milestone.priority == 'Critical' %}border-danger border-opacity-40{% elif milestone.priority == 'High' %}border-warning border-opacity-40{% else %}border-secondary border-opacity-25{% endif %}">
+                                
+                                <!-- Top Bar: Week Range & Badges -->
+                                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-primary text-white fw-bold px-3 py-1 rounded-pill">
+                                            <i class="fa-regular fa-calendar me-1"></i> Week {{ milestone.week_start }}{% if milestone.week_start != milestone.week_end %} - {{ milestone.week_end }}{% endif %}
+                                        </span>
+                                        <span class="badge bg-dark border border-secondary text-info small">
+                                            <i class="fa-solid fa-tag me-1"></i> {{ milestone.skill }}
+                                        </span>
+                                        <span class="badge {% if milestone.priority == 'Critical' %}bg-danger text-white{% elif milestone.priority == 'High' %}bg-warning text-dark{% else %}bg-primary text-white{% endif %} small fw-bold">
+                                            {{ milestone.priority }} Priority
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-secondary small">
+                                            <i class="fa-regular fa-clock me-1"></i> ~{{ milestone.estimated_hours|round|int }}h
+                                        </span>
+                                        <button type="button" 
+                                                class="btn btn-sm {% if milestone.is_completed %}btn-success{% else %}btn-outline-secondary{% endif %} btn-milestone-toggle" 
+                                                data-milestone-id="{{ milestone.id }}" 
+                                                data-completed="{{ 'true' if milestone.is_completed else 'false' }}">
+                                            <i class="fa-solid {% if milestone.is_completed %}fa-circle-check{% else %}fa-check{% endif %} me-1"></i>
+                                            <span class="btn-text">{{ 'Completed' if milestone.is_completed else 'Mark Milestone Done' }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Milestone Title & Objective -->
+                                <h4 class="h5 fw-bold text-white mb-2">{{ milestone.title }}</h4>
+                                <p class="text-secondary small mb-3 lh-base">{{ milestone.description }}</p>
+
+                                <!-- Actionable Tasks Checklist -->
+                                <div class="p-3 rounded bg-dark border border-secondary border-opacity-50 mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="text-secondary small fw-bold text-uppercase">
+                                            <i class="fa-solid fa-list-check me-1 text-primary"></i> Actionable Learning Tasks:
+                                        </span>
+                                        <span class="badge bg-dark border border-secondary text-secondary small milestone-task-counter" id="task-counter-{{ milestone.id }}">
+                                            {% set completed_count = milestone.tasks|selectattr('completed')|list|length %}
+                                            {{ completed_count }} / {{ milestone.tasks|length }} Tasks
+                                        </span>
+                                    </div>
+
+                                    <div class="d-flex flex-column gap-2">
+                                        {% for task in milestone.tasks %}
+                                            <div class="form-check d-flex align-items-start gap-2 p-0 ms-1">
+                                                <input class="form-check-input mt-1 task-chk" 
+                                                       type="checkbox" 
+                                                       value="{{ task.id }}" 
+                                                       id="chk_task_{{ milestone.id }}_{{ task.id }}" 
+                                                       data-milestone-id="{{ milestone.id }}"
+                                                       data-task-id="{{ task.id }}"
+                                                       {% if task.completed %}checked{% endif %}>
+                                                <label class="form-check-label text-white small flex-grow-1 {% if task.completed %}text-decoration-line-through text-muted{% endif %}" 
+                                                       for="chk_task_{{ milestone.id }}_{{ task.id }}" 
+                                                       id="label_task_{{ milestone.id }}_{{ task.id }}">
+                                                    {{ task.text }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                                <!-- Hands-on Checkpoint Project Deliverable -->
+                                {% if milestone.checkpoint_title %}
+                                    <div class="p-3 rounded bg-primary-subtle bg-opacity-10 border border-primary-subtle mb-3">
+                                        <div class="d-flex align-items-start gap-2">
+                                            <i class="fa-solid fa-flag-checkered text-warning fs-5 mt-1"></i>
+                                            <div>
+                                                <strong class="text-white small d-block mb-1">{{ milestone.checkpoint_title }}</strong>
+                                                <p class="text-secondary small mb-0 lh-sm">{{ milestone.checkpoint_description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <!-- Recommended Curated Learning Resources -->
+                                {% if milestone.recommended_resources %}
+                                    <div class="pt-2 border-top border-secondary border-opacity-25">
+                                        <span class="text-secondary small fw-bold d-block mb-2">
+                                            <i class="fa-solid fa-graduation-cap me-1 text-info"></i> Recommended Courses & Resources:
+                                        </span>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for res in milestone.recommended_resources %}
+                                                <a href="{{ res.url }}" target="_blank" rel="noopener noreferrer" class="btn btn-dark btn-sm border border-secondary text-secondary hover-primary text-truncate" style="max-width: 320px;" title="{{ res.title }}">
+                                                    <i class="fa-solid fa-arrow-up-right-from-square me-1 text-primary"></i>
+                                                    {{ res.title }} <span class="text-muted">({{ res.provider }})</span>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Bottom Action Ribbon -->
+    <div class="glass-card p-4 text-center mt-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="text-md-start">
+                <h4 class="h5 fw-bold text-white mb-1">Ready to start with Week 1?</h4>
+                <p class="text-secondary small mb-0">Check off tasks as you study each week. Your progress updates your active dashboard in real-time.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('course_recommendations', role=target_role) }}" class="btn btn-brand-primary btn-sm">
+                    <i class="fa-solid fa-graduation-cap me-1"></i> Browse All Courses
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-brand-outline btn-sm">
+                    <i class="fa-solid fa-gauge-high me-1"></i> User Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Client-side Interactive Script for Task & Milestone AJAX Checkoffs -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rootEl = document.getElementById('roadmap-root');
+    const roadmapId = rootEl.dataset.roadmapId;
+
+    // Phase Filter Tabs
+    const phaseButtons = document.querySelectorAll('.phase-filter-btn');
+    const phaseSections = document.querySelectorAll('.phase-section');
+
+    phaseButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            phaseButtons.forEach(b => {
+                b.classList.remove('btn-brand-primary', 'active');
+                b.classList.add('btn-brand-outline');
+            });
+            this.classList.remove('btn-brand-outline');
+            this.classList.add('btn-brand-primary', 'active');
+
+            const selectedPhase = this.dataset.phase;
+            phaseSections.forEach(section => {
+                if (selectedPhase === 'all' || section.dataset.phaseId === selectedPhase) {
+                    section.classList.remove('d-none');
+                } else {
+                    section.classList.add('d-none');
+                }
+            });
+        });
+    });
+
+    // Task Checkbox Toggle via AJAX
+    document.querySelectorAll('.task-chk').forEach(chk => {
+        chk.addEventListener('change', function() {
+            const milestoneId = this.dataset.milestoneId;
+            const taskId = this.dataset.taskId;
+            const isChecked = this.checked;
+            const labelEl = document.getElementById(`label_task_${milestoneId}_${taskId}`);
+
+            if (isChecked) {
+                labelEl.classList.add('text-decoration-line-through', 'text-muted');
+            } else {
+                labelEl.classList.remove('text-decoration-line-through', 'text-muted');
+            }
+
+            if (!roadmapId) {
+                // Guest mode: update local UI
+                updateLocalMilestoneProgress(milestoneId);
+                return;
+            }
+
+            fetch("{{ url_for('api_roadmap_task_toggle') }}", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    roadmap_id: roadmapId,
+                    milestone_id: milestoneId,
+                    task_id: taskId,
+                    completed: isChecked
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update header progress bar
+                    updateProgressBar(data.overall_progress);
+
+                    // Update milestone counter
+                    const counter = document.getElementById(`task-counter-${milestoneId}`);
+                    if (counter) {
+                        counter.textContent = `${data.milestone_tasks_completed} / ${data.milestone_tasks_total} Tasks`;
+                    }
+
+                    // Update milestone card styling & button
+                    const milestoneCard = document.getElementById(`milestone-card-${milestoneId}`);
+                    const toggleBtn = milestoneCard ? milestoneCard.querySelector('.btn-milestone-toggle') : null;
+                    if (toggleBtn) {
+                        if (data.is_milestone_completed) {
+                            toggleBtn.classList.remove('btn-outline-secondary');
+                            toggleBtn.classList.add('btn-success');
+                            toggleBtn.querySelector('.btn-text').textContent = 'Completed';
+                            toggleBtn.querySelector('i').className = 'fa-solid fa-circle-check me-1';
+                            toggleBtn.dataset.completed = 'true';
+                        } else {
+                            toggleBtn.classList.remove('btn-success');
+                            toggleBtn.classList.add('btn-outline-secondary');
+                            toggleBtn.querySelector('.btn-text').textContent = 'Mark Milestone Done';
+                            toggleBtn.querySelector('i').className = 'fa-solid fa-check me-1';
+                            toggleBtn.dataset.completed = 'false';
+                        }
+                    }
+                } else {
+                    console.error("Task toggle failed:", data.error);
+                }
+            })
+            .catch(err => console.error("Error updating task:", err));
+        });
+    });
+
+    // Milestone Toggle Button via AJAX
+    document.querySelectorAll('.btn-milestone-toggle').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const milestoneId = this.dataset.milestoneId;
+            const currentCompleted = this.dataset.completed === 'true';
+            const newCompleted = !currentCompleted;
+
+            if (!roadmapId) {
+                // Guest mode
+                this.dataset.completed = newCompleted ? 'true' : 'false';
+                this.querySelector('.btn-text').textContent = newCompleted ? 'Completed' : 'Mark Milestone Done';
+                this.className = `btn btn-sm ${newCompleted ? 'btn-success' : 'btn-outline-secondary'} btn-milestone-toggle`;
+                const checkboxes = document.querySelectorAll(`.task-chk[data-milestone-id="${milestoneId}"]`);
+                checkboxes.forEach(c => {
+                    c.checked = newCompleted;
+                    const l = document.getElementById(`label_task_${milestoneId}_${c.dataset.taskId}`);
+                    if (l) {
+                        if (newCompleted) l.classList.add('text-decoration-line-through', 'text-muted');
+                        else l.classList.remove('text-decoration-line-through', 'text-muted');
+                    }
+                });
+                return;
+            }
+
+            fetch("{{ url_for('api_roadmap_milestone_status') }}", {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    roadmap_id: roadmapId,
+                    milestone_id: milestoneId,
+                    is_completed: newCompleted
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert("Could not update milestone: " + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => console.error("Error updating milestone:", err));
+        });
+    });
+
+    function updateProgressBar(pct) {
+        const pctEl = document.getElementById('header-progress-pct');
+        const barEl = document.getElementById('header-progress-bar');
+        if (pctEl) pctEl.textContent = `${pct}%`;
+        if (barEl) barEl.style.width = `${pct}%`;
+    }
+
+    function updateLocalMilestoneProgress(milestoneId) {
+        const checkboxes = document.querySelectorAll(`.task-chk[data-milestone-id="${milestoneId}"]`);
+        let completed = 0;
+        checkboxes.forEach(c => { if (c.checked) completed++; });
+        const counter = document.getElementById(`task-counter-${milestoneId}`);
+        if (counter) {
+            counter.textContent = `${completed} / ${checkboxes.length} Tasks`;
+        }
+    }
+});
+</script>
+{% endblock %}

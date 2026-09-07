@@ -1,0 +1,555 @@
+{
+  "last_updated": "2026-08-01",
+  "market_overview": {
+    "total_job_postings_analyzed": 128450,
+    "median_salary_usd": 118500,
+    "median_salary_inr_lpa": 18.5,
+    "fastest_growing_skill": "Generative AI & LLMs",
+    "fastest_growth_rate_pct": 46.8,
+    "top_hiring_sector": "Tech & Cloud Services",
+    "top_hiring_sector_share_pct": 36.5,
+    "remote_eligible_pct": 58.2
+  },
+  "roles": [
+    {
+      "id": "data_analyst",
+      "title": "Data Analyst",
+      "category": "Data & Analytics",
+      "demand_index": 92,
+      "growth_rate_pct": 18.4,
+      "active_openings": 28400,
+      "salary": {
+        "usd": {
+          "entry": 72000,
+          "mid": 95000,
+          "senior": 128000,
+          "lead": 158000
+        },
+        "inr_lpa": {
+          "entry": 7.5,
+          "mid": 14.0,
+          "senior": 22.5,
+          "lead": 32.0
+        }
+      },
+      "work_modes": {
+        "remote": 44,
+        "hybrid": 41,
+        "onsite": 15
+      },
+      "top_skills": [
+        {"skill": "SQL", "demand_pct": 88, "growth_pct": 14.2, "salary_boost_pct": 16.5, "category": "Databases"},
+        {"skill": "Python", "demand_pct": 82, "growth_pct": 22.6, "salary_boost_pct": 21.0, "category": "Programming"},
+        {"skill": "Power BI", "demand_pct": 74, "growth_pct": 28.5, "salary_boost_pct": 15.0, "category": "BI Tools"},
+        {"skill": "Excel", "demand_pct": 70, "growth_pct": 6.8, "salary_boost_pct": 8.5, "category": "Productivity"},
+        {"skill": "Tableau", "demand_pct": 62, "growth_pct": 16.0, "salary_boost_pct": 14.5, "category": "BI Tools"},
+        {"skill": "Statistics", "demand_pct": 58, "growth_pct": 18.0, "salary_boost_pct": 17.0, "category": "Analytics"},
+        {"skill": "Data Cleaning", "demand_pct": 55, "growth_pct": 12.0, "salary_boost_pct": 11.0, "category": "Engineering"},
+        {"skill": "A/B Testing", "demand_pct": 42, "growth_pct": 24.5, "salary_boost_pct": 19.5, "category": "Analytics"}
+      ],
+      "industry_hiring": {
+        "Technology & SaaS": 34,
+        "Financial Services & Banking": 26,
+        "Healthcare & Pharma": 16,
+        "E-Commerce & Retail": 14,
+        "Media & Telecommunications": 10
+      },
+      "top_tools": ["PostgreSQL", "Power BI", "Tableau", "Pandas", "Jupyter", "Excel", "Snowflake", "dbt"]
+    },
+    {
+      "id": "data_scientist",
+      "title": "Data Scientist",
+      "category": "AI & Data Science",
+      "demand_index": 95,
+      "growth_rate_pct": 26.8,
+      "active_openings": 21200,
+      "salary": {
+        "usd": {
+          "entry": 92000,
+          "mid": 128000,
+          "senior": 168000,
+          "lead": 215000
+        },
+        "inr_lpa": {
+          "entry": 11.5,
+          "mid": 21.0,
+          "senior": 34.0,
+          "lead": 48.0
+        }
+      },
+      "work_modes": {
+        "remote": 52,
+        "hybrid": 38,
+        "onsite": 10
+      },
+      "top_skills": [
+        {"skill": "Python", "demand_pct": 94, "growth_pct": 24.0, "salary_boost_pct": 22.0, "category": "Programming"},
+        {"skill": "Machine Learning", "demand_pct": 89, "growth_pct": 32.5, "salary_boost_pct": 26.5, "category": "AI/ML"},
+        {"skill": "SQL", "demand_pct": 84, "growth_pct": 12.0, "salary_boost_pct": 15.0, "category": "Databases"},
+        {"skill": "Scikit-learn", "demand_pct": 78, "growth_pct": 20.0, "salary_boost_pct": 18.0, "category": "AI/ML"},
+        {"skill": "Deep Learning", "demand_pct": 68, "growth_pct": 38.0, "salary_boost_pct": 29.0, "category": "AI/ML"},
+        {"skill": "Statistics", "demand_pct": 72, "growth_pct": 15.0, "salary_boost_pct": 18.5, "category": "Analytics"},
+        {"skill": "PyTorch", "demand_pct": 64, "growth_pct": 42.0, "salary_boost_pct": 31.0, "category": "AI/ML"},
+        {"skill": "NLP", "demand_pct": 58, "growth_pct": 44.0, "salary_boost_pct": 28.0, "category": "AI/ML"}
+      ],
+      "industry_hiring": {
+        "Technology & SaaS": 42,
+        "Financial Services & FinTech": 24,
+        "Healthcare & BioTech": 18,
+        "Automotive & Robotics": 9,
+        "Retail & Consumer Tech": 7
+      },
+      "top_tools": ["Python", "PyTorch", "Scikit-learn", "Pandas", "SQL Server", "Docker", "MLflow", "Jupyter"]
+    },
+    {
+      "id": "ai_engineer",
+      "title": "AI Engineer",
+      "category": "Artificial Intelligence",
+      "demand_index": 98,
+      "growth_rate_pct": 46.8,
+      "active_openings": 16800,
+      "salary": {
+        "usd": {
+          "entry": 105000,
+          "mid": 145000,
+          "senior": 190000,
+          "lead": 245000
+        },
+        "inr_lpa": {
+          "entry": 14.0,
+          "mid": 25.0,
+          "senior": 40.0,
+          "lead": 58.0
+        }
+      },
+      "work_modes": {
+        "remote": 60,
+        "hybrid": 32,
+        "onsite": 8
+      },
+      "top_skills": [
+        {"skill": "PyTorch", "demand_pct": 92, "growth_pct": 48.0, "salary_boost_pct": 34.0, "category": "AI/ML"},
+        {"skill": "Large Language Models (LLMs)", "demand_pct": 88, "growth_pct": 62.0, "salary_boost_pct": 36.5, "category": "AI/ML"},
+        {"skill": "Python", "demand_pct": 96, "growth_pct": 25.0, "salary_boost_pct": 22.0, "category": "Programming"},
+        {"skill": "Deep Learning", "demand_pct": 85, "growth_pct": 40.0, "salary_boost_pct": 30.0, "category": "AI/ML"},
+        {"skill": "Vector Databases", "demand_pct": 76, "growth_pct": 58.0, "salary_boost_pct": 27.0, "category": "Databases"},
+        {"skill": "Natural Language Processing (NLP)", "demand_pct": 80, "growth_pct": 45.0, "salary_boost_pct": 29.0, "category": "AI/ML"},
+        {"skill": "FastAPI / REST APIs", "demand_pct": 72, "growth_pct": 30.0, "salary_boost_pct": 20.0, "category": "Engineering"},
+        {"skill": "Docker", "demand_pct": 70, "growth_pct": 28.0, "salary_boost_pct": 18.0, "category": "DevOps"}
+      ],
+      "industry_hiring": {
+        "AI Research & Foundation Models": 38,
+        "Enterprise Software & Cloud": 30,
+        "FinTech & Algorithmic Trading": 16,
+        "Autonomous Vehicles & Robotics": 10,
+        "Healthcare & Drug Discovery": 6
+      },
+      "top_tools": ["PyTorch", "Hugging Face", "LangChain", "ChromaDB", "FastAPI", "Docker", "vLLM", "CUDA"]
+    },
+    {
+      "id": "ml_engineer",
+      "title": "ML Engineer",
+      "category": "Artificial Intelligence",
+      "demand_index": 96,
+      "growth_rate_pct": 38.5,
+      "active_openings": 18500,
+      "salary": {
+        "usd": {
+          "entry": 98000,
+          "mid": 138000,
+          "senior": 182000,
+          "lead": 230000
+        },
+        "inr_lpa": {
+          "entry": 12.5,
+          "mid": 23.0,
+          "senior": 37.0,
+          "lead": 52.0
+        }
+      },
+      "work_modes": {
+        "remote": 56,
+        "hybrid": 34,
+        "onsite": 10
+      },
+      "top_skills": [
+        {"skill": "Python", "demand_pct": 95, "growth_pct": 22.0, "salary_boost_pct": 20.0, "category": "Programming"},
+        {"skill": "MLOps", "demand_pct": 86, "growth_pct": 48.0, "salary_boost_pct": 32.0, "category": "DevOps"},
+        {"skill": "Docker", "demand_pct": 82, "growth_pct": 30.0, "salary_boost_pct": 22.0, "category": "DevOps"},
+        {"skill": "Kubernetes", "demand_pct": 74, "growth_pct": 38.0, "salary_boost_pct": 28.0, "category": "DevOps"},
+        {"skill": "Machine Learning", "demand_pct": 90, "growth_pct": 28.0, "salary_boost_pct": 25.0, "category": "AI/ML"},
+        {"skill": "Model Deployment", "demand_pct": 84, "growth_pct": 42.0, "salary_boost_pct": 29.0, "category": "Engineering"},
+        {"skill": "PyTorch / TensorFlow", "demand_pct": 78, "growth_pct": 34.0, "salary_boost_pct": 26.0, "category": "AI/ML"},
+        {"skill": "CI/CD Pipelines", "demand_pct": 70, "growth_pct": 26.0, "salary_boost_pct": 18.0, "category": "DevOps"}
+      ],
+      "industry_hiring": {
+        "Technology & Cloud Platforms": 44,
+        "FinTech & Quantitative Finance": 22,
+        "E-Commerce & Recommenders": 18,
+        "Healthcare AI": 10,
+        "Telecommunications": 6
+      },
+      "top_tools": ["MLflow", "Docker", "Kubernetes", "Airflow", "FastAPI", "KServe", "Weights & Biases", "Git"]
+    },
+    {
+      "id": "data_engineer",
+      "title": "Data Engineer",
+      "category": "Data & Engineering",
+      "demand_index": 94,
+      "growth_rate_pct": 31.2,
+      "active_openings": 24600,
+      "salary": {
+        "usd": {
+          "entry": 88000,
+          "mid": 122000,
+          "senior": 162000,
+          "lead": 205000
+        },
+        "inr_lpa": {
+          "entry": 10.5,
+          "mid": 19.5,
+          "senior": 31.0,
+          "lead": 45.0
+        }
+      },
+      "work_modes": {
+        "remote": 54,
+        "hybrid": 36,
+        "onsite": 10
+      },
+      "top_skills": [
+        {"skill": "SQL", "demand_pct": 94, "growth_pct": 15.0, "salary_boost_pct": 18.0, "category": "Databases"},
+        {"skill": "Python", "demand_pct": 90, "growth_pct": 24.0, "salary_boost_pct": 21.0, "category": "Programming"},
+        {"skill": "Apache Spark", "demand_pct": 82, "growth_pct": 32.0, "salary_boost_pct": 27.5, "category": "Big Data"},
+        {"skill": "Snowflake / BigQuery", "demand_pct": 79, "growth_pct": 36.0, "salary_boost_pct": 26.0, "category": "Databases"},
+        {"skill": "Apache Airflow", "demand_pct": 75, "growth_pct": 28.0, "salary_boost_pct": 22.0, "category": "Engineering"},
+        {"skill": "ETL Pipeline Design", "demand_pct": 88, "growth_pct": 22.0, "salary_boost_pct": 24.0, "category": "Engineering"},
+        {"skill": "Docker", "demand_pct": 68, "growth_pct": 25.0, "salary_boost_pct": 17.0, "category": "DevOps"},
+        {"skill": "Kafka", "demand_pct": 62, "growth_pct": 34.0, "salary_boost_pct": 25.0, "category": "Big Data"}
+      ],
+      "industry_hiring": {
+        "Cloud & Data Platforms": 40,
+        "Banking & Payment Networks": 25,
+        "Healthcare & Insurance": 15,
+        "Retail & Supply Chain": 12,
+        "Entertainment & Streaming": 8
+      },
+      "top_tools": ["Apache Spark", "Snowflake", "Airflow", "dbt", "PostgreSQL", "Kafka", "AWS Glue", "Docker"]
+    },
+    {
+      "id": "cloud_engineer",
+      "title": "Cloud Engineer",
+      "category": "Cloud & Infrastructure",
+      "demand_index": 93,
+      "growth_rate_pct": 28.0,
+      "active_openings": 22100,
+      "salary": {
+        "usd": {
+          "entry": 85000,
+          "mid": 120000,
+          "senior": 158000,
+          "lead": 198000
+        },
+        "inr_lpa": {
+          "entry": 9.5,
+          "mid": 18.0,
+          "senior": 29.0,
+          "lead": 42.0
+        }
+      },
+      "work_modes": {
+        "remote": 58,
+        "hybrid": 34,
+        "onsite": 8
+      },
+      "top_skills": [
+        {"skill": "AWS / Azure / GCP", "demand_pct": 95, "growth_pct": 26.0, "salary_boost_pct": 25.0, "category": "Cloud"},
+        {"skill": "Docker", "demand_pct": 88, "growth_pct": 28.0, "salary_boost_pct": 20.0, "category": "DevOps"},
+        {"skill": "Kubernetes", "demand_pct": 82, "growth_pct": 36.0, "salary_boost_pct": 28.0, "category": "DevOps"},
+        {"skill": "Terraform (IaC)", "demand_pct": 78, "growth_pct": 34.0, "salary_boost_pct": 24.5, "category": "DevOps"},
+        {"skill": "Linux", "demand_pct": 86, "growth_pct": 14.0, "salary_boost_pct": 16.0, "category": "Systems"},
+        {"skill": "CI/CD Pipelines", "demand_pct": 80, "growth_pct": 24.0, "salary_boost_pct": 19.0, "category": "DevOps"},
+        {"skill": "Python / Bash", "demand_pct": 76, "growth_pct": 20.0, "salary_boost_pct": 17.5, "category": "Programming"},
+        {"skill": "Cloud Security", "demand_pct": 72, "growth_pct": 38.0, "salary_boost_pct": 27.0, "category": "Security"}
+      ],
+      "industry_hiring": {
+        "Enterprise Software & SaaS": 45,
+        "Financial Services": 23,
+        "Healthcare Systems": 14,
+        "Government & Defense": 10,
+        "Retail & Logistics": 8
+      },
+      "top_tools": ["Terraform", "Docker", "Kubernetes", "AWS Console", "GitHub Actions", "Ansible", "Prometheus", "Grafana"]
+    },
+    {
+      "id": "business_analyst",
+      "title": "Business Analyst",
+      "category": "Business & Analytics",
+      "demand_index": 88,
+      "growth_rate_pct": 14.5,
+      "active_openings": 19800,
+      "salary": {
+        "usd": {
+          "entry": 68000,
+          "mid": 90000,
+          "senior": 118000,
+          "lead": 146000
+        },
+        "inr_lpa": {
+          "entry": 6.8,
+          "mid": 12.5,
+          "senior": 20.0,
+          "lead": 28.5
+        }
+      },
+      "work_modes": {
+        "remote": 38,
+        "hybrid": 48,
+        "onsite": 14
+      },
+      "top_skills": [
+        {"skill": "Business Intelligence", "demand_pct": 84, "growth_pct": 16.0, "salary_boost_pct": 15.0, "category": "Analytics"},
+        {"skill": "SQL", "demand_pct": 78, "growth_pct": 14.0, "salary_boost_pct": 16.0, "category": "Databases"},
+        {"skill": "Excel", "demand_pct": 82, "growth_pct": 5.0, "salary_boost_pct": 8.0, "category": "Productivity"},
+        {"skill": "Power BI", "demand_pct": 72, "growth_pct": 24.0, "salary_boost_pct": 14.0, "category": "BI Tools"},
+        {"skill": "Requirement Gathering", "demand_pct": 86, "growth_pct": 10.0, "salary_boost_pct": 12.0, "category": "Product"},
+        {"skill": "Agile / Scrum", "demand_pct": 76, "growth_pct": 12.0, "salary_boost_pct": 11.5, "category": "Management"},
+        {"skill": "Process Mapping", "demand_pct": 68, "growth_pct": 11.0, "salary_boost_pct": 10.0, "category": "Product"},
+        {"skill": "Stakeholder Communication", "demand_pct": 90, "growth_pct": 8.0, "salary_boost_pct": 13.0, "category": "Soft Skills"}
+      ],
+      "industry_hiring": {
+        "Management Consulting": 32,
+        "Banking & Capital Markets": 28,
+        "Insurance & Healthcare": 18,
+        "Tech & Digital Products": 14,
+        "Manufacturing & Supply Chain": 8
+      },
+      "top_tools": ["Excel", "Power BI", "Jira", "Confluence", "Lucidchart", "SQL", "Tableau", "Salesforce"]
+    },
+    {
+      "id": "nlp_engineer",
+      "title": "NLP Engineer",
+      "category": "Artificial Intelligence",
+      "demand_index": 92,
+      "growth_rate_pct": 42.0,
+      "active_openings": 8200,
+      "salary": {
+        "usd": {
+          "entry": 98000,
+          "mid": 136000,
+          "senior": 178000,
+          "lead": 225000
+        },
+        "inr_lpa": {
+          "entry": 12.5,
+          "mid": 22.0,
+          "senior": 36.0,
+          "lead": 50.0
+        }
+      },
+      "work_modes": {
+        "remote": 62,
+        "hybrid": 30,
+        "onsite": 8
+      },
+      "top_skills": [
+        {"skill": "Natural Language Processing (NLP)", "demand_pct": 96, "growth_pct": 44.0, "salary_boost_pct": 30.0, "category": "AI/ML"},
+        {"skill": "Hugging Face Transformers", "demand_pct": 88, "growth_pct": 52.0, "salary_boost_pct": 32.0, "category": "AI/ML"},
+        {"skill": "Python", "demand_pct": 95, "growth_pct": 22.0, "salary_boost_pct": 20.0, "category": "Programming"},
+        {"skill": "PyTorch", "demand_pct": 86, "growth_pct": 40.0, "salary_boost_pct": 28.0, "category": "AI/ML"},
+        {"skill": "Large Language Models (LLMs)", "demand_pct": 84, "growth_pct": 60.0, "salary_boost_pct": 35.0, "category": "AI/ML"},
+        {"skill": "SpaCy & NLTK", "demand_pct": 74, "growth_pct": 18.0, "salary_boost_pct": 16.0, "category": "AI/ML"},
+        {"skill": "Vector Embeddings", "demand_pct": 78, "growth_pct": 54.0, "salary_boost_pct": 26.0, "category": "Databases"},
+        {"skill": "Regex & Tokenization", "demand_pct": 70, "growth_pct": 10.0, "salary_boost_pct": 12.0, "category": "Programming"}
+      ],
+      "industry_hiring": {
+        "Conversational AI & Search Engines": 40,
+        "Enterprise Knowledge Management": 26,
+        "Legal & Regulatory Tech": 16,
+        "Healthcare Transcription & Records": 12,
+        "Customer Experience Platforms": 6
+      },
+      "top_tools": ["Hugging Face", "PyTorch", "SpaCy", "NLTK", "ChromaDB", "TextBlob", "FastAPI", "OpenAI APIs"]
+    },
+    {
+      "id": "computer_vision_engineer",
+      "title": "Computer Vision Engineer",
+      "category": "Artificial Intelligence",
+      "demand_index": 90,
+      "growth_rate_pct": 34.5,
+      "active_openings": 7600,
+      "salary": {
+        "usd": {
+          "entry": 96000,
+          "mid": 134000,
+          "senior": 174000,
+          "lead": 220000
+        },
+        "inr_lpa": {
+          "entry": 12.0,
+          "mid": 21.5,
+          "senior": 35.0,
+          "lead": 48.0
+        }
+      },
+      "work_modes": {
+        "remote": 48,
+        "hybrid": 38,
+        "onsite": 14
+      },
+      "top_skills": [
+        {"skill": "OpenCV", "demand_pct": 92, "growth_pct": 22.0, "salary_boost_pct": 22.0, "category": "AI/ML"},
+        {"skill": "PyTorch / TensorFlow", "demand_pct": 88, "growth_pct": 34.0, "salary_boost_pct": 26.0, "category": "AI/ML"},
+        {"skill": "Computer Vision", "demand_pct": 94, "growth_pct": 36.0, "salary_boost_pct": 28.0, "category": "AI/ML"},
+        {"skill": "Object Detection (YOLO)", "demand_pct": 82, "growth_pct": 38.0, "salary_boost_pct": 24.0, "category": "AI/ML"},
+        {"skill": "Convolutional Neural Networks (CNNs)", "demand_pct": 85, "growth_pct": 26.0, "salary_boost_pct": 23.0, "category": "AI/ML"},
+        {"skill": "Python", "demand_pct": 94, "growth_pct": 20.0, "salary_boost_pct": 19.0, "category": "Programming"},
+        {"skill": "CUDA & GPU Acceleration", "demand_pct": 68, "growth_pct": 42.0, "salary_boost_pct": 29.0, "category": "Engineering"},
+        {"skill": "Image Processing", "demand_pct": 76, "growth_pct": 16.0, "salary_boost_pct": 17.0, "category": "AI/ML"}
+      ],
+      "industry_hiring": {
+        "Autonomous Vehicles & Mobility": 36,
+        "Industrial Automation & Robotics": 24,
+        "Healthcare Imaging & Diagnostics": 20,
+        "Security & Biometrics": 12,
+        "AR / VR & Gaming": 8
+      },
+      "top_tools": ["OpenCV", "PyTorch", "YOLOv8", "CUDA", "Albumentations", "NumPy", "TensorRT", "C++"]
+    },
+    {
+      "id": "product_analyst",
+      "title": "Product Analyst",
+      "category": "Product & Growth",
+      "demand_index": 87,
+      "growth_rate_pct": 20.5,
+      "active_openings": 11400,
+      "salary": {
+        "usd": {
+          "entry": 76000,
+          "mid": 102000,
+          "senior": 136000,
+          "lead": 168000
+        },
+        "inr_lpa": {
+          "entry": 8.0,
+          "mid": 15.0,
+          "senior": 24.0,
+          "lead": 34.0
+        }
+      },
+      "work_modes": {
+        "remote": 50,
+        "hybrid": 40,
+        "onsite": 10
+      },
+      "top_skills": [
+        {"skill": "SQL", "demand_pct": 90, "growth_pct": 14.0, "salary_boost_pct": 17.0, "category": "Databases"},
+        {"skill": "A/B Testing", "demand_pct": 86, "growth_pct": 28.0, "salary_boost_pct": 22.0, "category": "Analytics"},
+        {"skill": "Product Analytics", "demand_pct": 88, "growth_pct": 26.0, "salary_boost_pct": 20.0, "category": "Product"},
+        {"skill": "Python", "demand_pct": 72, "growth_pct": 20.0, "salary_boost_pct": 18.0, "category": "Programming"},
+        {"skill": "Mixpanel / Amplitude", "demand_pct": 76, "growth_pct": 32.0, "salary_boost_pct": 19.0, "category": "Analytics"},
+        {"skill": "Cohort Analysis", "demand_pct": 74, "growth_pct": 22.0, "salary_boost_pct": 16.5, "category": "Analytics"},
+        {"skill": "Data Visualization", "demand_pct": 78, "growth_pct": 15.0, "salary_boost_pct": 14.0, "category": "BI Tools"},
+        {"skill": "User Journey Mapping", "demand_pct": 65, "growth_pct": 18.0, "salary_boost_pct": 13.0, "category": "Product"}
+      ],
+      "industry_hiring": {
+        "B2C Mobile Apps & E-Commerce": 40,
+        "FinTech & Digital Banking": 25,
+        "SaaS & Enterprise Platforms": 20,
+        "Gaming & Social Media": 10,
+        "EdTech & Media": 5
+      },
+      "top_tools": ["Mixpanel", "Amplitude", "PostgreSQL", "Google Analytics 4", "Tableau", "Python", "Segment", "Figma"]
+    },
+    {
+      "id": "cybersecurity_analyst",
+      "title": "Cybersecurity Analyst",
+      "category": "Security & Networks",
+      "demand_index": 94,
+      "growth_rate_pct": 33.0,
+      "active_openings": 20500,
+      "salary": {
+        "usd": {
+          "entry": 80000,
+          "mid": 110000,
+          "senior": 148000,
+          "lead": 185000
+        },
+        "inr_lpa": {
+          "entry": 8.5,
+          "mid": 16.5,
+          "senior": 27.0,
+          "lead": 38.0
+        }
+      },
+      "work_modes": {
+        "remote": 46,
+        "hybrid": 40,
+        "onsite": 14
+      },
+      "top_skills": [
+        {"skill": "Network Security", "demand_pct": 92, "growth_pct": 20.0, "salary_boost_pct": 18.0, "category": "Security"},
+        {"skill": "SIEM Tools", "demand_pct": 86, "growth_pct": 30.0, "salary_boost_pct": 24.0, "category": "Security"},
+        {"skill": "Threat Detection", "demand_pct": 88, "growth_pct": 34.0, "salary_boost_pct": 25.0, "category": "Security"},
+        {"skill": "Incident Response", "demand_pct": 84, "growth_pct": 28.0, "salary_boost_pct": 22.0, "category": "Security"},
+        {"skill": "Python Scripting", "demand_pct": 75, "growth_pct": 25.0, "salary_boost_pct": 19.0, "category": "Programming"},
+        {"skill": "Linux Administration", "demand_pct": 80, "growth_pct": 14.0, "salary_boost_pct": 16.0, "category": "Systems"},
+        {"skill": "Vulnerability Assessment", "demand_pct": 82, "growth_pct": 26.0, "salary_boost_pct": 20.0, "category": "Security"},
+        {"skill": "Splunk", "demand_pct": 72, "growth_pct": 32.0, "salary_boost_pct": 23.0, "category": "Security"}
+      ],
+      "industry_hiring": {
+        "Banking & Financial Infrastructure": 38,
+        "Government & Public Sector": 22,
+        "Cloud & IT Services": 20,
+        "Healthcare & Hospital Systems": 12,
+        "Defense & Aerospace": 8
+      },
+      "top_tools": ["Splunk", "Wireshark", "Kali Linux", "Nmap", "CrowdStrike", "Burp Suite", "QRadar", "Python"]
+    },
+    {
+      "id": "financial_analyst",
+      "title": "Financial Analyst",
+      "category": "Finance & Economics",
+      "demand_index": 86,
+      "growth_rate_pct": 12.0,
+      "active_openings": 15600,
+      "salary": {
+        "usd": {
+          "entry": 70000,
+          "mid": 92000,
+          "senior": 122000,
+          "lead": 155000
+        },
+        "inr_lpa": {
+          "entry": 7.0,
+          "mid": 13.5,
+          "senior": 21.0,
+          "lead": 30.0
+        }
+      },
+      "work_modes": {
+        "remote": 32,
+        "hybrid": 52,
+        "onsite": 16
+      },
+      "top_skills": [
+        {"skill": "Financial Modeling", "demand_pct": 92, "growth_pct": 12.0, "salary_boost_pct": 20.0, "category": "Finance"},
+        {"skill": "Excel", "demand_pct": 95, "growth_pct": 4.0, "salary_boost_pct": 10.0, "category": "Productivity"},
+        {"skill": "SQL", "demand_pct": 68, "growth_pct": 22.0, "salary_boost_pct": 18.0, "category": "Databases"},
+        {"skill": "Forecasting & Budgeting", "demand_pct": 84, "growth_pct": 10.0, "salary_boost_pct": 15.0, "category": "Finance"},
+        {"skill": "Power BI", "demand_pct": 64, "growth_pct": 26.0, "salary_boost_pct": 16.0, "category": "BI Tools"},
+        {"skill": "Financial Statement Analysis", "demand_pct": 88, "growth_pct": 8.0, "salary_boost_pct": 14.0, "category": "Finance"},
+        {"skill": "Valuation Methods (DCF)", "demand_pct": 76, "growth_pct": 14.0, "salary_boost_pct": 19.0, "category": "Finance"},
+        {"skill": "Python for Finance", "demand_pct": 48, "growth_pct": 36.0, "salary_boost_pct": 24.0, "category": "Programming"}
+      ],
+      "industry_hiring": {
+        "Investment Banking & Private Equity": 36,
+        "Corporate Finance & Treasury": 30,
+        "Wealth & Asset Management": 18,
+        "FinTech & Payment Platforms": 10,
+        "Real Estate & Infrastructure": 6
+      },
+      "top_tools": ["Excel", "Power BI", "Bloomberg Terminal", "QuickBooks", "Python", "SQL", "Tableau", "SAP"]
+    }
+  ]
+}

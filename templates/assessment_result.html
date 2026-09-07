@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ result.skill_name }} Assessment Results - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="assessment-result-root">
+    
+    <!-- Top Breadcrumb & Title -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1">
+                    <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('assessment_hub') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-laptop-code me-1"></i> Assessments</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ result.skill_name }} Results</li>
+                </ol>
+            </nav>
+            <h1 class="h2 fw-bold text-white mb-0">
+                <span class="text-gradient">{{ result.skill_name }}</span> Assessment Report
+            </h1>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('start_assessment_view', skill_name=result.skill_name) }}" class="btn btn-brand-primary btn-sm">
+                <i class="fa-solid fa-rotate-right me-1"></i> Retake Assessment
+            </a>
+            <a href="{{ url_for('assessment_hub') }}" class="btn btn-brand-outline btn-sm">
+                <i class="fa-solid fa-arrow-left me-1"></i> All Assessments
+            </a>
+        </div>
+    </div>
+
+    <!-- Primary Result & Score Summary Card -->
+    <div class="glass-card mb-4 p-4 p-md-5 border-start border-4 {% if result.score >= 70 %}border-success{% elif result.score >= 45 %}border-primary{% else %}border-warning{% endif %}">
+        <div class="row align-items-center gy-4">
+            <!-- Left: Score Ring & Metrics -->
+            <div class="col-lg-5 text-center text-lg-start">
+                <div class="d-inline-flex flex-column align-items-center align-items-lg-start">
+                    <span class="badge {% if result.score >= 70 %}bg-success-subtle text-success border border-success-subtle{% elif result.score >= 45 %}bg-primary-subtle text-primary border border-primary-subtle{% else %}bg-warning-subtle text-warning border border-warning-subtle{% endif %} px-3 py-1 rounded-pill fw-bold small mb-2">
+                        <i class="fa-solid {% if result.score >= 70 %}fa-circle-check{% else %}fa-circle-exclamation{% endif %} me-1"></i>
+                        {% if result.score >= 70 %}Proficiency Verified{% else %}Knowledge Diagnostic Completed{% endif %}
+                    </span>
+                    <div class="display-4 fw-bold {% if result.score >= 70 %}text-success{% elif result.score >= 45 %}text-gradient{% else %}text-warning{% endif %} mb-1">
+                        {{ result.score }}%
+                    </div>
+                    <div class="text-secondary small mb-3">
+                        <strong class="text-white">{{ result.correct_count }}</strong> of {{ result.total_questions }} Questions Answered Correctly ({{ result.incorrect_count }} Incorrect)
+                    </div>
+
+                    <!-- Retake Score Improvement Pill -->
+                    {% if result.previous_score is not none %}
+                    <div class="p-2 px-3 rounded-pill bg-dark border border-secondary d-inline-flex align-items-center gap-2">
+                        <span class="text-muted small">Previous: <strong>{{ result.previous_score }}%</strong></span>
+                        <i class="fa-solid fa-arrow-right text-secondary small"></i>
+                        <span class="text-white small">New: <strong>{{ result.score }}%</strong></span>
+                        {% if result.score_improvement > 0 %}
+                            <span class="badge bg-success text-white fw-bold">
+                                +{{ result.score_improvement }}% Improvement
+                            </span>
+                        {% elif result.score_improvement < 0 %}
+                            <span class="badge bg-danger text-white fw-bold">
+                                {{ result.score_improvement }}%
+                            </span>
+                        {% else %}
+                            <span class="badge bg-secondary text-light">Equal Score</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right: Three-Way Comparison Benchmarks -->
+            <div class="col-lg-7">
+                <div class="p-3 rounded-3 bg-dark border border-secondary">
+                    <span class="text-secondary small fw-bold text-uppercase d-block mb-2">
+                        <i class="fa-solid fa-scale-balanced me-1"></i> Three-Way Proficiency Calibration
+                    </span>
+                    
+                    <div class="row g-2 text-center mb-3">
+                        <!-- 1. Self-Reported -->
+                        <div class="col-4">
+                            <div class="p-2 rounded bg-dark-subtle border border-secondary h-100">
+                                <span class="text-muted x-small d-block">1. Self-Reported</span>
+                                <strong class="text-white small">{{ result.self_reported_level }}</strong>
+                                <div class="text-secondary x-small mt-1">{{ result.self_reported_score }}%</div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Assessed Result -->
+                        <div class="col-4">
+                            <div class="p-2 rounded {% if result.score >= 70 %}bg-success-subtle border border-success-subtle text-success{% else %}bg-primary-subtle border border-primary-subtle text-primary{% endif %} h-100">
+                                <span class="x-small d-block fw-bold">2. Assessed Level</span>
+                                <strong class="small">{{ result.assessed_level }}</strong>
+                                <div class="x-small mt-1">{{ result.score }}%</div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Market Required -->
+                        <div class="col-4">
+                            <div class="p-2 rounded bg-dark-subtle border border-secondary h-100">
+                                <span class="text-muted x-small d-block">3. Market Target</span>
+                                <strong class="text-info small">{{ result.market_required_level }}</strong>
+                                <div class="text-secondary x-small mt-1">{{ result.market_required_score }}%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Constructive Feedback Verdict -->
+                    <div class="alert alert-dark border-secondary p-3 mb-0">
+                        <div class="d-flex align-items-start gap-2">
+                            <i class="fa-solid fa-lightbulb text-warning mt-1"></i>
+                            <p class="text-light small mb-0 lh-base">
+                                {{ result.comparison_verdict }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topics Diagnostic Matrix: Strong Topics vs Needs Improvement -->
+    <div class="row g-4 mb-4">
+        <!-- Strong Topics (Green) -->
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100 border-top border-4 border-success">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="badge rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div>
+                        <h3 class="h5 fw-bold text-white mb-0">Strong Topics (Validated)</h3>
+                        <span class="text-success small">&ge; 70% accuracy demonstrated</span>
+                    </div>
+                </div>
+
+                {% if result.strong_topics %}
+                <div class="d-flex flex-column gap-2">
+                    {% for topic in result.strong_topics %}
+                    <div class="p-3 rounded-3 bg-dark border border-success-subtle d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-success"></i>
+                            <strong class="text-white small">{{ topic }}</strong>
+                        </div>
+                        <span class="badge bg-success text-white x-small">Mastered</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="p-3 rounded-3 bg-dark border border-secondary text-center text-secondary small">
+                    <i class="fa-solid fa-info-circle me-1"></i> No topics reached the 70% threshold in this session. Review the suggested weak topics below.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Needs Improvement Topics (Yellow / Red) -->
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100 border-top border-4 border-warning">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="badge rounded-circle bg-warning text-dark p-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h3 class="h5 fw-bold text-white mb-0">Topics to Relearn & Practice</h3>
+                        <span class="text-warning small">Escalated as high-priority roadmap milestones</span>
+                    </div>
+                </div>
+
+                {% if result.weak_topics %}
+                <div class="d-flex flex-column gap-2">
+                    {% for topic in result.weak_topics %}
+                    <div class="p-3 rounded-3 bg-dark border border-warning-subtle d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation text-warning"></i>
+                            <strong class="text-white small">{{ topic }}</strong>
+                        </div>
+                        <span class="badge bg-warning text-dark fw-bold x-small">Needs Practice</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="p-3 rounded-3 bg-dark border border-success-subtle text-center text-success small">
+                    <i class="fa-solid fa-award me-1"></i> Excellent! No weak topics detected in this assessment.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Cascading Synchronization Confirmation Banner -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-info">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-1 text-info">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                    <strong class="small text-uppercase tracking-wider">Career Intelligence Synchronization</strong>
+                </div>
+                <h4 class="h5 fw-bold text-white mb-1">
+                    Your Profile & Roadmap Have Been Updated
+                </h4>
+                <p class="text-secondary small mb-0">
+                    Based on your verified answers, CareerSkill AI automatically adjusted your Skill Gap analysis, escalated practice tasks in your Roadmap, and reprioritized your course recommendations.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
+                    <a href="{{ url_for('career_analysis') }}" class="btn btn-brand-primary btn-sm">
+                        <i class="fa-solid fa-chart-pie me-1"></i> View Skill Gap
+                    </a>
+                    <a href="{{ url_for('roadmap') }}" class="btn btn-brand-outline btn-sm">
+                        <i class="fa-solid fa-road me-1"></i> Open Roadmap
+                    </a>
+                    <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-sm">
+                        <i class="fa-solid fa-graduation-cap me-1"></i> Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question-by-Question Detailed Review -->
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="h5 fw-bold text-white mb-0">
+                    <i class="fa-solid fa-square-check text-primary me-2"></i>Question-by-Question Review
+                </h3>
+                <span class="text-secondary small">Detailed solutions and pedagogical explanations.</span>
+            </div>
+            <span class="badge bg-dark border border-secondary text-secondary small">
+                {{ result.total_questions }} Questions
+            </span>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+            {% for item in result.evaluated_answers %}
+            <div class="p-3 p-md-4 rounded-3 bg-dark border {% if item.is_correct %}border-success-subtle{% else %}border-danger-subtle{% endif %}">
+                <!-- Question Top Row -->
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge {% if item.is_correct %}bg-success{% else %}bg-danger{% endif %} text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 24px; height: 24px;">
+                            <i class="fa-solid {% if item.is_correct %}fa-check{% else %}fa-xmark{% endif %}"></i>
+                        </span>
+                        <span class="badge bg-dark border border-secondary text-info small">{{ item.topic }}</span>
+                    </div>
+                    <span class="badge bg-dark border border-secondary text-secondary x-small">{{ item.difficulty }}</span>
+                </div>
+
+                <!-- Question Text -->
+                <p class="text-white fw-semibold small mb-3">
+                    {{ item.question_text }}
+                </p>
+
+                <!-- User Answer vs Correct Answer -->
+                <div class="row g-2 mb-3 small">
+                    <div class="col-md-6">
+                        <div class="p-2 rounded bg-dark-subtle border {% if item.is_correct %}border-success{% else %}border-danger{% endif %}">
+                            <span class="text-muted x-small d-block">Your Answer:</span>
+                            <span class="{% if item.is_correct %}text-success{% else %}text-danger{% endif %} fw-semibold">
+                                {{ item.user_answer if item.user_answer else '(No answer given)' }}
+                            </span>
+                        </div>
+                    </div>
+                    {% if not item.is_correct %}
+                    <div class="col-md-6">
+                        <div class="p-2 rounded bg-dark-subtle border border-success">
+                            <span class="text-muted x-small d-block">Correct Answer:</span>
+                            <span class="text-success fw-semibold">{{ item.correct_answer }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Explanation -->
+                {% if item.explanation %}
+                <div class="p-2 px-3 rounded bg-dark border border-secondary text-secondary x-small">
+                    <strong class="text-info"><i class="fa-solid fa-circle-info me-1"></i> Explanation:</strong> {{ item.explanation }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Footer -->
+    <div class="text-center py-2">
+        <a href="{{ url_for('start_assessment_view', skill_name=result.skill_name) }}" class="btn btn-brand-primary btn-lg px-4 me-2 mb-2">
+            <i class="fa-solid fa-rotate-right me-1"></i> Retake {{ result.skill_name }} Assessment
+        </a>
+        <a href="{{ url_for('assessment_hub') }}" class="btn btn-brand-outline btn-lg px-4 mb-2">
+            <i class="fa-solid fa-laptop-code me-1"></i> Validate Another Skill
+        </a>
+    </div>
+
+</div>
+{% endblock %}

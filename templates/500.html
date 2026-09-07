@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}500 - Server Error | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-auto text-center">
+    <div class="glass-card max-w-600 mx-auto p-5">
+        <h1 class="display-1 fw-bold text-gradient">500</h1>
+        <h2 class="h4 text-white mb-3">Internal Server Error</h2>
+        <p class="text-secondary mb-4">Something went wrong on the server. Please try again later.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-brand-primary">
+            <i class="fa-solid fa-house me-1"></i> Return Home
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}403 - Access Denied | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5 my-auto text-center" style="min-height: 70vh; display: flex; align-items: center; justify-content: center;">
+    <div class="glass-card max-w-600 mx-auto p-5 border border-danger border-opacity-25 shadow-lg" style="background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(16px); border-radius: 20px;">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle p-4 mb-2" style="width: 90px; height: 90px;">
+                <i class="fa-solid fa-shield-halved fa-3x"></i>
+            </div>
+        </div>
+        <h1 class="display-3 fw-bold text-danger mb-2">403</h1>
+        <h2 class="h4 text-white fw-semibold mb-3">Access Denied &middot; Unauthorized Area</h2>
+        <p class="text-secondary mb-4 fs-6 leading-relaxed">
+            You do not have administrator permissions to access this administrative portal. This incident has been logged for security governance.
+        </p>
+        
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-brand-primary px-4 py-2">
+                <i class="fa-solid fa-gauge me-2"></i> Return to Learner Dashboard
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary px-4 py-2">
+                <i class="fa-solid fa-house me-2"></i> Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

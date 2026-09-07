@@ -1,0 +1,209 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Enterprise Analytics - Admin Panel{% endblock %}
+{% block page_title %}Platform Telemetry & Enterprise Analytics{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Platform Telemetry & <span class="text-gradient">Data Analytics</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Real-time empirical aggregation of labor demand benchmarks, skill gap distributions, and course engagement rates.
+                </p>
+            </div>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill small">
+                Live Database Telemetry
+            </span>
+        </div>
+    </div>
+
+    <!-- Section 1: Career Role Analytics -->
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-briefcase text-primary"></i> 1. Career Role Analytics & Readiness
+            </h5>
+            <span class="text-secondary x-small">Popularity & Cohort Mean Readiness</span>
+        </div>
+
+        {% if analytics.has_career_data and analytics.career_popularity %}
+            <div class="row g-3">
+                {% for c in analytics.career_popularity %}
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-dark border border-secondary h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-white small">{{ c.career }}</strong>
+                                <span class="badge bg-primary text-white x-small">{{ c.users_count }} users</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center x-small text-secondary mb-1">
+                                <span>Cohort Mean Readiness</span>
+                                <strong class="text-gradient">{{ c.avg_readiness }}%</strong>
+                            </div>
+                            <div class="progress" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                                <div class="progress-bar bg-primary" style="width: {{ c.avg_readiness }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-4 text-center text-secondary small bg-dark rounded border border-secondary border-opacity-50">
+                <i class="fa-solid fa-chart-line fa-2x mb-2 text-secondary opacity-50"></i>
+                <p class="mb-0">Not enough data available.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Section 2: Skill Gap Analytics (Missing, Partial, Strong) -->
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-warning"></i> 2. Skill Gap Distribution (% of Evaluated Cohort)
+            </h5>
+            <span class="text-secondary x-small">Empirical Gap Frequency</span>
+        </div>
+
+        {% if analytics.has_gap_data %}
+            <div class="row g-4">
+                <!-- Missing Skills -->
+                <div class="col-lg-4">
+                    <div class="p-3 rounded bg-danger-subtle bg-opacity-10 border border-danger-subtle h-100">
+                        <span class="badge bg-danger text-white small mb-2 d-inline-block">Most Commonly Missing Skills</span>
+                        {% if analytics.missing_skills %}
+                            <div class="d-flex flex-column gap-2">
+                                {% for s in analytics.missing_skills %}
+                                    <div>
+                                        <div class="d-flex justify-content-between x-small text-secondary mb-1">
+                                            <strong class="text-white">{{ s.skill }}</strong>
+                                            <span>Missing for <strong>{{ s.percentage }}%</strong> of users</span>
+                                        </div>
+                                        <div class="progress" style="height: 5px; background-color: rgba(255,255,255,0.05);">
+                                            <div class="progress-bar bg-danger" style="width: {{ s.percentage }}%;"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted small mb-0">No missing skills recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Partial Skills -->
+                <div class="col-lg-4">
+                    <div class="p-3 rounded bg-warning-subtle bg-opacity-10 border border-warning-subtle h-100">
+                        <span class="badge bg-warning text-dark small mb-2 d-inline-block">Most Common Partial Skills</span>
+                        {% if analytics.partial_skills %}
+                            <div class="d-flex flex-column gap-2">
+                                {% for s in analytics.partial_skills %}
+                                    <div>
+                                        <div class="d-flex justify-content-between x-small text-secondary mb-1">
+                                            <strong class="text-white">{{ s.skill }}</strong>
+                                            <span>Partial for <strong>{{ s.percentage }}%</strong> of users</span>
+                                        </div>
+                                        <div class="progress" style="height: 5px; background-color: rgba(255,255,255,0.05);">
+                                            <div class="progress-bar bg-warning" style="width: {{ s.percentage }}%;"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted small mb-0">No partial skills recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Strong Skills -->
+                <div class="col-lg-4">
+                    <div class="p-3 rounded bg-success-subtle bg-opacity-10 border border-success-subtle h-100">
+                        <span class="badge bg-success text-white small mb-2 d-inline-block">Most Common Strong Skills</span>
+                        {% if analytics.strong_skills %}
+                            <div class="d-flex flex-column gap-2">
+                                {% for s in analytics.strong_skills %}
+                                    <div>
+                                        <div class="d-flex justify-content-between x-small text-secondary mb-1">
+                                            <strong class="text-white">{{ s.skill }}</strong>
+                                            <span>Mastered by <strong>{{ s.percentage }}%</strong> of users</span>
+                                        </div>
+                                        <div class="progress" style="height: 5px; background-color: rgba(255,255,255,0.05);">
+                                            <div class="progress-bar bg-success" style="width: {{ s.percentage }}%;"></div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted small mb-0">No strong skills recorded.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="p-4 text-center text-secondary small bg-dark rounded border border-secondary border-opacity-50">
+                <i class="fa-solid fa-chart-pie fa-2x mb-2 text-secondary opacity-50"></i>
+                <p class="mb-0">Not enough data available.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Section 3: Course Analytics & Completions -->
+    <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-graduation-cap text-primary"></i> 3. Course Completion & Quality Metrics
+            </h5>
+            <span class="badge bg-success-subtle text-success border border-success-subtle small">
+                {{ analytics.course_completion_rate }}% Overall Completion Rate
+            </span>
+        </div>
+
+        <div class="row g-4">
+            <!-- Most Completed Courses -->
+            <div class="col-lg-6">
+                <div class="p-3 rounded bg-dark border border-secondary h-100">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-3">
+                        <i class="fa-solid fa-circle-check text-success me-1"></i> Most Completed Courses
+                    </span>
+                    {% if analytics.most_completed_courses %}
+                        <div class="d-flex flex-column gap-2">
+                            {% for item in analytics.most_completed_courses %}
+                                <div class="d-flex justify-content-between align-items-center small text-secondary">
+                                    <span class="text-white text-truncate" style="max-width: 320px;" title="{{ item.title }}">{{ item.title }}</span>
+                                    <span class="badge bg-success text-white">{{ item.completions }} completions</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted small mb-0">Not enough data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Highest Rated Courses -->
+            <div class="col-lg-6">
+                <div class="p-3 rounded bg-dark border border-secondary h-100">
+                    <span class="text-secondary small text-uppercase fw-bold d-block mb-3">
+                        <i class="fa-solid fa-star text-warning me-1"></i> Highest Rated Courses
+                    </span>
+                    {% if analytics.highest_rated_courses %}
+                        <div class="d-flex flex-column gap-2">
+                            {% for item in analytics.highest_rated_courses %}
+                                <div class="d-flex justify-content-between align-items-center small text-secondary">
+                                    <span class="text-white text-truncate" style="max-width: 320px;" title="{{ item.title }}">{{ item.title }}</span>
+                                    <span class="badge bg-warning text-dark fw-bold"><i class="fa-solid fa-star me-1"></i>{{ item.rating }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted small mb-0">Not enough data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

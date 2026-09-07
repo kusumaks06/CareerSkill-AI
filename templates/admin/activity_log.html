@@ -1,0 +1,100 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Activity Governance Log - Admin Panel{% endblock %}
+{% block page_title %}Admin Activity Governance Log{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-warning">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Administrative <span class="text-gradient">Activity & Audit Log</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Immutable security governance audit trail recording all administrative alterations, user moderation, role updates, and curriculum changes.
+                </p>
+            </div>
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill small">
+                {{ logs|length }} Audit Records
+            </span>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="glass-card p-4">
+        {% if logs %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>ID</th>
+                            <th>Administrator</th>
+                            <th>Action</th>
+                            <th>Target Entity</th>
+                            <th>Details & Impact</th>
+                            <th>Timestamp (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                            <tr>
+                                <td class="text-muted small">#{{ log.id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-primary bg-opacity-20 text-primary d-flex align-items-center justify-content-center fw-bold small" style="width: 32px; height: 32px;">
+                                            <i class="fa-solid fa-user-shield"></i>
+                                        </div>
+                                        <div>
+                                            <span class="text-white fw-bold small d-block">{{ log.admin_name }}</span>
+                                            <span class="text-muted x-small">Admin ID: {{ log.admin_id or '—' }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if 'Delete' in log.action or 'Revoke' in log.action or 'Demote' in log.action %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle small fw-semibold">
+                                            <i class="fa-solid fa-trash-can me-1"></i> {{ log.action }}
+                                        </span>
+                                    {% elif 'Create' in log.action or 'Promote' in log.action %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle small fw-semibold">
+                                            <i class="fa-solid fa-plus-circle me-1"></i> {{ log.action }}
+                                        </span>
+                                    {% elif 'Update' in log.action or 'Edit' in log.action %}
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle small fw-semibold">
+                                            <i class="fa-solid fa-pen me-1"></i> {{ log.action }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle small fw-semibold">
+                                            <i class="fa-solid fa-sliders me-1"></i> {{ log.action }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-black border border-secondary text-light small">
+                                        {{ log.target_type }}: {{ log.target_name }}
+                                    </span>
+                                </td>
+                                <td style="max-width: 320px;">
+                                    <p class="text-secondary small mb-0 text-truncate" title="{{ log.details }}">
+                                        {{ log.details or '—' }}
+                                    </p>
+                                </td>
+                                <td class="text-muted small text-nowrap">
+                                    <i class="fa-regular fa-clock me-1"></i> {{ log.date }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="p-5 text-center text-secondary small">
+                <i class="fa-solid fa-clipboard-list fa-3x mb-3 text-secondary opacity-50"></i>
+                <p class="mb-0">No administrative activities logged yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

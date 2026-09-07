@@ -1,0 +1,308 @@
+[
+  {
+    "id": "data_analyst",
+    "title": "Data Analyst",
+    "normalized_title": "data analyst",
+    "category": "Data & Analytics",
+    "description": "Transforms raw business data into actionable insights through statistical analysis, reporting, and interactive dashboards.",
+    "core_skills": [
+      "SQL",
+      "Python",
+      "Excel",
+      "Power BI",
+      "Tableau",
+      "Statistics",
+      "Data Visualization",
+      "Data Cleaning",
+      "Exploratory Data Analysis (EDA)"
+    ],
+    "secondary_skills": ["R", "Git", "A/B Testing", "ETL Basics", "Business Intelligence"],
+    "domain_keywords": ["analytics", "reporting", "dashboard", "bi", "metrics", "kpi", "sql", "excel", "insights", "trends"],
+    "tools": ["PostgreSQL", "Power BI", "Tableau", "Pandas", "Jupyter", "Excel"]
+  },
+  {
+    "id": "data_scientist",
+    "title": "Data Scientist",
+    "normalized_title": "data scientist",
+    "category": "AI & Data Science",
+    "description": "Develops predictive models, machine learning algorithms, and deep statistical frameworks to solve complex business problems.",
+    "core_skills": [
+      "Python",
+      "SQL",
+      "Machine Learning",
+      "Scikit-learn",
+      "Pandas",
+      "NumPy",
+      "Statistics",
+      "Probability",
+      "Data Modeling",
+      "Data Visualization"
+    ],
+    "secondary_skills": ["Deep Learning", "TensorFlow", "PyTorch", "NLP", "Big Data", "Spark", "Docker"],
+    "domain_keywords": ["predictive modeling", "algorithms", "hypothesis testing", "machine learning", "math", "statistics", "science"],
+    "tools": ["Jupyter", "Scikit-learn", "Pandas", "NumPy", "Git", "SQL Server"]
+  },
+  {
+    "id": "business_analyst",
+    "title": "Business Analyst",
+    "normalized_title": "business analyst",
+    "category": "Business & Analytics",
+    "description": "Bridges the gap between business stakeholders and technical teams using data-driven process modeling and requirements engineering.",
+    "core_skills": [
+      "Business Intelligence",
+      "SQL",
+      "Excel",
+      "Power BI",
+      "Requirement Gathering",
+      "Process Mapping",
+      "Stakeholder Communication",
+      "Data Analysis",
+      "Financial Analysis"
+    ],
+    "secondary_skills": ["Agile/Scrum", "Jira", "Tableau", "BPMN", "Cost-Benefit Analysis"],
+    "domain_keywords": ["business", "requirements", "stakeholder", "strategy", "processes", "kpi", "operations"],
+    "tools": ["Excel", "Power BI", "Jira", "Confluence", "Lucidchart"]
+  },
+  {
+    "id": "ai_engineer",
+    "title": "AI Engineer",
+    "normalized_title": "ai engineer",
+    "category": "Artificial Intelligence",
+    "description": "Designs, builds, and deploys scalable artificial intelligence systems, large language model applications, and neural networks.",
+    "core_skills": [
+      "Python",
+      "Deep Learning",
+      "PyTorch",
+      "TensorFlow",
+      "Natural Language Processing (NLP)",
+      "Large Language Models (LLMs)",
+      "Computer Vision",
+      "API Development",
+      "Vector Databases"
+    ],
+    "secondary_skills": ["LangChain", "Docker", "MLOps", "Hugging Face", "CUDA", "C++"],
+    "domain_keywords": ["artificial intelligence", "ai", "neural networks", "generative ai", "deep learning", "llm", "transformers"],
+    "tools": ["PyTorch", "TensorFlow", "HuggingFace", "FastAPI", "Docker", "ChromaDB"]
+  },
+  {
+    "id": "ml_engineer",
+    "title": "ML Engineer",
+    "normalized_title": "ml engineer",
+    "category": "Artificial Intelligence",
+    "description": "Focuses on engineering pipelines, deploying models to production, monitoring drift, and optimizing ML infrastructure.",
+    "core_skills": [
+      "Python",
+      "Machine Learning",
+      "MLOps",
+      "Docker",
+      "Model Deployment",
+      "Scikit-learn",
+      "PyTorch",
+      "REST APIs",
+      "CI/CD Pipelines"
+    ],
+    "secondary_skills": ["Kubernetes", "MLflow", "AWS/GCP ML", "Feature Stores", "Airflow", "C++"],
+    "domain_keywords": ["machine learning", "ml", "deployment", "mlops", "pipelines", "serving", "infrastructure", "drift"],
+    "tools": ["MLflow", "Docker", "FastAPI", "Kubernetes", "Airflow", "Git"]
+  },
+  {
+    "id": "product_analyst",
+    "title": "Product Analyst",
+    "normalized_title": "product analyst",
+    "category": "Product & Growth",
+    "description": "Analyzes user behavior, product metrics, onboarding funnels, and feature retention to drive product growth.",
+    "core_skills": [
+      "SQL",
+      "Product Analytics",
+      "A/B Testing",
+      "Python",
+      "Mixpanel / Amplitude",
+      "Cohort Analysis",
+      "Data Visualization",
+      "User Journey Mapping"
+    ],
+    "secondary_skills": ["Excel", "Tableau", "Growth Modeling", "Hypothesis Testing", "Figma Basics"],
+    "domain_keywords": ["product", "growth", "retention", "conversion", "funnel", "user behavior", "ab testing", "engagement"],
+    "tools": ["Mixpanel", "Amplitude", "PostgreSQL", "Google Analytics", "Tableau"]
+  },
+  {
+    "id": "financial_analyst",
+    "title": "Financial Analyst",
+    "normalized_title": "financial analyst",
+    "category": "Finance & Economics",
+    "description": "Evaluates financial health, investment viability, budgeting forecasts, and economic variance using data modeling.",
+    "core_skills": [
+      "Financial Modeling",
+      "Excel",
+      "Financial Statement Analysis",
+      "Forecasting & Budgeting",
+      "SQL",
+      "Valuation Methods (DCF)",
+      "Variance Analysis",
+      "Power BI"
+    ],
+    "secondary_skills": ["Python for Finance", "Bloomberg Terminal", "Risk Management", "Accounting Basics"],
+    "domain_keywords": ["finance", "financial", "accounting", "valuation", "investment", "budget", "revenue", "roi", "stocks"],
+    "tools": ["Excel", "Power BI", "QuickBooks", "Python", "SQL"]
+  },
+  {
+    "id": "cybersecurity_analyst",
+    "title": "Cybersecurity Analyst",
+    "normalized_title": "cybersecurity analyst",
+    "category": "Security & Networks",
+    "description": "Monitors network traffic, detects threats, investigates security incidents, and enforces vulnerability management policies.",
+    "core_skills": [
+      "Network Security",
+      "SIEM Tools",
+      "Threat Detection",
+      "Vulnerability Assessment",
+      "Incident Response",
+      "Python Scripting",
+      "Linux Administration",
+      "Firewalls & IDS/IPS"
+    ],
+    "secondary_skills": ["Wireshark", "Splunk", "Ethical Hacking", "Cryptography", "Compliance (SOC2/ISO)"],
+    "domain_keywords": ["cyber", "security", "threat", "soc", "siem", "firewall", "incident", "vulnerability", "malware"],
+    "tools": ["Splunk", "Wireshark", "Kali Linux", "Nmap", "Metasploit"]
+  },
+  {
+    "id": "cloud_engineer",
+    "title": "Cloud Engineer",
+    "normalized_title": "cloud engineer",
+    "category": "Cloud & Infrastructure",
+    "description": "Architects, provisions, and maintains reliable, scalable, and automated cloud computing infrastructure across AWS, Azure, or GCP.",
+    "core_skills": [
+      "AWS / Azure / GCP",
+      "Linux",
+      "Docker",
+      "Kubernetes",
+      "Terraform (IaC)",
+      "CI/CD Pipelines",
+      "Cloud Networking & Security",
+      "Python / Bash Scripting"
+    ],
+    "secondary_skills": ["Ansible", "Serverless", "Monitoring (Prometheus/Grafana)", "Cost Optimization"],
+    "domain_keywords": ["cloud", "aws", "azure", "gcp", "devops", "infrastructure", "terraform", "kubernetes", "containers"],
+    "tools": ["AWS Console", "Terraform", "Docker", "Kubernetes", "GitHub Actions"]
+  },
+  {
+    "id": "software_developer",
+    "title": "Software Developer",
+    "normalized_title": "software developer",
+    "category": "Software Engineering",
+    "description": "Designs, writes, tests, and maintains robust backend and frontend software applications and RESTful APIs.",
+    "core_skills": [
+      "Python",
+      "Data Structures & Algorithms",
+      "Object-Oriented Programming (OOP)",
+      "SQL",
+      "RESTful API Development",
+      "Git & GitHub",
+      "Software Testing",
+      "System Design Basics"
+    ],
+    "secondary_skills": ["Docker", "HTML/CSS", "Relational Databases", "Design Patterns", "Clean Code"],
+    "domain_keywords": ["software", "engineering", "backend", "developer", "coding", "programming", "algorithms", "oop"],
+    "tools": ["VS Code", "Git", "Postman", "PostgreSQL", "Docker"]
+  },
+  {
+    "id": "data_engineer",
+    "title": "Data Engineer",
+    "normalized_title": "data engineer",
+    "category": "Data & Engineering",
+    "description": "Builds robust ETL pipelines, data warehouses, and big data streaming platforms to feed downstream analytics.",
+    "core_skills": [
+      "Python",
+      "SQL",
+      "ETL Pipeline Design",
+      "Data Warehousing (Snowflake/BigQuery)",
+      "Apache Spark",
+      "Apache Airflow",
+      "Database Modeling",
+      "Docker"
+    ],
+    "secondary_skills": ["Kafka", "Scala", "dbt", "Cloud Data Lakes", "NoSQL (MongoDB)"],
+    "domain_keywords": ["etl", "pipeline", "warehouse", "spark", "airflow", "snowflake", "big data", "data architecture"],
+    "tools": ["Airflow", "Apache Spark", "Snowflake", "dbt", "PostgreSQL"]
+  },
+  {
+    "id": "nlp_engineer",
+    "title": "NLP Engineer",
+    "normalized_title": "nlp engineer",
+    "category": "Artificial Intelligence",
+    "description": "Builds natural language processing pipelines, text mining systems, sentiment analysis engines, and semantic search.",
+    "core_skills": [
+      "Python",
+      "Natural Language Processing (NLP)",
+      "NLTK & SpaCy",
+      "Hugging Face Transformers",
+      "Text Classification & Sentiment Analysis",
+      "Information Extraction",
+      "PyTorch",
+      "Regex"
+    ],
+    "secondary_skills": ["LLM Fine-tuning", "Vector Embeddings", "Tokenization", "Named Entity Recognition (NER)"],
+    "domain_keywords": ["nlp", "text", "linguistics", "sentiment", "tokenization", "embeddings", "transformers", "language"],
+    "tools": ["NLTK", "SpaCy", "Hugging Face", "PyTorch", "TextBlob"]
+  },
+  {
+    "id": "computer_vision_engineer",
+    "title": "Computer Vision Engineer",
+    "normalized_title": "computer vision engineer",
+    "category": "Artificial Intelligence",
+    "description": "Develops algorithms for visual perception, object detection, image segmentation, and real-time video processing.",
+    "core_skills": [
+      "Python",
+      "Computer Vision",
+      "OpenCV",
+      "PyTorch / TensorFlow",
+      "Convolutional Neural Networks (CNNs)",
+      "Object Detection (YOLO)",
+      "Image Processing",
+      "NumPy"
+    ],
+    "secondary_skills": ["Image Segmentation", "CUDA", "Edge AI (TensorRT)", "MediaPipe"],
+    "domain_keywords": ["vision", "cv", "opencv", "images", "video", "yolo", "cnn", "segmentation", "detection"],
+    "tools": ["OpenCV", "PyTorch", "YOLOv8", "Albumentations", "NumPy"]
+  },
+  {
+    "id": "healthcare_data_scientist",
+    "title": "Healthcare Data Scientist",
+    "normalized_title": "healthcare data scientist",
+    "category": "Health & Life Sciences",
+    "description": "Analyzes clinical trials, electronic health records (EHR), biomedical datasets, and patient outcome predictions.",
+    "core_skills": [
+      "Python",
+      "Healthcare Analytics",
+      "Healthcare Data Standards (HL7/FHIR)",
+      "Biostatistics",
+      "SQL",
+      "Machine Learning",
+      "Survival Analysis",
+      "Data Visualization"
+    ],
+    "secondary_skills": ["EHR Systems", "Epidemiology Basics", "HIPAA Compliance", "R for Biostats"],
+    "domain_keywords": ["healthcare", "health", "clinical", "medical", "patient", "biomedical", "ehr", "hospital", "pharma"],
+    "tools": ["Python", "SQL", "Pandas", "Scikit-learn", "R", "Tableau"]
+  },
+  {
+    "id": "marketing_data_analyst",
+    "title": "Marketing Data Analyst",
+    "normalized_title": "marketing data analyst",
+    "category": "Marketing & Growth",
+    "description": "Evaluates digital campaign performance, customer acquisition costs (CAC), lifetime value (LTV), and multi-touch attribution.",
+    "core_skills": [
+      "SQL",
+      "Marketing Analytics",
+      "Google Analytics 4",
+      "Customer Segmentation",
+      "Attribution Modeling",
+      "Power BI",
+      "Excel",
+      "A/B Testing"
+    ],
+    "secondary_skills": ["Python", "Tableau", "CRM Analytics (HubSpot/Salesforce)", "SEO Metrics"],
+    "domain_keywords": ["marketing", "campaign", "cac", "ltv", "conversion", "google analytics", "attribution", "ads"],
+    "tools": ["GA4", "Power BI", "SQL", "Excel", "HubSpot"]
+  }
+]

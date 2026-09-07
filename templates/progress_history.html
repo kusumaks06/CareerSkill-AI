@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}Learning Progress & History - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="progress-history-root">
+    
+    <!-- Top Header Banner -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-chart-line me-1"></i> Progress Tracking
+                    </span>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill small">
+                        <i class="fa-solid fa-bullseye me-1"></i> Target: {{ target_role }}
+                    </span>
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    Learning Progress & <span class="text-gradient">Activity History</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Track your verified learning hours, milestone roadmap completions, skill evolution, and career readiness over time.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <button type="button" class="btn btn-brand-primary btn-sm me-2 mb-1" data-bs-toggle="modal" data-bs-target="#logSessionModal">
+                    <i class="fa-solid fa-plus me-1"></i> Log Study Hours
+                </button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-brand-outline btn-sm mb-1">
+                    <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Primary KPI Summary Metric Cards -->
+    <div class="row g-3 mb-4">
+        <!-- 1. Overall Learning Progress -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-primary">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Overall Progress</span>
+                <div class="h2 fw-bold text-white mb-1">{{ summary.overall_progress_pct }}%</div>
+                <div class="progress mb-2" style="height: 5px; background-color: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-gradient" style="width: {{ summary.overall_progress_pct }}%;"></div>
+                </div>
+                <span class="text-muted x-small">Weighted completion</span>
+            </div>
+        </div>
+
+        <!-- 2. Career Readiness -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-success">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Career Readiness</span>
+                <div class="h2 fw-bold text-success mb-1">{{ summary.career_readiness }}%</div>
+                <div class="d-flex justify-content-center align-items-center gap-1">
+                    <span class="text-muted x-small">Prev: {{ summary.previous_readiness }}%</span>
+                    <i class="fa-solid fa-arrow-right text-success x-small"></i>
+                    <span class="text-info x-small">Target: {{ summary.target_readiness }}%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Learning Hours Completed -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-info">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Hours Logged</span>
+                <div class="h2 fw-bold text-info mb-1">{{ summary.learning_hours_completed }}h</div>
+                <span class="text-secondary x-small">
+                    This Week: <strong class="text-white">{{ summary.hours_summary.week_hours }}h</strong> / {{ summary.hours_summary.planned_weekly_hours }}h
+                </span>
+            </div>
+        </div>
+
+        <!-- 4. Courses & Topics Done -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-warning">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Courses & Topics</span>
+                <div class="h2 fw-bold text-warning mb-1">{{ summary.courses_completed }} <span class="fs-6 text-muted">courses</span></div>
+                <span class="text-secondary x-small">
+                    {{ summary.topics_completed }} Topics Mastered &bull; {{ summary.skills_improved_count }} Skills Boosted
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Learning Hours Tracker & Breakdown -->
+    <div class="glass-card p-4 mb-4 border-top border-4 border-info">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-6">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="badge rounded-circle bg-info text-dark p-2 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <h3 class="h5 fw-bold text-white mb-0">Learning Hours Tracker</h3>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Compare your actual completed learning time against your planned schedule ({{ summary.hours_summary.planned_weekly_hours }} hours/week).
+                </p>
+
+                <div class="d-flex flex-column gap-2">
+                    <div>
+                        <div class="d-flex justify-content-between small text-secondary mb-1">
+                            <span>Weekly Pace Target: <strong>{{ summary.hours_summary.week_hours }} / {{ summary.hours_summary.planned_weekly_hours }} hrs</strong></span>
+                            <span class="text-info fw-bold">{{ summary.hours_summary.planned_vs_completed_pct }}% of weekly goal</span>
+                        </div>
+                        <div class="progress" style="height: 8px; background-color: rgba(255,255,255,0.05);">
+                            <div class="progress-bar bg-info" style="width: {{ summary.hours_summary.planned_vs_completed_pct }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="row g-2 text-center">
+                    <div class="col-4">
+                        <div class="p-3 rounded-3 bg-dark border border-secondary">
+                            <span class="text-muted x-small d-block text-uppercase">Today</span>
+                            <strong class="h4 text-white d-block mt-1 mb-0">{{ summary.hours_summary.today_hours }}h</strong>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded-3 bg-dark border border-secondary">
+                            <span class="text-muted x-small d-block text-uppercase">This Week</span>
+                            <strong class="h4 text-info d-block mt-1 mb-0">{{ summary.hours_summary.week_hours }}h</strong>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 rounded-3 bg-dark border border-secondary">
+                            <span class="text-muted x-small d-block text-uppercase">This Month</span>
+                            <strong class="h4 text-success d-block mt-1 mb-0">{{ summary.hours_summary.month_hours }}h</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Progress Over Time Matrix -->
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h3 class="h5 fw-bold text-white mb-0">
+                    <i class="fa-solid fa-chart-column text-primary me-2"></i>Skill Proficiency Growth Over Time
+                </h3>
+                <span class="text-secondary small">Compare your initial baseline score vs current verified score vs target market requirement.</span>
+            </div>
+            <span class="badge bg-dark border border-secondary text-secondary small">
+                {{ summary.skill_growth|length }} Skills Monitored
+            </span>
+        </div>
+
+        <div class="row g-3">
+            {% for sg in summary.skill_growth %}
+            <div class="col-md-6 col-lg-4">
+                <div class="p-3 rounded-3 bg-dark border {% if sg.is_target_met %}border-success-subtle{% elif sg.growth_delta > 0 %}border-primary-subtle{% else %}border-secondary{% endif %} h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Header Badges -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong class="text-white small">{{ sg.skill_name }}</strong>
+                            {% if sg.growth_delta > 0 %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle x-small fw-bold">
+                                    +{{ sg.growth_delta }}% Growth
+                                </span>
+                            {% elif sg.is_target_met %}
+                                <span class="badge bg-success text-white x-small">Target Met</span>
+                            {% else %}
+                                <span class="badge bg-secondary text-light x-small">Baseline</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- 3-Way Metrics -->
+                        <div class="row g-1 text-center small mb-3">
+                            <div class="col-4">
+                                <div class="p-1 rounded bg-dark-subtle border border-secondary">
+                                    <span class="text-muted x-small d-block">Before</span>
+                                    <strong class="text-secondary">{{ sg.before_score }}%</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-1 rounded bg-dark-subtle border border-primary-subtle">
+                                    <span class="text-info x-small d-block">Current</span>
+                                    <strong class="text-white">{{ sg.current_score }}%</strong>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-1 rounded bg-dark-subtle border border-secondary">
+                                    <span class="text-muted x-small d-block">Required</span>
+                                    <strong class="text-info">{{ sg.required_score }}%</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="progress mb-2" style="height: 6px; background-color: rgba(255,255,255,0.05);">
+                            <div class="progress-bar {% if sg.is_target_met %}bg-success{% else %}bg-primary{% endif %}" style="width: {{ sg.current_score }}%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Action -->
+                    <div class="mt-2 pt-2 border-top border-secondary d-flex justify-content-between align-items-center">
+                        <span class="text-secondary x-small">
+                            Remaining Gap: <strong class="{% if sg.remaining_gap == 0 %}text-success{% else %}text-warning{% endif %}">{{ sg.remaining_gap }}%</strong>
+                        </span>
+                        <a href="{{ url_for('start_assessment_view', skill_name=sg.skill_name) }}" class="btn btn-brand-outline btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                            Validate <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Chronological Learning Activity Audit History Table -->
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h3 class="h5 fw-bold text-white mb-0">
+                    <i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Activity History Timeline
+                </h3>
+                <span class="text-secondary small">Chronological audit trail of verified learning activities.</span>
+            </div>
+            <button type="button" class="btn btn-brand-outline btn-sm" data-bs-toggle="modal" data-bs-target="#logSessionModal">
+                <i class="fa-solid fa-plus me-1"></i> Log Study Session
+            </button>
+        </div>
+
+        {% if activities %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr class="text-secondary small text-uppercase">
+                        <th>Date</th>
+                        <th>Skill</th>
+                        <th>Activity</th>
+                        <th>Details</th>
+                        <th>Hours</th>
+                        <th>Progress Delta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in activities %}
+                    <tr>
+                        <td class="text-secondary small font-monospace">
+                            {{ a.date_short }}
+                        </td>
+                        <td>
+                            <span class="badge bg-dark border border-secondary text-info small">
+                                {{ a.skill }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge {% if a.activity_type == 'Course' %}bg-primary-subtle text-primary border border-primary-subtle{% elif a.activity_type == 'Assessment' %}bg-success-subtle text-success border border-success-subtle{% elif a.activity_type == 'Roadmap' %}bg-info-subtle text-info border border-info-subtle{% else %}bg-secondary text-light{% endif %} small">
+                                {{ a.activity_type }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong class="text-white small d-block">{{ a.title }}</strong>
+                            {% if a.notes %}
+                                <span class="text-muted x-small">{{ a.notes }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="small text-white">
+                            {% if a.hours > 0 %}
+                                <span class="badge bg-dark border border-secondary text-white">{{ a.hours }}h</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if a.progress_delta and a.progress_delta > 0 %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                    +{{ a.progress_delta }}%
+                                </span>
+                            {% elif a.score is not none %}
+                                <span class="badge bg-primary fw-bold">{{ a.score }}% Score</span>
+                            {% else %}
+                                <span class="text-muted small">Recorded</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-4 text-center text-secondary small bg-dark rounded-3 border border-secondary">
+            <i class="fa-solid fa-list-check fa-2x mb-2 d-block text-muted"></i>
+            No learning activities recorded yet. Advance a course, complete a roadmap task, or log a study session to begin tracking.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Career Readiness Disclaimer Card -->
+    <div class="alert alert-dark border-secondary p-3 mb-0 text-center">
+        <span class="text-muted small">
+            <i class="fa-solid fa-circle-info me-1 text-info"></i>
+            <strong>Disclaimer:</strong> {{ summary.disclaimer }}
+        </span>
+    </div>
+
+</div>
+
+<!-- Log Study Session Modal -->
+<div class="modal fade" id="logSessionModal" tabindex="-1" aria-labelledby="logSessionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border border-secondary text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title h6 fw-bold text-white" id="logSessionModalLabel">
+                    <i class="fa-solid fa-stopwatch text-primary me-2"></i>Log Learning Session
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="log-session-form" action="{{ url_for('api_log_session') }}" method="POST">
+                <div class="modal-body d-flex flex-column gap-3">
+                    <div>
+                        <label class="form-label small text-secondary fw-semibold">Skill Studied</label>
+                        <select name="skill" class="form-select bg-dark border-secondary text-white small" required>
+                            {% for sg in summary.skill_growth %}
+                                <option value="{{ sg.skill_name }}">{{ sg.skill_name }}</option>
+                            {% endfor %}
+                            <option value="General">General Technical Practice</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label small text-secondary fw-semibold">Session Title / Topic</label>
+                        <input type="text" name="title" class="form-control bg-dark border-secondary text-white small" placeholder="e.g. SQL JOIN Practice on LeetCode" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label small text-secondary fw-semibold">Time Spent (Hours)</label>
+                        <input type="number" name="hours" class="form-control bg-dark border-secondary text-white small" step="0.25" min="0.25" max="24" value="1.5" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label small text-secondary fw-semibold">Notes & Key Takeaways</label>
+                        <textarea name="notes" class="form-control bg-dark border-secondary text-white small" rows="2" placeholder="Optional notes on what you learned..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand-primary btn-sm">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Save Session
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logForm = document.getElementById('log-session-form');
+    if (logForm) {
+        logForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(logForm);
+            
+            fetch(logForm.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to log session');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                window.location.reload();
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Career Management - Admin Panel{% endblock %}
+{% block page_title %}Career Pathways & Taxonomy{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid p-0">
+    <!-- Header -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-success">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold text-white mb-1">
+                    Career Pathways & <span class="text-gradient">Market Intelligence</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Define and govern industry career profiles, required skill competencies, salary benchmarks, and market demand trends.
+                </p>
+            </div>
+            <button type="button" class="btn btn-brand-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newCareerModal">
+                <i class="fa-solid fa-plus me-1"></i> Add New Career
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="glass-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin_careers_view') }}" class="row g-2 align-items-center">
+            <div class="col-md-9">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-dark text-secondary border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control bg-dark text-white border-secondary" name="q" placeholder="Search career title, category, or core skills..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-brand-primary btn-sm flex-grow-1">Search</button>
+                <a href="{{ url_for('admin_careers_view') }}" class="btn btn-brand-outline btn-sm">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Careers Table -->
+    <div class="glass-card p-4">
+        {% if careers %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead class="table-secondary text-white small">
+                        <tr>
+                            <th>Career Title</th>
+                            <th>Category</th>
+                            <th>Market Demand</th>
+                            <th>Salary & Experience</th>
+                            <th>Core Skills</th>
+                            <th>Source</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in careers %}
+                            <tr>
+                                <td>
+                                    <strong class="text-white small d-block">{{ c.title }}</strong>
+                                    <span class="text-muted x-small">Priority: {{ c.priority }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary text-white small">{{ c.category }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle small fw-semibold">
+                                        <i class="fa-solid fa-arrow-trend-up me-1"></i> {{ c.market_demand or 'High Demand' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-white x-small d-block">{{ c.salary_range or '₹6,00,000 - ₹15,00,000 / yr' }}</span>
+                                    <span class="text-muted x-small">{{ c.experience_level or 'All Experience Levels' }}</span>
+                                </td>
+                                <td style="max-width: 220px;">
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% for s in c.core_skills[:3] %}
+                                            <span class="badge bg-black border border-secondary text-light x-small">{{ s }}</span>
+                                        {% endfor %}
+                                        {% if c.core_skills|length > 3 %}
+                                            <span class="badge bg-secondary text-light x-small">+{{ c.core_skills|length - 3 }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-dark border border-secondary text-secondary x-small">{{ c.source }}</span>
+                                </td>
+                                <td class="text-end">
+                                    {% if c.id %}
+                                        <div class="d-inline-flex gap-2">
+                                            <button type="button" class="btn btn-outline-warning btn-sm py-1 px-2" data-bs-toggle="modal" data-bs-target="#editCareerModal-{{ c.id }}">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+
+                                            <form method="POST" action="{{ url_for('admin_career_delete', career_id=c.id) }}" class="d-inline" onsubmit="return confirm('Delete career pathway {{ c.title }}?');">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm py-1 px-2">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <!-- Edit Modal -->
+                                        <div class="modal fade text-start" id="editCareerModal-{{ c.id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content bg-dark text-white border-secondary">
+                                                    <div class="modal-header border-secondary">
+                                                        <h5 class="modal-title fs-6 fw-bold">Edit Career &bull; {{ c.title }}</h5>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form method="POST" action="{{ url_for('admin_career_save') }}">
+                                                        <input type="hidden" name="career_id" value="{{ c.id }}">
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Career Title *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="title" value="{{ c.title }}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Category</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="category" value="{{ c.category }}">
+                                                            </div>
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col-6">
+                                                                    <label class="form-label text-secondary small">Experience Level</label>
+                                                                    <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="experience_level" value="{{ c.experience_level or 'All Experience Levels' }}">
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <label class="form-label text-secondary small">Market Demand</label>
+                                                                    <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="market_demand" value="{{ c.market_demand or 'High Demand' }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Salary Benchmark</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="salary_range" value="{{ c.salary_range or '₹6,00,000 - ₹15,00,000 / yr' }}">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Description</label>
+                                                                <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="description" rows="3">{{ c.description }}</textarea>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Core Skills (comma separated) *</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="core_skills" value="{{ c.core_skills|join(', ') }}" required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label class="form-label text-secondary small">Secondary Skills (comma separated)</label>
+                                                                <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="secondary_skills" value="{{ c.secondary_skills|join(', ') }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-secondary">
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-brand-primary btn-sm">Save Changes</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted x-small">System Catalog</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-secondary small mb-0 text-center py-4">No careers found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- New Career Modal -->
+<div class="modal fade text-start" id="newCareerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title fs-6 fw-bold"><i class="fa-solid fa-plus text-primary me-1"></i> Add New Career Pathway</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_career_save') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Career Title *</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="title" placeholder="e.g., Cloud Security Engineer" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Category</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="category" placeholder="e.g., Cloud & Infrastructure" value="Technology">
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Experience Level</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="experience_level" placeholder="e.g., 0 - 3 Years" value="All Experience Levels">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-secondary small">Market Demand</label>
+                            <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="market_demand" placeholder="e.g., High Demand" value="High Demand">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Salary Benchmark</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="salary_range" placeholder="e.g., ₹8,00,000 - ₹20,00,000 / yr" value="₹8,00,000 - ₹20,00,000 / yr">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Description</label>
+                        <textarea class="form-control form-control-sm bg-black text-white border-secondary" name="description" rows="3" placeholder="Overview of job responsibilities and role summary..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Core Skills (comma separated) *</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="core_skills" placeholder="e.g., AWS Security, IAM, Network Security, Python" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-secondary small">Secondary Skills (comma separated)</label>
+                        <input type="text" class="form-control form-control-sm bg-black text-white border-secondary" name="secondary_skills" placeholder="e.g., Docker, Terraform, Bash">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-brand-primary btn-sm">Create Career Pathway</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

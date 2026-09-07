@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if existing_feedback %}Edit Feedback{% else %}Course Feedback{% endif %} - {{ course.title }} | CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <div class="mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-gauge-high me-1"></i> Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('course_recommendations') }}" class="text-secondary text-decoration-none"><i class="fa-solid fa-graduation-cap me-1"></i> Recommendations</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('course_detail', course_id=course.id) }}" class="text-secondary text-decoration-none">{{ course.title }}</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">Course Feedback</li>
+            </ol>
+        </nav>
+        <a href="{{ url_for('course_recommendations') }}" class="btn btn-brand-outline btn-sm">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Courses
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Course Header Card -->
+            <div class="glass-card p-4 mb-4 border-start border-4 border-primary">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill small">
+                            <i class="fa-solid fa-circle-check me-1"></i> Course Completed
+                        </span>
+                        <span class="badge bg-secondary text-white px-3 py-1 rounded-pill small">
+                            {{ course.skill }}
+                        </span>
+                    </div>
+                    <span class="text-muted small">
+                        <i class="fa-solid fa-building me-1 text-primary"></i> {{ course.provider }}
+                    </span>
+                </div>
+                <h1 class="h3 fw-bold text-white mb-2">{{ course.title }}</h1>
+                <p class="text-secondary small mb-0">
+                    {% if existing_feedback %}
+                        You have already reviewed this course. You can update your feedback and rating below.
+                    {% else %}
+                        Congratulations on completing this course! Please share your feedback to help improve future learning recommendations.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Feedback Form Card -->
+            <div class="glass-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-secondary">
+                    <div class="brand-icon-box" style="width: 38px; height: 38px; font-size: 1.1rem;">
+                        <i class="fa-solid fa-comments text-primary"></i>
+                    </div>
+                    <div>
+                        <h2 class="h5 fw-bold text-white mb-0">
+                            {% if existing_feedback %}Edit Your Feedback & Rating{% else %}Course Completion Feedback{% endif %}
+                        </h2>
+                        <span class="text-secondary small">Your insights help calibrate personalized learning paths</span>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('course_feedback_view', course_id=course.id) }}" id="course-feedback-form">
+                    <!-- 1. Star Rating -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold d-block mb-2">
+                            1. Overall Rating <span class="text-danger">*</span>
+                        </label>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="star-rating-widget d-flex gap-1 fs-3" id="star-rating-container">
+                                {% set cur_rating = existing_feedback.rating if existing_feedback else 5 %}
+                                {% for r in range(1, 6) %}
+                                    <i class="fa-star {% if r <= cur_rating %}fa-solid text-warning{% else %}fa-regular text-secondary{% endif %} cursor-pointer star-item" data-value="{{ r }}" role="button" tabindex="0"></i>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="rating" id="rating-input" value="{{ existing_feedback.rating if existing_feedback else 5 }}" required>
+                            <span class="badge bg-dark border border-secondary text-warning px-3 py-2 fs-6" id="rating-text-label">
+                                {{ existing_feedback.rating if existing_feedback else 5 }} Stars
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 2. Usefulness -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold d-block mb-2">
+                            2. How useful was this course? <span class="text-danger">*</span>
+                        </label>
+                        {% set cur_useful = existing_feedback.usefulness if existing_feedback else 'Very Useful' %}
+                        <div class="row g-2">
+                            {% for opt in ['Very Useful', 'Useful', 'Partially Useful', 'Not Useful'] %}
+                                <div class="col-6 col-sm-3">
+                                    <input type="radio" class="btn-check" name="usefulness" id="usefulness-{{ loop.index }}" value="{{ opt }}" {% if cur_useful == opt %}checked{% endif %} required>
+                                    <label class="btn btn-outline-secondary w-100 py-2 text-center text-white small" for="usefulness-{{ loop.index }}">
+                                        {{ opt }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- 3. Improved Skill -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold d-block mb-2">
+                            3. Did it improve your skill in <span class="text-primary">{{ course.skill }}</span>? <span class="text-danger">*</span>
+                        </label>
+                        {% set cur_improved = existing_feedback.improved_skill if existing_feedback else 'Yes' %}
+                        <div class="row g-2">
+                            {% for opt in ['Yes', 'Partially', 'No'] %}
+                                <div class="col-4">
+                                    <input type="radio" class="btn-check" name="improved_skill" id="improved-{{ loop.index }}" value="{{ opt }}" {% if cur_improved == opt %}checked{% endif %} required>
+                                    <label class="btn btn-outline-secondary w-100 py-2 text-center text-white small" for="improved-{{ loop.index }}">
+                                        {{ opt }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- 4. What did you like? -->
+                    <div class="mb-4">
+                        <label for="liked_aspects" class="form-label text-white fw-bold">
+                            4. What did you like?
+                        </label>
+                        <textarea class="form-control bg-dark text-white border-secondary" id="liked_aspects" name="liked_aspects" rows="3" placeholder="e.g., Clear hands-on exercises, well-structured modules, practical real-world data...">{{ existing_feedback.liked_aspects if existing_feedback else '' }}</textarea>
+                        <span class="text-muted small">Share positive aspects that helped your learning.</span>
+                    </div>
+
+                    <!-- 5. What should be improved? -->
+                    <div class="mb-4">
+                        <label for="improvement_suggestions" class="form-label text-white fw-bold">
+                            5. What should be improved?
+                        </label>
+                        <textarea class="form-control bg-dark text-white border-secondary" id="improvement_suggestions" name="improvement_suggestions" rows="3" placeholder="e.g., Needs more quiz questions, pacing was a bit fast in chapter 3...">{{ existing_feedback.improvement_suggestions if existing_feedback else '' }}</textarea>
+                        <span class="text-muted small">Constructive suggestions for future course recommendations.</span>
+                    </div>
+
+                    <!-- 6. Would you recommend this course? -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold d-block mb-2">
+                            6. Would you recommend this course to others? <span class="text-danger">*</span>
+                        </label>
+                        {% set cur_rec = existing_feedback.would_recommend if existing_feedback else 'Yes' %}
+                        <div class="d-flex gap-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="would_recommend" id="rec-yes" value="Yes" {% if cur_rec == 'Yes' %}checked{% endif %} required>
+                                <label class="form-check-label text-white" for="rec-yes">
+                                    <i class="fa-solid fa-thumbs-up text-success me-1"></i> Yes, Highly Recommend
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="would_recommend" id="rec-no" value="No" {% if cur_rec == 'No' %}checked{% endif %} required>
+                                <label class="form-check-label text-white" for="rec-no">
+                                    <i class="fa-solid fa-thumbs-down text-danger me-1"></i> No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button Strip -->
+                    <div class="pt-3 border-top border-secondary d-flex align-items-center justify-content-between flex-wrap gap-2">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-brand-outline">
+                            Skip to Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-brand-primary px-4 py-2" id="btn-submit-feedback">
+                            <i class="fa-solid fa-paper-plane me-2"></i>
+                            {% if existing_feedback %}Update Feedback{% else %}Submit Feedback{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const starContainer = document.getElementById('star-rating-container');
+    const ratingInput = document.getElementById('rating-input');
+    const ratingLabel = document.getElementById('rating-text-label');
+    const stars = starContainer.querySelectorAll('.star-item');
+
+    const ratingDescriptions = {
+        1: '1 Star - Poor',
+        2: '2 Stars - Fair',
+        3: '3 Stars - Good',
+        4: '4 Stars - Very Good',
+        5: '5 Stars - Outstanding'
+    };
+
+    function updateStars(value) {
+        stars.forEach(star => {
+            const val = parseInt(star.dataset.value);
+            if (val <= value) {
+                star.classList.remove('fa-regular', 'text-secondary');
+                star.classList.add('fa-solid', 'text-warning');
+            } else {
+                star.classList.remove('fa-solid', 'text-warning');
+                star.classList.add('fa-regular', 'text-secondary');
+            }
+        });
+        ratingLabel.textContent = ratingDescriptions[value] || (value + ' Stars');
+    }
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const val = parseInt(this.dataset.value);
+            ratingInput.value = val;
+            updateStars(val);
+        });
+
+        star.addEventListener('mouseenter', function() {
+            const val = parseInt(this.dataset.value);
+            updateStars(val);
+        });
+    });
+
+    starContainer.addEventListener('mouseleave', function() {
+        const currentVal = parseInt(ratingInput.value) || 5;
+        updateStars(currentVal);
+    });
+
+    // Initialize with current value
+    updateStars(parseInt(ratingInput.value) || 5);
+});
+</script>
+{% endblock %}

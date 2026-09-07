@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Skill Assessments - CareerSkill AI{% endblock %}
+
+{% block content %}
+<div class="container py-5" id="assessment-hub-root">
+    
+    <!-- Top Header & Breadcrumb -->
+    <div class="glass-card mb-4 p-4 border-start border-4 border-primary">
+        <div class="row align-items-center gy-3">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 rounded-pill fw-bold">
+                        <i class="fa-solid fa-laptop-code me-1"></i> Knowledge Verification
+                    </span>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-1 rounded-pill small">
+                        <i class="fa-solid fa-bullseye me-1"></i> Target: {{ target_role }}
+                    </span>
+                </div>
+                <h1 class="h2 fw-bold text-white mb-2">
+                    AI Skill Assessment & <span class="text-gradient">Progress Validation</span>
+                </h1>
+                <p class="text-secondary small mb-0">
+                    Test your practical knowledge of the skills required for your target career. Assessments diagnose strong vs weak topics, calibrate your baseline, and update your roadmap.
+                </p>
+            </div>
+
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-brand-outline btn-sm me-2 mb-1">
+                    <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
+                </a>
+                <a href="{{ url_for('career_analysis') }}" class="btn btn-brand-outline btn-sm mb-1">
+                    <i class="fa-solid fa-chart-pie me-1"></i> Skill Gap
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4 Assessment KPI Metric Summary Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total Assessments Completed -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-primary">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Assessments Taken</span>
+                <div class="h3 fw-bold text-white mb-0">{{ stats.total_completed }}</div>
+                <span class="text-muted x-small">Completed Tests</span>
+            </div>
+        </div>
+
+        <!-- Average Score -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-info">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Average Score</span>
+                <div class="h3 fw-bold text-gradient mb-0">{{ stats.avg_score }}%</div>
+                <span class="text-muted x-small">Overall Accuracy</span>
+            </div>
+        </div>
+
+        <!-- Skills Validated -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-success">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Skills Validated</span>
+                <div class="h3 fw-bold text-success mb-0">{{ stats.validated_count }}</div>
+                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill x-small mt-1">
+                    Score &ge; 70%
+                </span>
+            </div>
+        </div>
+
+        <!-- Skills Needing Improvement -->
+        <div class="col-6 col-lg-3">
+            <div class="glass-card p-3 text-center h-100 border-top border-3 border-warning">
+                <span class="text-secondary small text-uppercase fw-bold d-block mb-1">Action Needed</span>
+                <div class="h3 fw-bold text-warning mb-0">{{ stats.improvement_needed_count }}</div>
+                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill x-small mt-1">
+                    Score &lt; 70%
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Assessment Grid -->
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h3 class="h5 fw-bold text-white mb-0">
+                    <i class="fa-solid fa-list-check text-primary me-2"></i>Skills to Validate for {{ target_role }}
+                </h3>
+                <span class="text-secondary small">Adaptive assessments calibrated for your target career requirements.</span>
+            </div>
+            <span class="badge bg-dark border border-secondary text-secondary small">
+                {{ available_skills|length }} Available Skills
+            </span>
+        </div>
+
+        <div class="row g-3">
+            {% for s in available_skills %}
+            <div class="col-md-6 col-lg-4">
+                <div class="p-3 rounded-3 bg-dark border {% if s.validation_status == 'Validated' %}border-success-subtle{% elif s.validation_status == 'Needs Improvement' %}border-warning-subtle{% else %}border-secondary{% endif %} h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <!-- Header Badges -->
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge {% if s.priority == 'Critical' %}bg-danger{% elif s.priority == 'High' %}bg-warning text-dark{% else %}bg-primary{% endif %} x-small">
+                                {{ s.priority }} Priority
+                            </span>
+                            <span class="badge bg-{{ s.status_badge }} x-small">
+                                {{ s.validation_status }}
+                            </span>
+                        </div>
+
+                        <!-- Skill Name -->
+                        <h4 class="h5 fw-bold text-white mb-1">
+                            {{ s.skill_name }}
+                        </h4>
+
+                        <!-- Meta Info -->
+                        <div class="text-secondary small mb-3">
+                            <div>Self-Reported: <strong class="text-white">{{ s.self_reported_level }}</strong></div>
+                            <div>Required Target: <span class="text-info">{{ s.required_level }}</span></div>
+                            {% if s.last_score is not none %}
+                                <div class="mt-1">
+                                    Last Score: <strong class="{% if s.last_score >= 70 %}text-success{% else %}text-warning{% endif %}">{{ s.last_score }}%</strong>
+                                    {% if s.assessed_level %}
+                                        <span class="badge bg-dark border border-secondary text-light x-small ms-1">Assessed: {{ s.assessed_level }}</span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="mt-2 pt-2 border-top border-secondary text-end">
+                        {% if s.latest_attempt_id %}
+                            <div class="d-flex gap-2">
+                                <a href="{{ url_for('assessment_result_view', attempt_id=s.latest_attempt_id) }}" class="btn btn-dark border-secondary btn-sm flex-grow-1 text-light">
+                                    <i class="fa-solid fa-eye me-1"></i> Result
+                                </a>
+                                <a href="{{ url_for('start_assessment_view', skill_name=s.skill_name) }}" class="btn btn-brand-primary btn-sm flex-grow-1">
+                                    <i class="fa-solid fa-rotate-right me-1"></i> Retake
+                                </a>
+                            </div>
+                        {% else %}
+                            <a href="{{ url_for('start_assessment_view', skill_name=s.skill_name) }}" class="btn btn-brand-primary btn-sm w-100">
+                                <i class="fa-solid fa-play me-1"></i> Start Assessment
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Assessment Attempt History Table -->
+    {% if stats.recent_attempts %}
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h5 fw-bold text-white mb-0">
+                <i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Assessment History & Progress
+            </h3>
+            <span class="badge bg-dark border border-secondary text-secondary small">Recent Attempts</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr class="text-secondary small text-uppercase">
+                        <th>Skill</th>
+                        <th>Score</th>
+                        <th>Assessed Level</th>
+                        <th>Target Required</th>
+                        <th>Improvement</th>
+                        <th>Strong Topics</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in stats.recent_attempts %}
+                    <tr>
+                        <td>
+                            <strong class="text-white">{{ a.skill_name }}</strong>
+                        </td>
+                        <td>
+                            <span class="badge {% if a.score >= 70 %}bg-success{% elif a.score >= 45 %}bg-primary{% else %}bg-warning text-dark{% endif %} fw-bold">
+                                {{ a.score }}%
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-dark border border-secondary text-light">
+                                {{ a.assessed_level }}
+                            </span>
+                        </td>
+                        <td class="text-info small">
+                            {{ a.market_required_level }}
+                        </td>
+                        <td>
+                            {% if a.score_improvement is not none %}
+                                {% if a.score_improvement > 0 %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                        +{{ a.score_improvement }}%
+                                    </span>
+                                {% elif a.score_improvement < 0 %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">
+                                        {{ a.score_improvement }}%
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted small">0%</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted small">First Attempt</span>
+                            {% endif %}
+                        </td>
+                        <td class="small text-secondary">
+                            {% if a.strong_topics %}
+                                {{ a.strong_topics|join(', ') }}
+                            {% else %}
+                                <span class="text-muted">None verified yet</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('assessment_result_view', attempt_id=a.id) }}" class="btn btn-brand-outline btn-sm">
+                                View Details <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
