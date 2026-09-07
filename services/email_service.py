@@ -54,7 +54,7 @@ class EmailService:
         print("\n==================================================")
         print("[*] Password reset OTP generated for:")
         print(f"[*] Email: {email}")
-        print(f"[*] Development OTP: {otp}")
+        print("[*] Development OTP: ******")
         print("[*] Expiry: 10 minutes")
         print("==================================================\n")
         return True
