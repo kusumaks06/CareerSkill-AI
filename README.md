@@ -131,3 +131,8 @@ python app.py
 
 ### 5. Open in Browser
 Navigate to `http://127.0.0.1:5000` to access the CareerSkill AI portal.
+
+## 👩‍💻 Developed By
+
+Kusuma K S
+Artificial Intelligence and Data Science Student 
