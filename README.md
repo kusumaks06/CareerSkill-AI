@@ -136,3 +136,4 @@ Navigate to `http://127.0.0.1:5000` to access the CareerSkill AI portal.
 
 Kusuma K S
 Artificial Intelligence and Data Science Student 
+GitHub: https://github.com/kusumaks06
